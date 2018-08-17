@@ -74,7 +74,9 @@
 							<col style="width:auto">
 							<col style="width:auto">
 							<col style="width:auto">
-							<col style="width:300px">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:200px">
 						</colgroup>
 						<thead>
 							<tr>
@@ -107,7 +109,7 @@
 								<td></td>
 								<td>
 									<button type="button" class="btn_fill btn_sm">수정</button>
-									<button type="button" class="btn_fill btn_sm">메뉴 설정</button>
+									<button type="button" class="btn_line btn_sm">메뉴 설정</button>
 									<button type="button" class="btn_fill btn_sm">해제</button>								
 								</td>
 							</tr>

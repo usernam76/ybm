@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title>어학시험 admin</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" type="text/css" href="../resources/css/default.css" media="all">
+<link rel="stylesheet" type="text/css" href="../resources/css/nanumbarungothic.css" media="all">
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script type="text/javascript" src="../resources/js/jquery.js"></script>
+<script type="text/javascript" src="../resources/js/common.js"></script>
+</head>
+
+<body>
+<form action="" method="post"> 
+<fieldset> 
+<!-- header -->
+<div class="wrap_top_bg">
+	<div class="wrap_top">
+		<h1 class="logo">
+			<img src="../resources/images/logo.png">
+		</h1>
+		<ul class="nav">
+			<li><a href="#" class="on">시험관리</a></li>
+			<li><a href="#">성적표발급</a></li>
+			<li><a href="#">어학공통</a></li>
+			<li><a href="#">수험자관리</a></li>
+			<li><a href="#">사이트관리</a></li>
+		</ul>
+		<div class="info dropdown">
+		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
+		  <div class="dropdown-content">
+			<a href="#">내용</a>
+			<a href="#">내용 2</a>
+			<a href="#">내용 3</a>
+		  </div>
+		</div>
+	</div>
+</div>
+<!-- header //-->
+<!--left -->
+<div id="left_area">
+	<div class="item"> 
+		<select style="width:100%">  
+			<option>TOEIC</option> 
+			<option>TOEIC Speaking</option> 
+			<option>TOEFL ITP</option> 
+			<option>TOEIC Bridge</option> 
+			<option>JET</option> 
+			<option>JET-SW</option> 
+			<option>JPT</option> 
+			<option>JPT-JAPAN</option> 
+			<option>일본어검정</option> 
+			<option>SJPT</option> 
+			<option>TSC</option> 
+			<option>상무한검</option> 
+			<option>KPE</option> 
+		</select>
+	</div>
+	<div class="wrap_lnb">
+		<h3>· 접수현황통계</h3>
+		<ul>
+			<li><a href="#" class="on">일별 접수통계</a></li>
+			<li><a href="#">월별 접수통계</a></li>
+			<li><a href="#">연도별 접수통계</a></li>
+			<li><a href="#">지역/고사장 현황</a></li>
+			<li><a href="#">단체별 현황</a></li>
+			<li><a href="#">접수 예상 인원</a></li>
+			<li><a href="#">접수자 추이 통계</a></li>
+			<li><a href="#">접수자 성향 통계</a></li>
+			<li><a href="#">(목표달성현황)</a></li>
+		</ul>
+		<h3>· 접수관리</h3>
+		<ul>
+			<li><a href="#">접수자 검색</a></li>
+			<li><a href="#">접수자 리스트</a></li>
+			<li><a href="#">고사장별 접수리스트</a></li>
+			<li><a href="#">단체별 접수리스트</a></li>
+			<li><a href="#">편의지원신청</a></li>
+			<li><a href="#">수동접수</a></li>
+			<li><a href="#">환불신청리스트</a></li>
+		</ul>
+		<h3>· 시험세팅</h3>
+		<ul>
+			<li><a href="#">지역/고사장관리</a></li>
+			<li><a href="#">시험일정관리</a></li>
+			<li><a href="#">회차별 고사장세팅</a></li>
+		</ul>
+	</div>
+</div>
+<!--left //-->
+
+<!--right -->
+<div id="right_area">
+	<div class="wrap_contents">
+		<div class="wid_fix"> 
+			<h3 class="title">센터별운영통계 - 상세보기</h3>
+			<!-- 테이블1 -->
+			<div class="box_bs">
+				<div class="box_inform">
+					<p class="c_title fm_malgun">YBM 강남CBT센터/6층 – 강남역11번출구(점프밀라노뒤편)</p>
+					<p class="fl_l">
+						<select style="width:100px;">  
+							<option>2018년</option> 
+							<option>선택 둘</option> 
+							<option>선택 셋</option> 
+						</select>
+						<span>(2018.01.01 ~ 2018.00.00, <strong>00회</strong> 오픈)</span>
+					</p>
+					<p class="fl_r">
+						<button class="btn_line btn_md" type="button">전체 센터 통계</button>
+					</p>
+				</div>
+				<div class="wrap_tbl">
+					<table class="type01">
+						<caption></caption>
+						<colgroup>
+							<col style="width:30%">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>지역명</th>
+								<th>센터 수</th>
+								<th>오픈횟수</th>
+								<th>오픈율(%)</th>
+								<th>총좌석수</th>
+								<th>룸수</th>
+								<th>접수율(%)</th>
+								<th>누적접수인원</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td>서울 강남구</td>
+								<td>30</td>
+								<td>00</td>
+								<td>00%</td>
+								<td>000</td>
+								<td>000</td>
+								<td>00%</td>
+								<td>000</td>
+							</tr>
+							<tr>
+								<td class="total">전체합계</td>
+								<td class="total">30</td>
+								<td class="total">00</td>
+								<td class="total">00%</td>
+								<td class="total">000</td>
+								<td class="total">000</td>
+								<td class="total">00%</td>
+								<td class="total">000</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- //테이블1-->
+		</div>
+	</div>
+</div>
+<!--right //-->
+
+</fieldset>
+</form> 
+</body>
+</html>

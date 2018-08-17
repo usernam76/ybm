@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title>어학시험 admin</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" type="text/css" href="../resources/css/default.css" media="all">
+<link rel="stylesheet" type="text/css" href="../resources/css/nanumbarungothic.css" media="all">
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script type="text/javascript" src="../resources/js/jquery.js"></script>
+<script type="text/javascript" src="../resources/js/common.js"></script>
+</head>
+
+<body>
+<form action="" method="post"> 
+<fieldset> 
+<!-- header -->
+<div class="wrap_top_bg">
+	<div class="wrap_top">
+		<h1 class="logo">
+			<img src="../resources/images/logo.png">
+		</h1>
+		<ul class="nav">
+			<li><a href="#" class="on">시험관리</a></li>
+			<li><a href="#">성적표발급</a></li>
+			<li><a href="#">어학공통</a></li>
+			<li><a href="#">수험자관리</a></li>
+			<li><a href="#">사이트관리</a></li>
+		</ul>
+		<div class="info dropdown">
+		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
+		  <div class="dropdown-content">
+			<a href="#">내용</a>
+			<a href="#">내용 2</a>
+			<a href="#">내용 3</a>
+		  </div>
+		</div>
+	</div>
+</div>
+<!-- header //-->
+<!--left -->
+<div id="left_area">
+	<div class="item"> 
+		<select style="width:100%">  
+			<option>TOEIC</option> 
+			<option>TOEIC Speaking</option> 
+			<option>TOEFL ITP</option> 
+			<option>TOEIC Bridge</option> 
+			<option>JET</option> 
+			<option>JET-SW</option> 
+			<option>JPT</option> 
+			<option>JPT-JAPAN</option> 
+			<option>일본어검정</option> 
+			<option>SJPT</option> 
+			<option>TSC</option> 
+			<option>상무한검</option> 
+			<option>KPE</option> 
+		</select>
+	</div>
+	<div class="wrap_lnb">
+		<h3>· 접수현황통계</h3>
+		<ul>
+			<li><a href="day_register.html" class="on">일별 접수통계</a></li>
+			<li><a href="month_register.html">월별 접수통계</a></li>
+			<li><a href="year_register.html">연도별 접수통계</a></li>
+			<li><a href="exam_place.html">지역/고사장 현황</a></li>
+			<li><a href="group.html">단체별 현황</a></li>
+			<li><a href="number_register.html">접수 예상 인원</a></li>
+			<li><a href="number_state.html">접수자 추이 통계</a></li>
+			<li><a href="register_state.html">접수자 성향 통계</a></li>
+			<li><a href="aim_list.html">목표달성현황</a></li>
+			<li><a href="center_state.html">센터별운영통계</a></li>
+		</ul>
+		<h3>· 접수관리</h3>
+		<ul>
+			<li><a href="search_register.html">접수자 검색</a></li>
+			<li><a href="#">접수자 리스트</a></li>
+			<li><a href="#">고사장별 접수리스트</a></li>
+			<li><a href="#">단체별 접수리스트</a></li>
+			<li><a href="#">편의지원신청</a></li>
+			<li><a href="#">수동접수</a></li>
+			<li><a href="#">환불신청리스트</a></li>
+		</ul>
+		<h3>· 시험세팅</h3>
+		<ul>
+			<li><a href="#">지역/고사장관리</a></li>
+			<li><a href="#">시험일정관리</a></li>
+			<li><a href="#">회차별 고사장세팅</a></li>
+		</ul>
+	</div>
+</div>
+<!--left //-->
+
+<!--right -->
+<div id="right_area">
+	<div class="wrap_contents">
+		<div class="wid_fix"> 
+			<h3 class="title">수동접수 <span class="sm_tit">( 등록 )</span></h3>
+			<!-- sorting area -->
+			<div class="box_sort2">
+				<strong class="part_tit">검색</strong>
+				<div class="item">
+					MemberID &nbsp;
+					<input style="width: 300px;" type="text">
+					<button class="btn_fill btn_md" type="button">조회</button>	
+					<p class="fl_r pad_t5">* 기존 접수내역이 있으면 가장 최근 접수내역을 불러옵니다.</p>
+				</div>
+			</div>
+			<!-- sorting area  //-->
+			<!-- 테이블1 -->
+			<div class="box_bs">
+				<div class="box_inform">
+					<p class="fl_l">
+					<strong class="s_tit fm_malgun">시험정보</strong>
+					</p>
+					<p class="fl_r pad_t5 point">* 필수입력</p>
+				</div>
+				<div class="wrap_tbl">
+					<table class="type02">
+						<caption></caption>
+						<colgroup>
+							<col style="width: 180px;">
+							<col style="width: auto;">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>시험일 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									<strong>[정기] 18.00.00 <span class="point">(일) 09:20</span></strong> 
+								</td>
+							</tr>
+							<tr>
+								<th>고사장 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									<div class="item">
+										<input style="width: 200px;" type="text">
+										<button class="btn_fill btn_sm" type="button">검색</button>
+									</div>
+									<div class="item pad_t5">
+										<button class="btn_fill_sub btn_sm" type="button">강남구 - 대명중</button>
+										<button class="btn_line btn_sm" type="button">강남구 - 역삼중</button>
+										<button class="btn_line btn_sm" type="button">강남구 - 청담고</button>
+										<button class="btn_line btn_sm" type="button">강남구 - 풍문고</button>
+									</div>
+									<p class="pad_t10">
+										검색 결과가 없습니다.
+									</p>
+								</td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- //테이블1-->
+			<!-- 테이블2 -->
+			<div class="box_bs">
+				<div class="box_inform">
+					<p class="txt_l">
+					<strong class="s_tit fm_malgun">개인정보</strong>
+					</p>
+				</div>
+				<div class="wrap_tbl">
+					<table class="type02">
+						<caption></caption>
+						<colgroup>
+							<col style="width: 180px;">
+							<col style="width: auto;">
+							<col style="width: 180px;">
+							<col style="width: auto;">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th rowspan="5">사진 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td rowspan="5">
+									<p><img src="../resources/images/pic.jpg"> </p>
+									<p><button class="btn_line btn_sm" type="button">사진 변경</button></p>
+								</td>
+								<th>생년월일</th>
+								<td>
+									00.00.00
+								</td>
+							</tr>
+							<tr>
+								<th>이름</th>
+								<td>
+									홍길동
+								</td>
+							</tr>
+							<tr>
+								<th>영문(성) &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									<div class="item">
+										<input style="width: 200px;" type="text">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>영문(이름) &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									<div class="item">
+										<input style="width: 200px;" type="text">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>성별 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									남
+								</td>
+							</tr>
+							<tr>
+								<th>휴대폰번호 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									<div class="item">
+										<select style="width: 100px;">  
+											<option>010</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select> -
+										<select style="width: 100px;">  
+											<option>0000</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select> -
+										<select style="width: 100px;">  
+											<option>0000</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select>
+									</div>
+								</td>
+								<th>이메일 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									<div class="item">
+										<input style="width: 120px;" type="text">
+										<input style="width: 120px;" type="text">
+										<select style="width: 120px;">  
+											<option>선택</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>SMS수신동의</th>
+								<td>
+									<div class="item">
+										<input class="i_unit" id="agree" type="checkbox"><label for="agree">수신에 동의합니다.</label>
+									</div>
+								</td>
+								<th>ARS성적확인동의 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td>
+									<div class="item">
+										<input class="i_unit" id="" type="radio"><label for="">동의함</label>
+										<input class="i_unit" id="" type="radio"><label for="">동의하지 않음</label>
+									</div> 
+								</td>
+							</tr>
+							<tr>
+								<th>성적표수령방법 &nbsp;&nbsp; <span class="point">*</span></th>
+								<td colspan="3">
+									<div class="item">
+										<input class="i_unit" id="" type="radio"><label for="">온라인 출력</label>
+										<input class="i_unit" id="" type="radio"><label for="">우편 수령</label>
+									</div>
+									<div class="item pad_t5">
+										<input style="width: 200px;" type="text">
+										<button class="btn_line btn_sm" type="button">우편번호</button>
+									</div>
+									<div class="item pad_t5">
+										<input style="width: 40%;" type="text">
+										<input style="width: 40%;" type="text">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>직업</th>
+								<td colspan="3">
+									<div class="item">
+										<select style="width: 200px;">  
+											<option>선택</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="wrap_btn">
+					<button class="btn_fill btn_lg" type="button">등록</button>
+				</div>
+			</div>
+			<!-- //테이블2-->
+		</div>
+	</div>
+</div>
+<!--right //-->
+<!-- modal 팝업 :: goal-->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+   	<h2 class="p_title">고사장 및 시간 변경</h2>
+    <span class="close"><img src="../resources/images/btn_x.png"></span>
+    <!-- 팝업내용 -->
+	<div class="wrap_tbl">
+		<div class="box_inform">
+			<p class="txt_l">
+				<strong>현재 접수내역</strong>
+			</p>
+		</div>
+		<div class="wrap_tbl pad_b30">
+			<table class="type02">
+				<caption></caption>
+				<colgroup>
+					<col style="width: 120px;">
+					<col style="width: auto;">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>시험</th>
+						<td>TOEIC Speaking  - 00.00.00(토) 시행 </td>
+					</tr>
+					<tr>
+						<th>접수한 고사장</th>
+						<td>대구 - YBM 대구CBT센터- 대구2호선 반월당역(13번출구 방면)</td>
+					</tr>
+					<tr>
+						<th>시험시간</th>
+						<td>10:30</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="box_inform">
+			<p class="txt_l">
+				<strong>고사장 및 시간 선택</strong>
+			</p>
+		</div>
+		<div class="wrap_tbl">
+			<table class="type02">
+				<caption></caption>
+				<colgroup>
+					<col style="width: 120px;">
+					<col style="width: auto;">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>시험</th>
+						<td>
+							<div class="item">
+							   <select style="width: 200px;">  
+									<option>전체</option> 
+									<option>선택 둘</option> 
+									<option>선택 셋</option> 
+							   </select>
+							   <select style="width: 200px;">  
+									<option>전체</option> 
+									<option>선택 둘</option> 
+									<option>선택 셋</option> 
+							   </select>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>고사장</th>
+						<td>
+							<div class="item"> 
+								<select style="width: 400px;">  
+									<option>선택하세요</option> 
+									<option>선택2</option> 
+									<option>선택3</option> 
+								</select>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>시간</th>
+						<td>
+							<div class="item"> 
+								<select style="width: 300px;">  
+									<option>선택하세요</option> 
+									<option>선택2</option> 
+									<option>선택3</option>  
+								</select>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="wrap_btn pad_b30">
+			<button class="btn_fill btn_lg" type="button">저장</button>
+			<button class="btn_line btn_lg" type="button">취소</button>
+		</div>
+	</div>
+   <!-- 팝업내용 :: goal //-->
+  </div>
+</div>
+
+</fieldset>
+</form> 
+</body>
+</html>

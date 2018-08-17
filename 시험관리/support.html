@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title>어학시험 admin</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" type="text/css" href="../resources/css/default.css" media="all">
+<link rel="stylesheet" type="text/css" href="../resources/css/nanumbarungothic.css" media="all">
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script type="text/javascript" src="../resources/js/jquery.js"></script>
+<script type="text/javascript" src="../resources/js/common.js"></script>
+</head>
+
+<body>
+<form action="" method="post"> 
+<fieldset> 
+<!-- header -->
+<div class="wrap_top_bg">
+	<div class="wrap_top">
+		<h1 class="logo">
+			<img src="../resources/images/logo.png">
+		</h1>
+		<ul class="nav">
+			<li><a href="#" class="on">시험관리</a></li>
+			<li><a href="#">성적표발급</a></li>
+			<li><a href="#">어학공통</a></li>
+			<li><a href="#">수험자관리</a></li>
+			<li><a href="#">사이트관리</a></li>
+		</ul>
+		<div class="info dropdown">
+		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
+		  <div class="dropdown-content">
+			<a href="#">내용</a>
+			<a href="#">내용 2</a>
+			<a href="#">내용 3</a>
+		  </div>
+		</div>
+	</div>
+</div>
+<!-- header //-->
+<!--left -->
+<div id="left_area">
+	<div class="item"> 
+		<select style="width:100%">  
+			<option>TOEIC</option> 
+			<option>TOEIC Speaking</option> 
+			<option>TOEFL ITP</option> 
+			<option>TOEIC Bridge</option> 
+			<option>JET</option> 
+			<option>JET-SW</option> 
+			<option>JPT</option> 
+			<option>JPT-JAPAN</option> 
+			<option>일본어검정</option> 
+			<option>SJPT</option> 
+			<option>TSC</option> 
+			<option>상무한검</option> 
+			<option>KPE</option> 
+		</select>
+	</div>
+	<div class="wrap_lnb">
+		<h3>· 접수현황통계</h3>
+		<ul>
+			<li><a href="day_register.html" class="on">일별 접수통계</a></li>
+			<li><a href="month_register.html">월별 접수통계</a></li>
+			<li><a href="year_register.html">연도별 접수통계</a></li>
+			<li><a href="exam_place.html">지역/고사장 현황</a></li>
+			<li><a href="group.html">단체별 현황</a></li>
+			<li><a href="number_register.html">접수 예상 인원</a></li>
+			<li><a href="number_state.html">접수자 추이 통계</a></li>
+			<li><a href="register_state.html">접수자 성향 통계</a></li>
+			<li><a href="aim_list.html">목표달성현황</a></li>
+			<li><a href="center_state.html">센터별운영통계</a></li>
+		</ul>
+		<h3>· 접수관리</h3>
+		<ul>
+			<li><a href="search_register.html">접수자 검색</a></li>
+			<li><a href="#">접수자 리스트</a></li>
+			<li><a href="#">고사장별 접수리스트</a></li>
+			<li><a href="#">단체별 접수리스트</a></li>
+			<li><a href="#">편의지원신청</a></li>
+			<li><a href="#">수동접수</a></li>
+			<li><a href="#">환불신청리스트</a></li>
+		</ul>
+		<h3>· 시험세팅</h3>
+		<ul>
+			<li><a href="#">지역/고사장관리</a></li>
+			<li><a href="#">시험일정관리</a></li>
+			<li><a href="#">회차별 고사장세팅</a></li>
+		</ul>
+	</div>
+</div>
+<!--left //-->
+
+<!--right -->
+<div id="right_area">
+	<div class="wrap_contents">
+		<div class="wid_fix"> 
+			<h3 class="title">편의지원신청</h3>
+			<!-- sorting area -->
+			<div class="box_sort2">
+				<strong class="part_tit">검색</strong>
+				<div class="item line">
+					<select style="width:200px;">  
+						<option>MemberID</option> 
+						<option>선택 둘</option> 
+						<option>선택 셋</option> 
+					</select>
+					<input style="width:300px;" type="text">
+					<button class="btn_fill btn_md" type="button">조회</button>	
+				</div>
+				<strong class="part_tit">필터</strong>
+				<div class="item">
+					<select style="width:300px;">  
+						<option>회차347회 (2018-01-13)</option> 
+						<option>선택 둘</option> 
+						<option>선택 셋</option> 
+					</select>
+					~ 
+					<select style="width:300px;">  
+						<option>347회 (2018-01-13)</option> 
+						<option>선택 둘</option> 
+						<option>선택 셋</option> 
+					</select>
+				</div>
+				<div class="item pad_t20">
+					<strong class="part_tit2">· 처리상태</strong>
+					<div class="item pad_t5">
+						<input class="i_unit" id="subj1" type="checkbox"><label for="subj1">전체 (00)</label>
+						<input class="i_unit" id="subj2" type="checkbox"><label for="subj2">확인중 (00)</label>
+						<input class="i_unit" id="subj3" type="checkbox"><label for="subj3">신청재처리중 (00)</label>
+						<input class="i_unit" id="subj4" type="checkbox"><label for="subj4">정보오류 (00)</label>
+						<input class="i_unit" id="subj5" type="checkbox"><label for="subj5">보류 (00)</label>
+						<input class="i_unit" id="subj6" type="checkbox"><label for="subj6">확인완료 (00)</label>
+					</div>
+				</div>
+				<div class="item pad_t10">
+					<strong class="part_tit2">· 진위여부</strong>
+					<div class="item pad_t5">
+						<input class="i_unit" id="2_subj1_1" type="checkbox"><label for="2_subj1">전체 (00)</label>
+						<input class="i_unit" id="2_subj2" type="checkbox"><label for="2_subj2">진위확인중 (00)</label>
+						<input class="i_unit" id="2_subj3" type="checkbox"><label for="2_subj3">진위확인완료 (00)</label>
+						<input class="i_unit" id="2_subj4" type="checkbox"><label for="2_subj4">진위확인불가 (00)</label>
+					</div>
+				</div>
+			</div>
+			<!-- sorting area -->
+			<!-- 테이블1 -->
+			<div class="box_bs">
+				<p class="fl_l pad_b10">검색건수 : <strong>000</strong> 명 (장애인: 0,000명, 비장애인: 000명)</p>
+				<div class="wrap_tbl">
+					<table class="type01">
+						<caption></caption>
+						<colgroup>
+							<col style="width:80px">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>번호</th>
+								<th>회차</th>
+								<th>이름</th>
+								<th>MemberID</th>
+								<th>수험번호</th>
+								<th>고사장</th>
+								<th>시험 접수일</th>
+								<th>편의지원 신청일</th>
+								<th>수정일</th>
+								<th>처리상태</th>
+								<th>진위여부</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>000</td>
+								<td>000</td>
+								<td><a href="#">홍*동</a></td>
+								<td>00.00.00</td>
+								<td>987654</td>
+								<td>서울 - 대치중</td>
+								<td>0000원</td>
+								<td>0</td>
+								<td>00000****</td>
+								<td><a href="#">확인중</a></td>
+								<td>진위 확인중</td>
+							</tr>
+							<tr>
+								<td>000</td>
+								<td>000</td>
+								<td><a href="#">홍*동</a></td>
+								<td>00.00.00</td>
+								<td>987654</td>
+								<td>서울 - 대치중</td>
+								<td>0000원</td>
+								<td>0</td>
+								<td>00000****</td>
+								<td><a href="#">신청재처리중</a></td>
+								<td>진위 확인중</td>
+							</tr>
+							<tr>
+								<td>000</td>
+								<td>000</td>
+								<td><a href="#">홍*동</a></td>
+								<td>00.00.00</td>
+								<td>987654</td>
+								<td>서울 - 대치중</td>
+								<td>0000원</td>
+								<td>0</td>
+								<td>00000****</td>
+								<td><a href="#">정보오류</a></td>
+								<td>진위 확인중</td>
+							</tr>
+							<tr>
+								<td>000</td>
+								<td>000</td>
+								<td><a href="#">홍*동</a></td>
+								<td>00.00.00</td>
+								<td>987654</td>
+								<td>서울 - 대치중</td>
+								<td>0000원</td>
+								<td>0</td>
+								<td>00000****</td>
+								<td><a href="#">정보오류</a></td>
+								<td>진위 확인중</td>
+							</tr>
+							<tr>
+								<td>000</td>
+								<td>000</td>
+								<td><a href="#">홍*동</a></td>
+								<td>00.00.00</td>
+								<td>987654</td>
+								<td>서울 - 대치중</td>
+								<td>0000원</td>
+								<td>0</td>
+								<td>00000****</td>
+								<td><a href="#">보류</a></td>
+								<td>진위 확인중</td>
+							</tr>
+							<tr>
+								<td>000</td>
+								<td>000</td>
+								<td><a href="#">홍*동</a></td>
+								<td>00.00.00</td>
+								<td>987654</td>
+								<td>서울 - 대치중</td>
+								<td>0000원</td>
+								<td>0</td>
+								<td>00000****</td>
+								<td><a href="#">보류</a></td>
+								<td>진위 확인중</td>
+							</tr>
+							<tr>
+								<td>000</td>
+								<td>000</td>
+								<td><a href="#">홍*동</a></td>
+								<td>00.00.00</td>
+								<td>987654</td>
+								<td>서울 - 대치중</td>
+								<td>0000원</td>
+								<td>0</td>
+								<td>00000****</td>
+								<td><a href="#">보류</a></td>
+								<td>진위 확인중</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p class="l_txt pad_t10">선택 항목의 처리상태를 
+					<select style="width: 100px;">  
+						<option>확인중</option> 
+						<option>선택 둘</option> 
+						<option>선택 셋</option> 
+					</select>
+					으로
+					<button class="btn_fill btn_sm" type="button">변경</button>
+				</p>
+				<div class="paging">
+					<ol>
+						<li class="prev"><a title="맨 이전페이지" href="#"> &lt;&lt; </a></li>
+						<li class="prev"><a title="이전 페이지" href="#"> &lt; </a></li>
+						<li class="current"><span>1</span></li>
+						<li><a href="#">2</a></li>
+						<li><a href="#">3</a></li>
+						<li><a href="#">4</a></li>
+						<li><a href="#">5</a></li>
+						<li><a href="#">6</a></li>
+						<li><a href="#">7</a></li>
+						<li><a href="#">8</a></li>
+						<li><a href="#">9</a></li>
+						<li><a href="#">10</a></li>
+						<li class="next"><a title="다음 페이지" href="#"> &gt; </a></li>
+						<li class="next"><a title="맨 다음 페이지" href="#"> &gt;&gt; </a></li>
+					</ol>
+				</div>
+				<div class="item r_txt">
+					<input style="width: 40px;" type="text"> / 50 &nbsp;
+					<button class="btn_line btn_sm" type="button">Go</button>	
+				</div>
+			</div>
+			<!-- //테이블1-->
+		</div>
+	</div>
+</div>
+<!--right //-->
+
+</fieldset>
+</form> 
+</body>
+</html>

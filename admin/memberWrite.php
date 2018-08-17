@@ -47,56 +47,61 @@
 			<h3 class="title">계정관리</h3>
 			<!-- 세로형 테이블 -->
 			<div class="box_bs">
+				<div class="box_inform">
+					<p class="pad_tb15">
+						* 처음 로그인 하신 경우나 비밀번호를 분실하여 임시 비밀번호를 발급받은 경우 반드시 비밀번호를 변경해 주시기 바랍니다.<br>
+						* 비밀번호는 최소 30일에 한번은 변경해주셔야 지속적으로 사이트 이용이 가능합니다.<br>
+						* 이메일, 소속부서, 컴퓨터 아이피주소 등의 개인정보는 관리자만 수정이 가능하오니, 정보가 변경되었을 경우 관리자에게 연락하여 수정해주시기 바랍니다.<br>
+					</p>
+				</div>
+
 				<div class="wrap_tbl">
 					<table class="type02">
 						<caption></caption>
 						<colgroup>
 							<col style="width:180px">
 							<col style="width:auto">
-							<col style="width:180px">
-							<col style="width:auto">
 						</colgroup>
 						<tbody>
+							<tbody>
 							<tr>
 								<th>아이디</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="text" name="" id="" style="width:20%" placeholder="">
+										<input style="width: 300px;" type="text">
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>비밀번호</th>
-								<td colspan="3">
-									<div class="item">
-										<input type="text" name="" id="" style="width:20%" placeholder="">
-									</div>
+								<td>
+									<span class="point">* 자동생성되어 입력한 이메일로 발송</span>
 								</td>
 							</tr>
 							<tr>
 								<th>이름</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="text" name="" id="" style="width:20%" placeholder="">
+										<input style="width: 300px;" type="text">
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>eToken</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="text" name="" id="" style="width:20%" placeholder="">
+										<input style="width: 300px;" type="text">
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>이메일</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="text" name="" id="" style="width:20%" placeholder="">
-										@
-										<select style="width:48%">  
-											<option>선택하세요</option> 
+										<input style="width: 300px;" type="text">
+										@ 
+										<select style="width: 300px;">  
+											<option>ybm.co.kr</option> 
 											<option>선택 둘</option> 
 											<option>선택 셋</option> 
 										</select>
@@ -105,25 +110,25 @@
 							</tr>
 							<tr>
 								<th>전화번호</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="text" name="" id="" style="width:20%" placeholder=""> -
-										<input type="text" name="" id="" style="width:20%" placeholder=""> -
-										<input type="text" name="" id="" style="width:20%" placeholder="">
+										<input style="width: 150px;" type="text"> -
+										<input style="width: 150px;" type="text"> -
+										<input style="width: 150px;" type="text">
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>소속회사/부서</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<select style="width:48%">  
-											<option>선택하세요</option> 
+										<select style="width: 300px;">  
+											<option>선택</option> 
 											<option>선택 둘</option> 
 											<option>선택 셋</option> 
-										</select>
-										<select style="width:48%">  
-											<option>선택하세요</option> 
+										</select> &nbsp;
+										<select style="width: 300px;">  
+											<option>선택</option> 
 											<option>선택 둘</option> 
 											<option>선택 셋</option> 
 										</select>
@@ -131,37 +136,37 @@
 								</td>
 							</tr>
 							<tr>
-								<th>컴퓨터 IP</th>
-								<td colspan="3">
+								<th>컴퓨터IP</th>
+								<td>
 									<div class="item">
-										<input type="text" name="" id="" style="width:20%" placeholder="">
+										<input style="width: 300px;" type="text">
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>개인정보 권한</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="radio" name="" id="yes" class="i_unit"><label for="yes">부여</label>
-										<input type="radio" name="" id="no" class="i_unit"><label for="no">부여안함</label>
+										<input class="i_unit" id="" type="radio"><label for="">부여</label>
+										<input class="i_unit" id="" type="radio"><label for="">부여안함</label>
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>결제 권한</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="radio" name="" id="yes" class="i_unit"><label for="yes">부여</label>
-										<input type="radio" name="" id="no" class="i_unit"><label for="no">부여안함</label>
+										<input class="i_unit" id="" type="radio"><label for="">부여</label>
+										<input class="i_unit" id="" type="radio"><label for="">부여안함</label>
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th>사용여부</th>
-								<td colspan="3">
+								<td>
 									<div class="item">
-										<input type="radio" name="" id="yes" class="i_unit"><label for="yes">사용</label>
-										<input type="radio" name="" id="no" class="i_unit"><label for="no">사용안함</label>
+										<input class="i_unit" id="" type="radio"><label for="">사용</label>
+										<input class="i_unit" id="" type="radio"><label for="">부여안함</label>
 									</div>
 								</td>
 							</tr>

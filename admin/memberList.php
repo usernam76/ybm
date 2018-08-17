@@ -44,7 +44,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">신청리스트</h3>
+			<h3 class="title">계정관리</h3>
 			<!-- sorting area -->
 			<div class="box_sort2">
 				<strong class="part_tit">검색</strong>
@@ -57,8 +57,13 @@
 					</select>
 					<input style="width:300px;" type="text">
 					<button class="btn_fill btn_md" type="button">검색</button>	
-				</div>				
+
+					<span class="fl_r">
+						<button class="btn_fill btn_md" type="button" onclick="location.href='memberWrite.php'">등록</button>
+					</span>
+				</div>
 			</div>
+
 			<!-- sorting area -->
 			<!-- 테이블1 -->
 			<div class="box_bs">

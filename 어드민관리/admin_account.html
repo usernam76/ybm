@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title>어학시험 admin</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" type="text/css" href="../resources/css/default.css" media="all">
+<link rel="stylesheet" type="text/css" href="../resources/css/nanumbarungothic.css" media="all">
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script type="text/javascript" src="../resources/js/jquery.js"></script>
+<script type="text/javascript" src="../resources/js/common.js"></script>
+</head>
+
+<body>
+<form action="" method="post"> 
+<fieldset> 
+<!-- header -->
+<div class="wrap_top_bg">
+	<div class="wrap_top">
+		<h1 class="logo">
+			<img src="../resources/images/logo.png">
+		</h1>
+		<ul class="nav">
+			<li><a href="#">시험관리</a></li>
+			<li><a href="#">성적표발급</a></li>
+			<li><a href="#">어학공통</a></li>
+			<li><a href="#">수험자관리</a></li>
+			<li><a href="#" class="on">사이트관리</a></li>
+		</ul>
+		<div class="info dropdown">
+		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
+		  <div class="dropdown-content">
+			<a href="#">내용</a>
+			<a href="#">내용 2</a>
+			<a href="#">내용 3</a>
+		  </div>
+		</div>
+	</div>
+</div>
+<!-- header //-->
+<!--left -->
+<div id="left_area">
+	<div class="wrap_lnb">
+		<br>
+		<h3>· 어드민 관리</h3>
+		<ul>
+			<li><a href="#" class="on">계정관리</a></li>
+			<li><a href="#">메뉴관리</a></li>
+		</ul>
+	</div>
+</div>
+<!--left //-->
+
+<!--right -->
+<div id="right_area">
+	<div class="wrap_contents">
+		<div class="wid_fix"> 
+			<h3 class="title">메뉴설정</h3>
+			<!-- 테이블2 -->
+			<div class="box_bs tree">
+				<div class="wrap_tbl">
+					<table class="type01">
+						<caption></caption>
+						<colgroup>
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>이름</th>
+								<th>이메일</th>
+								<th>소속부서</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>hong</td>
+								<td>홍길동</td>
+								<td>ybmnet@ybm.co.kr</td>
+								<td>정기시험관리팀</td>
+							</tr>
+					  </tbody>
+					</table>
+				</div>
+				<div class="wrap_box_tree">
+					<div class="l_cont">
+						<p class="mtit">전체 메뉴</p>
+							<div class="box_tree">
+								<!-- tree -->
+								<div class="nav_tree">
+									<ul>
+										<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">시험관리</a> 
+											<ul>
+												<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC</a> 
+													<ul>
+														<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">접수현황통계</a>
+															<ul>
+																<li class="nav_tree_off"><a class="nav_tree_label" href="#">일별 접수통계</a></li>
+																<li class="nav_tree_off"><a class="nav_tree_label none" href="#">월별 접수통계</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">연도별 접수통계</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">지역/고사장 현황</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">단체별 현황</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">접수 예상 인원</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label" href="#">접수자 추이 통계</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label" href="#">접수자 성향 통계</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_labe none" href="#">목표달성현황</a></li>
+															</ul>
+														</li>
+														<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">접수관리</a></li>
+														<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">시험세팅</a></li>
+													</ul>
+												</li>
+												<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
+												<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
+											</ul>
+										</li>
+									</ul>
+								</div>
+								<!-- //tree-->
+							</div>
+						</div>
+						<div class="c_cont">
+							<div class="item"> 
+								<p><button class="btn_arr" type="button"><strong class="fs_sm">◀</strong></button><br>추가</p>
+								<p class="pad_t20"><button class="btn_arr" type="button"><strong class="fs_sm">▶</strong></button><br>제거</p>
+							</div>
+						</div>
+						<div class="r_cont">
+							<p class="mtit">사용자 지정메뉴</p>
+								<div class="box_tree">
+									<!-- tree -->
+								<div class="nav_tree">
+									<ul>
+										<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">시험관리</a> 
+											<ul>
+												<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC</a> 
+													<ul>
+														<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">접수현황통계</a>
+															<ul>
+																<li class="nav_tree_off"><a class="nav_tree_label" href="#">일별 접수통계</a></li>
+																<li class="nav_tree_off"><a class="nav_tree_label" href="#">지역/고사장 현황</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label" href="#">단체별 현황</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label" href="#">접수 예상 인원</a></li>
+																<li class="nav_tree_last"><a class="nav_tree_label" href="#">목표달성현황</a></li>
+															</ul>
+														</li>
+														<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">접수관리</a></li>
+														<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">시험세팅</a></li>
+													</ul>
+												</li>
+												<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
+												<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
+											</ul>
+										</li>
+										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">성적표발급</a></li>
+										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">어학공통</a></li>
+										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">수험자관리</a></li>
+										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">PLAZA관리</a></li>
+									</ul>
+								</div>
+								<!-- //tree-->
+								</div>
+						</div>
+					</div>
+					<div class="wrap_tbl pad_t20">
+						<table class="type01">
+							<tbody><tr>
+								<td class="headline">
+									<strong>Hong</strong> 에게
+									<input style="width: 100px;" type="text"> 과 동일한 권한 주기 &nbsp;&nbsp;
+									<button class="btn_fill btn_md" type="button">확인</button>
+								</td>
+							</tr>
+						</tbody></table>
+					</div>
+				</div>
+			<!-- //테이블2-->
+			<!-- 버튼 -->
+			<div class="wrap_btn">
+				<button class="btn_fill btn_lg" type="button">확인</button>
+				<button class="btn_line btn_lg" type="button">취소</button>
+			</div>
+			<!-- 버튼 //-->
+		</div>
+	</div>
+</div>
+<!--right //-->
+
+</fieldset>
+</form> 
+</body>
+</html>

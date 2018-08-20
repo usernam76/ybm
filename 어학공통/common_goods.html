@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title>어학시험 admin</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" type="text/css" href="../resources/css/default.css" media="all">
+<link rel="stylesheet" type="text/css" href="../resources/css/nanumbarungothic.css" media="all">
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script type="text/javascript" src="../resources/js/jquery.js"></script>
+<script type="text/javascript" src="../resources/js/common.js"></script>
+</head>
+
+<body>
+<form action="" method="post"> 
+<fieldset> 
+<!-- header -->
+<div class="wrap_top_bg">
+	<div class="wrap_top">
+		<h1 class="logo">
+			<img src="../resources/images/logo.png">
+		</h1>
+		<ul class="nav">
+			<li><a href="#" class="on">시험관리</a></li>
+			<li><a href="#">성적표발급</a></li>
+			<li><a href="#">어학공통</a></li>
+			<li><a href="#">수험자관리</a></li>
+			<li><a href="#">사이트관리</a></li>
+		</ul>
+		<div class="info dropdown">
+		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
+		  <div class="dropdown-content">
+			<a href="#">내용</a>
+			<a href="#">내용 2</a>
+			<a href="#">내용 3</a>
+		  </div>
+		</div>
+	</div>
+</div>
+<!-- header //-->
+<!--left -->
+<div id="left_area">
+	<div class="wrap_lnb">
+		<br>
+		<h3>· 어학공통</h3>
+		<ul>
+			<li><a href="#">쿠폰관리</a></li>
+			<li><a href="#">쿠폰통계</a></li>
+			<li><a href="#">응시권 관리</a></li>
+			<li><a href="#">응시권 통계</a></li>
+			<li><a href="#">지역/고사장관리</a></li>
+			<li><a href="#" class="on">상품관리</a></li>
+			<li><a href="#">Exam 스케줄</a></li>
+		</ul>
+	</div>
+</div>
+<!--left //-->
+
+<!--right -->
+<div id="right_area">
+	<div class="wrap_contents">
+		<div class="wid_fix"> 
+			<h3 class="title">상품관리</h3>
+			<!-- sorting area -->
+			<div class="box_sort2">
+				<p class="tab_line"><a href="#" class="on">단과시험</a> | <a href="#">패키지시험</a></p>
+				<div>
+					<strong class="part_tit">검색</strong>
+					<div class="item">
+						<span class="fl_r">
+							<button class="btn_line btn_md" type="button" id="">추가</button>
+						</span>
+						<select style="width:200px;">  
+							<option>상품명</option> 
+							<option>선택 둘</option> 
+							<option>선택 셋</option> 
+						</select>
+						<input style="width:300px;" type="text">
+						<button class="btn_fill btn_md" type="button">조회</button>	
+					</div>
+				</div>
+			</div>
+			<!-- sorting area //-->
+			<!-- 테이블1 -->
+			<div class="box_bs">
+				<div class="wrap_tbl">
+					<table class="type01">
+						<caption></caption>
+						<colgroup>
+							<col style="width: 80px;">
+							<col style="width: auto;">
+							<col style="width: 200px;">
+							<col style="width: 200px;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+							<col style="width: 80px;">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>번호</th>
+								<th>패키지코드</th>
+								<th>상품명</th>
+								<th>노출명</th>
+								<th>정가 합계</th>
+								<th>단과1 할인가</th>
+								<th>단과2 할인가</th>
+								<th>할인금액</th>
+								<th>패키지금액</th>
+								<th>수정</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>000</td>
+								<td>TOEIC 정기 + TOEIC Speaking</td>
+								<td>TOEIC + TOEIC Speaking</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td>00,000원</td>
+								<td class="point">00,000원</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- //테이블1-->
+		</div>
+	</div>
+</div>
+<!--right //-->
+</fieldset>
+</form> 
+</body>
+</html>

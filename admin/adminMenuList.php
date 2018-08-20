@@ -1,58 +1,27 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
-<head>
-<title>어학시험 admin</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<link rel="stylesheet" type="text/css" href="../_resources/css/default.css" media="all">
-<link rel="stylesheet" type="text/css" href="../_resources/css/nanumbarungothic.css" media="all">
-<!--[if lt IE 9]>
-	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-<script type="text/javascript" src="../_resources/js/jquery.js"></script>
-<script type="text/javascript" src="../_resources/js/common.js"></script>
-</head>
-
-<body>
-<form action="" method="post"> 
-<fieldset> 
-<!-- header -->
-<div class="wrap_top_bg">
-	<div class="wrap_top">
-		<h1 class="logo">
-			<img src="../resources/images/logo.png">
-		</h1>
-		<ul class="nav">
-			<li><a href="#">시험관리</a></li>
-			<li><a href="#">성적표발급</a></li>
-			<li><a href="#">어학공통</a></li>
-			<li><a href="#">수험자관리</a></li>
-			<li><a href="#" class="on">사이트관리</a></li>
-		</ul>
-		<div class="info dropdown">
-		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
-		  <div class="dropdown-content">
-			<a href="#">내용</a>
-			<a href="#">내용 2</a>
-			<a href="#">내용 3</a>
-		  </div>
-		</div>
-	</div>
-</div>
-<!-- header //-->
-<!--left -->
-<div id="left_area">
-	<div class="wrap_lnb">
-		<br>
-		<h3>· 어드민 관리</h3>
-		<ul>
-			<li><a href="#">계정관리</a></li>
-			<li><a href="#" class="on">메뉴관리</a></li>
-		</ul>
-	</div>
-</div>
-<!--left //-->
-
+<?php
+	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/config.php';
+	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
+	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
+	
+	// validation 체크를 따로 안할 경우 빈 배열로 선언
+	//$valueValid = [];
+	$valueValid = [
+		'idx' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 0, 'max' => 3],
+		'userId' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 2, 'max' => 20]
+	];
+	
+	$sql = 'SELECT';
+	$sql .= '[Menu_idx],[Menu_Name],[Menu_order],[Menu_depth]';
+	$sql .= 'FROM [theExam].[dbo].[Menu_Info]';
+	$sql .= 'WHERE Menu_depth = 1';
+	$sql .= 'ORDER BY Menu_order asc';
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+	
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
+?>
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
@@ -65,15 +34,13 @@
 						<p><button class="btn_sm_bg_grey" type="button" style="width:100%" id="myBtn">+ 메뉴 추가하기</button></p>
 						<div class="box_ln">
 							<ul>
-								<li><a href="#" class="on">시험관리</a></li>
-								<li><a href="#">주니어단체</a></li>
-								<li><a href="#">CBT센터관리</a></li>
-								<li><a href="#">어학공통</a></li>
-								<li><a href="#">성적표 발급</a></li>
-								<li><a href="#">수험자관리</a></li>
-								<li><a href="#">사이트관리</a></li>
-								<li><a href="#">어드민관리</a></li>
-								<li><a href="#">정산</a></li>
+							<?php
+								foreach($arrRows as $data) {
+							?>
+								<li><a href="#" menuIdx="<?=$data["Menu_idx"]?>" parMenuIdx="<?=$data["Par_Menu_idx"]?>" menuOrder ="<?=$data["Menu_order"]?>" menuDepth="<?=$data["Menu_depth"]?>"><?=$data["Menu_Name"]?></a></li>
+							<?php
+							}
+							?>
 							</ul>
 						</div>
 						<p class="item">
@@ -90,8 +57,10 @@
 					<div class="box_bs">
 						<p class="stit">2Depth 메뉴</p>
 						<p><button class="btn_sm_bg_grey" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
-						<div class="box_ln">
+						<div class="box_ln" check="2">
 							<ul>
+							<?php
+							/*?>
 								<li><a href="#" class="on">TOEIC</a></li>
 								<li><a href="#">TOEIC Speaking</a></li>
 								<li><a href="#">TOEFL ITP</a></li>
@@ -105,6 +74,7 @@
 								<li><a href="#">TSC</a></li>
 								<li><a href="#">상무한검</a></li>
 								<li><a href="#">KPE</a></li>
+								<?*/?>
 							</ul>
 						</div>
 						<p class="item">
@@ -121,11 +91,14 @@
 					<div class="box_bs">
 						<p class="stit">3Depth 메뉴</p>
 						<p><button class="btn_sm_bg_grey" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
-						<div class="box_ln">
+						<div class="box_ln"  check="3">
 							<ul>
+							<?php
+							/*?>
 								<li><a href="#" class="on">접수현황통계</a></li>
 								<li><a href="#">접수관리</a></li>
 								<li><a href="#">시험세팅</a></li>
+								<?*/?>
 							</ul>
 						</div>
 						<p class="item">
@@ -144,6 +117,8 @@
 						<p><button class="btn_sm_bg_grey" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
 						<div class="box_ln">
 							<ul>
+							<?php
+							/*?>
 								<li><a href="#" class="on">일별 접수통계</a></li>
 								<li><a href="#">월별 접수통계</a></li>
 								<li><a href="#">연도별 접수통계</a></li>
@@ -154,6 +129,7 @@
 								<li><a href="#">접수자 성향 통계</a></li>
 								<li><a href="#">(목표달성현황)</a></li>
 								<li><a href="#">(센터별 운영통계)</a></li>
+								<?*/?>
 							</ul>
 						</div>
 						<p class="item">
@@ -242,8 +218,102 @@ span.onclick = function() {
     modal.style.display = "none";
 }
 
+var yUI = (function() {
+	/*
+		@auth : 최상운
+		@date : 2018-08-20
+		@description : 관리자 메뉴 관리 이벤트 스크립트
+	*/
+
+	/* 메뉴 클릭 이벤트 > 하위 메뉴 호출 */
+	var menuEvent = function(){
+		$(".box_ln > ul > li").on("click", function(){
+			if($(this).find("a").attr("menuDepth")=="4" ){
+				return; // 4depth 메뉴의 경우 하위 이벤트 설정x
+			}
+			var chkMenu = $(this).find("a").attr("menuIdx");
+			$(".box_ln > ul > li").each(function(){
+				if( chkMenu == $(this).find("a").attr("menuIdx") ) {
+					$(this).find("a").addClass("on");
+				}else{
+					$(this).find("a").removeClass("on");
+				}
+			});
+
+			var menuIdx = $(this).find("a").attr("menuIdx");	// menu 고유번호
+			var menuDepth =$(this).find("a").attr("menuDepth");	// menu 메뉴단계
+			var menuOrder = $(this).find("a").attr("menuOrder");	//	menu 정렬순서
+			var parMenuIdx =$(this).find("a").attr("parMenuIdx");	// menu 상위메뉴 고유번호
+			var u = "./adminMenuProc.php";	// 비동기 전송 파일 URL
+
+			var param = {	// 파라메터
+				"proc" : "getMenuLoadAjax",
+				"menuIdx"		:	menuIdx,
+				"menuDepth"	:	menuDepth,
+				"menuOrder"	:	menuOrder,
+				"parMenuIdx"	:	parMenuIdx
+			};
+			
+			/* 하위 메뉴 출력 정보 전송*/
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+				success: function(e) {
+					if(e.status == "success"){
+						menuLoad(e)
+					}else{
+						console.log("[Error]");
+						console.log(e)
+					}
+				},
+				error: function(e) {
+					console.log("[Error]");
+					console.log(e)
+				}
+			});
+		});
+	};
+
+	/* 하위 메뉴 삽입 */
+	var menuLoad = function(e){
+		var addDepth = parseInt(e.depth,10);
+		var len = e.data.length;
+		var addHTML = "";
+		addHTML = "<ul>"
+		for(var i=0; i<len; i++){
+			addHTML += '<li>';
+			addHTML += '<a href="#"';
+			addHTML += 'menuIdx="'+e.data[i].Menu_idx+'"';
+			addHTML += 'parMenuIdx="'+e.data[i].Par_Menu_idx+'"'; 
+			addHTML += 'menuOrder ="'+e.data[i].Menu_order+'"';
+			addHTML += 'menuDepth="'+e.data[i].Menu_depth+'"';
+			addHTML += '>'+e.data[i].Menu_Name+'</a>';
+			addHTML += '</li>';
+		}
+		addHTML += "</ul>";
+		$(".box_ln").eq(addDepth-1).html('');	// 하위 메뉴 초기화
+		$(".box_ln").eq(addDepth-1).html(addHTML);	// 메뉴 입력
+	}
+
+
+	var init = function(){
+		menuEvent();
+	};
+
+	return {
+		init: init
+	};
+
+}());
+
+;(function() {
+  $(document).ready(function() {
+    yUI.init();
+  });
+}());
+
+
 </script>
 </fieldset>
 </form> 
-</body>
-</html>
+<?php
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/footer.php';
+?>

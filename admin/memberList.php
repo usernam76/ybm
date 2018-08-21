@@ -4,21 +4,29 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
-	//$valueValid = [];
-	$valueValid = [
-		'idx' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 0, 'max' => 3],
-		'userId' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 2, 'max' => 20]
-	];
+	$valueValid = [];
+
+	$resultArray = fnGetRequestParam($valueValid);
 	
 	$totalRecords	= 0;		// 총 레코드 수
 	$recordsPerPage	= 10;		// 한 페이지에 보일 레코드 수
 	$pagePerBlock	= 10;		// 한번에 보일 페이지 블럭 수
 	$currentPage	= 1;		// 현재 페이지
+	$totalPage		= 1;
+	if( $pCurrentPage > 0 ){
+		$currentPage = $pCurrentPage;
+	}
+
+	$where		= "";
+	if( $pSearchKey != "" ){
+		$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
+	}
 
 	$sql = ' SELECT ';
-	$sql .= ' (SELECT COUNT(*) FROM [theExam].[dbo].[Adm_info] ) AS totalRecords ';
+	$sql .= ' (SELECT COUNT(*) FROM [theExam].[dbo].[Adm_info] WHERE 1=1 '. $where.' ) AS totalRecords ';
 	$sql .= ' , Adm_id, Adm_name, Adm_Email, Reg_day, Login_day, Password_day ';
 	$sql .= ' FROM [theExam].[dbo].[Adm_info] ';
+	$sql .= ' WHERE 1=1 '. $where;
 	$sql .= ' ORDER BY Reg_day DESC ';
 	$sql .= ' OFFSET ( '.$currentPage.' - 1 ) * '.$recordsPerPage.' ROWS ';
 	$sql .= ' FETCH NEXT '.$recordsPerPage.' ROWS ONLY ';
@@ -28,8 +36,10 @@
 
 	if ( count($arrRows) > 0 ){
 		$totalRecords	= $arrRows[0][totalRecords];
+		$totalPage		= ceil($totalRecords / $recordsPerPage);
 	}
 
+	
 ?>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
@@ -37,34 +47,82 @@
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
 ?>
 <body>
-<form action="" method="post"> 
-<fieldset> 
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+	$('#searchFrm').validate({
+        onfocusout: false,
+        rules: {
+            searchKey: {
+                required: true    //필수조건
+			}
+        }, messages: {
+			searchKey: {
+				required: "검색어를 입력해주세요."
+			}
+        }, errorPlacement: function (error, element) {
+            // $(element).removeClass('error');
+            // do nothing;
+        }, invalidHandler: function (form, validator) {
+            var errors = validator.numberOfInvalids();
+            if (errors) {
+                alert(validator.errorList[0].message);
+                validator.errorList[0].element.focus();
+            }
+        }
+    });
+
+	$("#searchBtn").click(function () {
+		$("#searchKey").val( $.trim($("#searchKey").val()) );
+
+		$('#searchFrm').submit();
+    });
+
+	$("#goPage").click(function () {
+		if( $("#goPageNo").val() > 0 && $("#goPageNo").val() <= <?=$totalPage?> ){
+			location.href = "<?=$_SERVER['SCRIPT_NAME'].fnGetParams()?>currentPage="+$("#goPageNo").val();
+		}else{
+			alert("1 ~ <?=$totalPage?> 사이의 숫자를 입력해 주세요.")
+		}
+    });
+
+	$("#writeBtn").click(function () {
+		location.href = "./memberWrite.php";
+	});
+	
+
+});
+</script>
 
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
 			<h3 class="title">계정관리</h3>
+
 			<!-- sorting area -->
+<form name="searchFrm" id="searchFrm" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
 			<div class="box_sort2">
 				<strong class="part_tit">검색</strong>
 				<div class="item line">
-					<select style="width:200px;">  
-						<option>아이디</option> 
-						<option>이름</option> 
-						<option>이메일</option> 
-						<option>소속부서</option> 
+					<select style="width:200px;" name="searchType">  
+						<option value="Adm_id"		<?=( $pSearchKey == 'Adm_id'	)? "SELECTED": "" ?> >아이디</option> 
+						<option value="Adm_name"	<?=( $pSearchKey == 'Adm_name'	)? "SELECTED": "" ?> >이름</option> 
+						<option value="Adm_Email"	<?=( $pSearchKey == 'Adm_Email'	)? "SELECTED": "" ?> >이메일</option> 
+						<option value="Adm_Email"	<?=( $pSearchKey == 'Adm_Email'	)? "SELECTED": "" ?> >소속부서</option> 
 					</select>
-					<input style="width:300px;" type="text">
-					<button class="btn_fill btn_md" type="button">검색</button>	
+					<input style="width:300px;" type="text" id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
+					<button class="btn_fill btn_md" type="button" id="searchBtn">검색</button>	
 
 					<span class="fl_r">
-						<button class="btn_fill btn_md" type="button" onclick="location.href='memberWrite.php'">등록</button>
+						<button class="btn_fill btn_md" type="button" id="writeBtn">등록</button>
 					</span>
 				</div>
 			</div>
-
+</form> 
 			<!-- sorting area -->
+
 			<!-- 테이블1 -->
 			<div class="box_bs">
 				<p class="fl_l pad_b10">총 <strong><?=$totalRecords?></strong> 건</p>
@@ -129,8 +187,8 @@
 				<?=fnPaginator($totalRecords, $recordsPerPage, $pagePerBlock, $currentPage)?>
 
 				<div class="item r_txt">
-					<input style="width: 40px;" type="text"> / 50 &nbsp;
-					<button class="btn_line btn_sm" type="button">Go</button>	
+					<input style="width: 40px;" type="text" id="goPageNo" value="<?=$currentPage?>"> / <?=$totalPage?> &nbsp;
+					<button class="btn_line btn_sm" type="button" id="goPage">Go</button>	
 				</div>
 			</div>
 			<!-- //테이블1-->

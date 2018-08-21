@@ -4,32 +4,38 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
-	//$valueValid = [];
-	$valueValid = [
-		'idx' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 0, 'max' => 3],
-		'userId' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 2, 'max' => 20]
-	];
-	
-	$totalRecords	= 0;		// 총 레코드 수
-	$recordsPerPage	= 10;		// 한 페이지에 보일 레코드 수
-	$pagePerBlock	= 10;		// 한번에 보일 페이지 블럭 수
-	$currentPage	= 1;		// 현재 페이지
+	$valueValid = [];
+//	$valueValid = [
+//		'idx' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 0, 'max' => 3],
+//		'userId' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 2, 'max' => 20]
+//	];
+	$resultArray = fnGetRequestParam($valueValid);
 
-	$sql = ' SELECT ';
-	$sql .= ' (SELECT COUNT(*) FROM [theExam].[dbo].[Adm_info] ) AS totalRecords ';
-	$sql .= ' , Adm_id, Adm_name, Adm_Email, Reg_day, Login_day, Password_day ';
-	$sql .= ' FROM [theExam].[dbo].[Adm_info] ';
-	$sql .= ' ORDER BY Reg_day DESC ';
-	$sql .= ' OFFSET ( '.$currentPage.' - 1 ) * '.$recordsPerPage.' ROWS ';
-	$sql .= ' FETCH NEXT '.$recordsPerPage.' ROWS ONLY ';
+	$proc = "write";
 
-	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
-	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+	$admEmail1	= "";
+	$admEmail2	= "";
+	$admTel1	= "";
+	$admTel2	= "";
+	$admTel3	= "";
 
-	if ( count($arrRows) > 0 ){
-		$totalRecords	= $arrRows[0][totalRecords];
-	}
+	if ( $pAdmId != "" ){
+		$sql = ' SELECT ';
+		$sql .= ' Adm_id, Adm_name, Adm_Email, Reg_day, Login_day, Password_day ';
+		$sql .= ' FROM [theExam].[dbo].[Adm_info] ';
+		$sql .= ' WHERE Adm_id = :admId ';
 
+		$pArray[':admId'] = $pAdmId;
+
+		$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+		if( count($arrRows) == 0 ){
+			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
+		}else{
+			$proc = "modify";
+		}		
+	}	
 ?>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
@@ -37,14 +43,63 @@
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
 ?>
 <body>
-<form action="" method="post"> 
-<fieldset> 
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+	$('#writeFrm').validate({
+        onfocusout: false,
+        rules: {
+            admId: {
+                required: true    //필수조건
+			}, admName: {
+                required: true    //필수조건
+			}, tokenCode: {
+                required: true    //필수조건
+			}
+        }, messages: {
+			admId: {
+				required: "아이디를 입력해주세요."
+			}, admName: {
+				required: "이름을 입력해주세요."
+			}, tokenCode: {
+				required: "eToken을 입력해주세요."
+			}
+        }, errorPlacement: function (error, element) {
+            // $(element).removeClass('error');
+            // do nothing;
+        }, invalidHandler: function (form, validator) {
+            var errors = validator.numberOfInvalids();
+            if (errors) {
+                alert(validator.errorList[0].message);
+                validator.errorList[0].element.focus();
+            }
+        }
+    });
+
+	$("#writeBtn").click(function () {
+		$("#admId").val( $.trim($("#admId").val()) );
+
+		$('#writeFrm').submit();
+    });
+
+	$("#cancelBtn").click(function () {
+		location.href = "./memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
+	});
+	
+
+});
+</script>
 
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
 			<h3 class="title">계정관리</h3>
+
+<form name="writeFrm" id="writeFrm" action="./memberProc.php" method="post"> 
+<input type="hidden" name="proc" value="<?=$proc?>">
+
 			<!-- 세로형 테이블 -->
 			<div class="box_bs">
 				<div class="box_inform">
@@ -68,7 +123,12 @@
 								<th>아이디</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text">
+<?php	if( $proc == "write" ){		?>
+										<input style="width: 300px;" type="text" id="admId" name="admId" value="">
+<?php	}else{		?>
+										<?=$arrRows[0][Adm_id]?>
+										<input type="hidden" name="admId" value="<?=$arrRows[0][Adm_id]?>">
+<?php	}		?>
 									</div>
 								</td>
 							</tr>
@@ -82,7 +142,7 @@
 								<th>이름</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text">
+										<input style="width: 300px;" type="text" id="admName" name="admName" value="<?=$arrRows[0][Adm_name]?>">
 									</div>
 								</td>
 							</tr>
@@ -90,7 +150,7 @@
 								<th>eToken</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text">
+										<input style="width: 300px;" type="text" name="tokenCode" value="<?=$arrRows[0][Token_code]?>">
 									</div>
 								</td>
 							</tr>
@@ -98,9 +158,9 @@
 								<th>이메일</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text">
+										<input style="width: 300px;" type="text" name="admEmail1" value="<?=$admEmail1?>">
 										@ 
-										<select style="width: 300px;">  
+										<select style="width: 300px;" name="Adm_Email">  
 											<option>ybm.co.kr</option> 
 											<option>선택 둘</option> 
 											<option>선택 셋</option> 
@@ -112,9 +172,9 @@
 								<th>전화번호</th>
 								<td>
 									<div class="item">
-										<input style="width: 150px;" type="text"> -
-										<input style="width: 150px;" type="text"> -
-										<input style="width: 150px;" type="text">
+										<input style="width: 150px;" type="text" name="admTel1" value="<?=$admTel1?>"> -
+										<input style="width: 150px;" type="text" name="admTel2" value="<?=$admTel2?>"> -
+										<input style="width: 150px;" type="text" name="admTel3" value="<?=$admTel3?>">
 									</div>
 								</td>
 							</tr>
@@ -139,7 +199,7 @@
 								<th>컴퓨터IP</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text">
+										<input style="width: 300px;" type="text" name="Adm_Email" value="<?=$Adm_Email?>">
 									</div>
 								</td>
 							</tr>
@@ -173,14 +233,15 @@
 						</tbody>
 					</table>
 				</div>
-
-				<div class="wrap_btn">
-					<button type="button" class="btn_fill btn_lg">등록</button>
-					<button type="button" class="btn_line btn_lg">취소</button>
-				</div>
-
 			</div>
+</form> 
 			<!-- 세로형 테이블 //-->
+
+			<div class="wrap_btn">
+				<button type="button" class="btn_fill btn_lg" id="writeBtn">등록</button>
+				<button type="button" class="btn_line btn_lg" id="cancelBtn">취소</button>
+			</div>
+
 		</div>
 	</div>
 </div>

@@ -64,7 +64,8 @@
 	}
 
 	function fnGetHref(){
-		$href = $_SERVER["PHP_SELF"]; // 현재 페이지 주소
+//		$href = $_SERVER["PHP_SELF"]; // 현재 페이지 주소
+		$href = $_SERVER['SCRIPT_NAME']; // 현재 페이지 주소
 		$i=0;		
 		foreach($_REQUEST as $key => $data){ // request로 넘어온 값들 체크
 			if($data != ''){
@@ -80,6 +81,27 @@
 			}
 		}
 		return $href;
+	}
+
+	function fnGetParams(){
+		$params = "";
+		$i=0;		
+		foreach($_REQUEST as $key => $data){ // request로 넘어온 값들 체크
+			if($data != ''){
+				if($key != "currentPage"){ // 페이지 관련 파라미터가 아닌 파라미터로만 문자열 생성
+					if($i==0){
+						$params.="?"; // 첫 파라미터 앞에는 ? 
+					}else{
+						$params.="&"; // 첫 파라미터가 아닌 경우에는 &
+					}
+					$params.=$key."=".$data; // param=value 형태로 주소 값 생성
+					$i++; // 아래에서 이동
+				}
+			}
+		}
+
+		$params .= ((strpos($params,"?") === false) ? "?" : "&"); // $params ?가 있으면 끝에 &를 붙이고 없으면 ?를 붙인다.
+		return $params;
 	}
 
 

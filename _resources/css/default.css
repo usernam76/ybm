@@ -361,7 +361,13 @@ table.type02 th {
 	border-bottom: 1px solid #d6d7da;
 	background: #eeeff3;
 }
-
+table.type03{
+	width:100%;
+}
+table.type03 th,table.type03 td{
+	border-top:1px solid #d6d7da;
+	background:none;
+}
 table.cal {
 	width: 100%;
 	table-layout: fixed
@@ -404,26 +410,41 @@ table.cal .box_cal {
 	font-size: 12.5px;
 }
 table.cal .box_cal .top {
-	height: 30px;
+	height: 35px;
 	position: relative;
 }
 table.cal .box_cal .bottom {
 	line-height: 20px;
+	color:#555;
+	font-size:12px;
 }
 table.cal .box_cal .top .bl {
-	position: absolute;
 	display: inline-block;
-	top: 0;
-	left: 0;
 	padding: 2px 8px;
 	font-size: 12px;
+	margin-right:5px;
 }
-table.cal .box_cal .top .test {
+table.cal .box_cal .top .bl_c{
+	display: inline-block;
+	padding:5px;
+	width:14px;
+	height:14px;
+	line-height:14px;
+	text-align: center;
+	border-radius: 50%;
+	font-size: 12px;
+	margin-right:5px;
+}
+table.cal .box_cal .top .yel,table.cal .box_cal .top .test {
 	background: #ffe118;
 	color: #222;
 }
-table.cal .box_cal .top .regi {
+table.cal .box_cal .top .green,table.cal .box_cal .top .regi {
 	background: #0cc244;
+	color: #fff;
+}
+table.cal .box_cal .top .blue{
+	background: #2f4fc7;
 	color: #fff;
 }
 table.cal .box_cal .top .score {
@@ -484,6 +505,7 @@ table.cal .box_cal .top .score {
 .menu_manage_list .box_ln > ul > li{
 	float:none;
 	width:100%;
+	position:relative;
 }
 .menu_manage_list .box_ln > ul >  li > a {
 	display: block;
@@ -491,6 +513,11 @@ table.cal .box_cal .top .score {
 }
 .menu_manage_list .box_ln > ul >  li > a.on {
 	background:#ebf2fb;
+}
+.menu_manage_list .box_ln > ul > li > .btn_r{
+	position:absolute;
+	top:6px;
+	right:10px;
 }
 .status {
 	padding-top: 10px;
@@ -786,7 +813,6 @@ select {
 /*common*/
 .wrap_tbl {
 	padding-bottom: 0;
-	clear: both;
 }
 .wrap_tbl a {
 	color: #2d71c4;
@@ -816,7 +842,7 @@ select {
 	clear: both;
 	overflow: hidden;
 	text-align: center;
-	padding: 30px 0;
+	padding: 20px 0 40px 0;
 }
 .wrap_btn_right {
 	overflow: hidden;
@@ -1201,6 +1227,9 @@ button img {
 	margin: 100px 0 0 15px;
 }
 /* tree */
+.wrap_box_tree{
+	overflow: hidden;
+}
 .wrap_box_tree .mtit{
 	text-align:center;
 	padding:30px 0 20px 0;

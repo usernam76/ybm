@@ -22,6 +22,10 @@
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
 ?>
+
+<style>
+.on{background-color:red !important; font-weight:700 !important;}
+</style>
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
@@ -31,22 +35,27 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">1Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey" type="button" style="width:100%" id="myBtn">+ 메뉴 추가하기</button></p>
+						<p><button class="btn_sm_bg_grey menu_add" data-depth="1" type="button" style="width:100%" id="myBtn">+ 메뉴 추가하기</button></p>
 						<div class="box_ln">
 							<ul>
 							<?php
 								foreach($arrRows as $data) {
 							?>
-								<li><a href="#" menuIdx="<?=$data["Menu_idx"]?>" parMenuIdx="<?=$data["Par_Menu_idx"]?>" menuOrder ="<?=$data["Menu_order"]?>" menuDepth="<?=$data["Menu_depth"]?>"><?=$data["Menu_Name"]?></a></li>
+								<li>
+									<a href="#" menuIdx="<?=$data["Menu_idx"]?>" parMenuIdx="<?=$data["Par_Menu_idx"]?>" menuOrder ="<?=$data["Menu_order"]?>" menuDepth="<?=$data["Menu_depth"]?>"><?=$data["Menu_Name"]?></a>
+									<span class="btn_r">
+										<button class="btn_sm_box" type="button">수정</button> 
+										<button class="btn_sm_box" type="button">삭제</button>
+									</span>
+								</li>
 							<?php
 							}
 							?>
 							</ul>
 						</div>
-						<p class="item">
+						<p class="item fl_r">
 							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
 							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
-							<button class="btn_line btn_md fl_r" type="button">정렬순서 저장</button>
 						</p>
 					</div>
 				</li>
@@ -56,31 +65,12 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">2Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
-						<div class="box_ln" check="2">
-							<ul>
-							<?php
-							/*?>
-								<li><a href="#" class="on">TOEIC</a></li>
-								<li><a href="#">TOEIC Speaking</a></li>
-								<li><a href="#">TOEFL ITP</a></li>
-								<li><a href="#">TOEIC Bridge</a></li>
-								<li><a href="#">JET</a></li>
-								<li><a href="#">JET-SW</a></li>
-								<li><a href="#">JPT</a></li>
-								<li><a href="#">JPT-JAPAN</a></li>
-								<li><a href="#">일본어검정</a></li>
-								<li><a href="#">SJPT</a></li>
-								<li><a href="#">TSC</a></li>
-								<li><a href="#">상무한검</a></li>
-								<li><a href="#">KPE</a></li>
-								<?*/?>
-							</ul>
+						<p><button class="btn_sm_bg_grey menu_add" data-depth="2" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
+						<div class="box_ln">
 						</div>
-						<p class="item">
+						<p class="item fl_r">
 							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
 							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
-							<button class="btn_line btn_md fl_r" type="button">정렬순서 저장</button>
 						</p>
 					</div>
 				</li>
@@ -90,21 +80,12 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">3Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
-						<div class="box_ln"  check="3">
-							<ul>
-							<?php
-							/*?>
-								<li><a href="#" class="on">접수현황통계</a></li>
-								<li><a href="#">접수관리</a></li>
-								<li><a href="#">시험세팅</a></li>
-								<?*/?>
-							</ul>
+						<p><button class="btn_sm_bg_grey menu_add" data-depth="3" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
+						<div class="box_ln" >
 						</div>
-						<p class="item">
+						<p class="item fl_r">
 							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
 							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
-							<button class="btn_line btn_md fl_r" type="button">정렬순서 저장</button>
 						</p>
 					</div>
 				</li>
@@ -114,102 +95,83 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">4Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
+						<p><button class="btn_sm_bg_grey menu_add" data-depth="4" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
 						<div class="box_ln">
-							<ul>
-							<?php
-							/*?>
-								<li><a href="#" class="on">일별 접수통계</a></li>
-								<li><a href="#">월별 접수통계</a></li>
-								<li><a href="#">연도별 접수통계</a></li>
-								<li><a href="#">지역/고사장 현황</a></li>
-								<li><a href="#">단체별 현황</a></li>
-								<li><a href="#">접수 예상 인원</a></li>
-								<li><a href="#">접수자 추이 통계</a></li>
-								<li><a href="#">접수자 성향 통계</a></li>
-								<li><a href="#">(목표달성현황)</a></li>
-								<li><a href="#">(센터별 운영통계)</a></li>
-								<?*/?>
-							</ul>
 						</div>
-						<p class="item">
+						<p class="item fl_r">
 							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
 							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
-							<button class="btn_line btn_md fl_r" type="button">정렬순서 저장</button>
 						</p>
 					</div>
 				</li>
 			</ul>
 			
-			<!-- 버튼 -->
-			<div class="wrap_btn">
-				<button class="btn_fill btn_lg" type="button">저장</button>
-				<button class="btn_line btn_lg" type="button">취소</button>
-			</div>
-			<!-- 버튼 //-->
 		</div>
 	</div>
 </div>
 <!--right //-->
 <!-- modal 팝업 :: goal-->
-<div id="myModal" class="modal">
-
-  <!-- Modal content -->
-  <div class="modal-content" style="width: 400px; height: 250px;">
-	<span class="close"><img class="sml" src="../resources/images/btn_x.png"></span>
-	<div class="wrap_tbl">
-		<div class="box_inform">
-			<p class="txt_l">
-				<span class="stit">메뉴 추가</span>
-			</p>
+<div id="myModal" class="menu_add_form modal">
+	<!-- Modal content -->
+	<div class="modal-content" style="width: 400px; height: 250px;">
+<form name="addMenuForm" method="post">
+		<span class="close"><img class="sml" src="../_resources/images/btn_x.png"></span>
+		<div class="wrap_tbl">
+			<div class="box_inform">
+				<p class="txt_l">
+					<span class="stit">메뉴 추가</span>
+				</p>
+			</div>
+			<table class="type02">
+				<caption></caption>
+				<colgroup>
+					<col style="width: 30%;">
+					<col style="width: auto;">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>메뉴명</th>
+						<td>
+							<div class="item">
+								<input style="width: 90%;" type="text" name="menu_name">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>링크</th>
+						<td>
+							<div class="item">
+								<input style="width: 90%;" type="text"  name="menu_url">
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
-		<table class="type02">
-			<caption></caption>
-			<colgroup>
-				<col style="width: 30%;">
-				<col style="width: auto;">
-			</colgroup>
-			<tbody>
-				<tr>
-					<th>메뉴명</th>
-					<td>
-						<div class="item">
-							<input style="width: 90%;" type="text">
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th>링크</th>
-					<td>
-						<div class="item">
-							<input style="width: 90%;" type="text">
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
 	<!-- 버튼 -->
-	<div class="wrap_btn">
-		<button class="btn_fill btn_sm" type="button">확인</button>
-		<button class="btn_line btn_sm" type="button">취소</button>
-	</div>
+		<div class="wrap_btn">
+			<button class="btn_fill btn_sm btn_ok" type="button">확인</button>
+			<button class="btn_line btn_sm btn_cancel" type="button">취소</button>
+		</div>
+</form>
 	<!-- 버튼 //-->
-  </div>
+	</div>
 </div>
 
 <script type="text/javascript">
 // Get the modal
+/*
 var modal = document.getElementById('myModal');
 
 // Get the button that opens the modal
 var btn = document.getElementById("myBtn");
-
+*/
 // Get the <span> element that closes the modal
+/*
 var span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal 
-btn.onclick = function() {
+/*btn.onclick = function() {
     modal.style.display = "block";
 }
 
@@ -217,6 +179,7 @@ btn.onclick = function() {
 span.onclick = function() {
     modal.style.display = "none";
 }
+*/
 
 var yUI = (function() {
 	/*
@@ -225,25 +188,79 @@ var yUI = (function() {
 		@description : 관리자 메뉴 관리 이벤트 스크립트
 	*/
 
+	/* modal 제어 event*/
+	var modalMenuControlEvent = function(){
+
+		var currentDepth = 1;
+		var currentParMenuIdx = 0;
+
+		// 메뉴 등록
+		$(".btn_ok").on("click", function(){
+
+		
+			var menuName = $("form[name=addMenuForm]").find("[name=menu_name]").val();
+			var menuUrl = $("form[name=addMenuForm]").find("[name=menu_url]").val();
+			var menuDepth = currentDepth;
+			var parMenuIdx = currentParMenuIdx;
+
+			var u = "./adminMenuProc.php";	// 비동기 전송 파일 URL
+			var param = {	// 파라메터
+				"proc" : "insert",
+				"menuName"		:	menuName,
+				"menuUrl"	:	menuUrl,
+				"menuDepth"	:	menuDepth,
+				"parMenuIdx"	:	parMenuIdx
+			};
+
+			console.log(param)
+
+		});
+
+		/* modal open event*/
+		$(".menu_add").on("click", function(){
+			currentDepth = $(this).attr("data-depth"); // 추가 버튼 클릭한 메뉴 depth
+			currentDepth = parseInt(currentDepth, 10);
+			if(currentDepth != 1){	// 1dep 메뉴는 체크X
+				// 상위 메뉴 선택 체크
+				var parentMenuObj = $(".box_ln").eq(currentDepth-2).find("ul").find(".on");	// 상위 메뉴객체
+				if(parentMenuObj.length < 1){
+					alert("상위메뉴를 선택하셔야 합니다.");
+					return false;
+				}
+				currentParMenuIdx = parentMenuObj.attr("menuIdx");
+			}else{
+				var parentMenuObj ;
+			}
+			$(".menu_add_form").css("display", "block");
+		});
+
+		/*modal close event*/
+		$(".close").on("click", function(){
+			$(".modal").css("display", "none");
+		});
+
+	}
+
+
+
+
 	/* 메뉴 클릭 이벤트 > 하위 메뉴 호출 */
 	var menuEvent = function(){
-		$(".box_ln > ul > li").on("click", function(){
-			if($(this).find("a").attr("menuDepth")=="4" ){
+		$(".box_ln > ul > li > a").on("click", function(){
+			var currentMenuDepth =parseInt( $(this).attr("menuDepth") , 10);
+			if(currentMenuDepth==4 ){
 				return; // 4depth 메뉴의 경우 하위 이벤트 설정x
 			}
-			var chkMenu = $(this).find("a").attr("menuIdx");
-			$(".box_ln > ul > li").each(function(){
-				if( chkMenu == $(this).find("a").attr("menuIdx") ) {
-					$(this).find("a").addClass("on");
-				}else{
-					$(this).find("a").removeClass("on");
-				}
-			});
 
-			var menuIdx = $(this).find("a").attr("menuIdx");	// menu 고유번호
-			var menuDepth =$(this).find("a").attr("menuDepth");	// menu 메뉴단계
-			var menuOrder = $(this).find("a").attr("menuOrder");	//	menu 정렬순서
-			var parMenuIdx =$(this).find("a").attr("parMenuIdx");	// menu 상위메뉴 고유번호
+			var chkMenu = $(this).attr("menuIdx");
+
+			$(this).parent().parent().find("a").removeClass("on");
+			$(this).addClass("on");
+
+			var menuIdx = $(this).attr("menuIdx");	// menu 고유번호
+			var menuDepth =$(this).attr("menuDepth");	// menu 메뉴단계
+			var menuOrder = $(this).attr("menuOrder");	//	menu 정렬순서
+			var parMenuIdx =$(this).attr("parMenuIdx");	// menu 상위메뉴 고유번호
 			var u = "./adminMenuProc.php";	// 비동기 전송 파일 URL
 
 			var param = {	// 파라메터
@@ -253,6 +270,7 @@ var yUI = (function() {
 				"menuOrder"	:	menuOrder,
 				"parMenuIdx"	:	parMenuIdx
 			};
+
 			
 			/* 하위 메뉴 출력 정보 전송*/
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
@@ -272,7 +290,7 @@ var yUI = (function() {
 		});
 	};
 
-	/* 하위 메뉴 삽입 */
+	/* 하위 메뉴 리스트 업 */
 	var menuLoad = function(e){
 		var addDepth = parseInt(e.depth,10);
 		var len = e.data.length;
@@ -289,13 +307,20 @@ var yUI = (function() {
 			addHTML += '</li>';
 		}
 		addHTML += "</ul>";
-		$(".box_ln").eq(addDepth-1).html('');	// 하위 메뉴 초기화
+		var len = $(".box_ln").length;
+		for(var i=addDepth-1; i<len; i++){
+			$(".box_ln").eq(i).html('');	// 하위 메뉴 초기화
+		}
 		$(".box_ln").eq(addDepth-1).html(addHTML);	// 메뉴 입력
+
+
+		menuEvent();	// menu 이벤트 추가
 	}
 
 
 	var init = function(){
-		menuEvent();
+		menuEvent();	// 메뉴명 이벤트
+		modalMenuControlEvent();
 	};
 
 	return {

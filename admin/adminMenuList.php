@@ -11,7 +11,7 @@
 	];
 	
 	$sql = 'SELECT';
-	$sql .= '[Menu_idx],[Menu_Name],[Menu_order],[Menu_depth]';
+	$sql .= '[Menu_idx],[Menu_Name],[Menu_order],[Menu_depth],[Menu_url]';
 	$sql .= 'FROM [theExam].[dbo].[Menu_Info]';
 	$sql .= 'WHERE Menu_depth = 1';
 	$sql .= 'ORDER BY Menu_order asc';
@@ -42,10 +42,10 @@
 								foreach($arrRows as $data) {
 							?>
 								<li>
-									<a href="#" menuIdx="<?=$data["Menu_idx"]?>" parMenuIdx="<?=$data["Par_Menu_idx"]?>" menuOrder ="<?=$data["Menu_order"]?>" menuDepth="<?=$data["Menu_depth"]?>"><?=$data["Menu_Name"]?></a>
+									<a href="#" menuIdx="<?=$data["Menu_idx"]?>" parMenuIdx="<?=$data["Par_Menu_idx"]?>" menuOrder ="<?=$data["Menu_order"]?>" menuDepth="<?=$data["Menu_depth"]?>" menuUrl="<?=$data["Menu_url"]?>"><?=$data["Menu_Name"]?></a>
 									<span class="btn_r">
-										<button class="btn_sm_box" type="button">수정</button> 
-										<button class="btn_sm_box" type="button">삭제</button>
+										<button class="btn_sm_box btn_modify" type="button">수정</button> 
+										<button class="btn_sm_box btn_delete" type="button">삭제</button>
 									</span>
 								</li>
 							<?php
@@ -158,6 +158,56 @@
 	</div>
 </div>
 
+
+<!-- modal 팝업 :: goal-->
+<div id="myModal" class="menu_modify_form modal">
+	<!-- Modal content -->
+	<div class="modal-content" style="width: 400px; height: 250px;">
+<form name="modifyMenuForm" method="post">
+		<span class="close"><img class="sml" src="../_resources/images/btn_x.png"></span>
+		<div class="wrap_tbl">
+			<div class="box_inform">
+				<p class="txt_l">
+					<span class="stit">메뉴 수정</span>
+				</p>
+			</div>
+			<table class="type02">
+				<caption></caption>
+				<colgroup>
+					<col style="width: 30%;">
+					<col style="width: auto;">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>메뉴명</th>
+						<td>
+							<div class="item">
+								<input style="width: 90%;" type="text" name="menu_name">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>링크</th>
+						<td>
+							<div class="item">
+								<input style="width: 90%;" type="text"  name="menu_url">
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	<!-- 버튼 -->
+		<div class="wrap_btn">
+			<button class="btn_fill btn_sm btn_ok" type="button">확인</button>
+			<button class="btn_line btn_sm btn_cancel" type="button">취소</button>
+		</div>
+</form>
+	<!-- 버튼 //-->
+	</div>
+</div>
+
+
 <script type="text/javascript">
 // Get the modal
 /*
@@ -191,28 +241,77 @@ var yUI = (function() {
 	/* modal 제어 event*/
 	var modalMenuControlEvent = function(){
 
-		var currentDepth = 1;
-		var currentParMenuIdx = 0;
+		var currentDepth = 1;			// 현재 선택한 메뉴의 depth
+		var currentParMenuIdx = 0;	//	현재 선택 상위메뉴의 고유번호
 
 		// 메뉴 등록
 		$(".btn_ok").on("click", function(){
-
-		
 			var menuName = $("form[name=addMenuForm]").find("[name=menu_name]").val();
 			var menuUrl = $("form[name=addMenuForm]").find("[name=menu_url]").val();
-			var menuDepth = currentDepth;
-			var parMenuIdx = currentParMenuIdx;
-
-			var u = "./adminMenuProc.php";	// 비동기 전송 파일 URL
+			var menuDepth = currentDepth;				// 입력하는 메뉴의 depth
+			var parMenuIdx = currentParMenuIdx;	// 입력하는 메뉴의 상위 메뉴 고유번호, 1depth는 0
+			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
 			var param = {	// 파라메터
-				"proc" : "insert",
+				"proc" : "write",
 				"menuName"		:	menuName,
 				"menuUrl"	:	menuUrl,
 				"menuDepth"	:	menuDepth,
 				"parMenuIdx"	:	parMenuIdx
 			};
 
-			console.log(param)
+			console.log(param) /*삭제예정*/
+
+			/* 데이터 비동기 전송*/
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+				success: function(e) {
+					console.log(e)
+//					menuLoad(e)
+
+				},
+				error: function(e) {
+					console.log("[Error]");
+					console.log(e)
+				}
+			});
+
+		});
+
+		/* 메뉴 수정 */
+		$(".btn_modify").on("click", function(){
+			var menuIdx = $(this).parent().prev().attr("menuIdx");	// 수정 선택 menu 고유번호
+			var menuName = $(this).parent().prev().text();	// 수정 선택 menu명
+			var menuUrl = $(this).parent().prev().attr("menuUrl");	// 수정 선택 menuURL
+
+			$("form[name=modifyMenuForm]").find("[name=menu_name]").val(menuName);
+			$("form[name=modifyMenuForm]").find("[name=menu_url]").val(menuUrl);
+
+			$(".menu_modify_form").css("display", "block");
+
+
+			return ;
+			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
+			var param = {	// 파라메터
+				"proc" : "modify",
+				"menuIdx"	:	menuIdx,
+				"menuName"		:	menuName,
+				"menuUrl"	:	menuUrl
+			};
+
+			console.log(param) /*삭제예정*/
+
+			/* 데이터 비동기 전송*/
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+				success: function(e) {
+					console.log(e)
+//					menuLoad(e)
+
+				},
+				error: function(e) {
+					console.log("[Error]");
+					console.log(e)
+				}
+			});
+
 
 		});
 
@@ -227,10 +326,11 @@ var yUI = (function() {
 					alert("상위메뉴를 선택하셔야 합니다.");
 					return false;
 				}
-				currentParMenuIdx = parentMenuObj.attr("menuIdx");
+				currentParMenuIdx = parentMenuObj.attr("menuIdx");		// 상위 메뉴 고유번호
 			}else{
-				var parentMenuObj ;
+				var parentMenuObj ;	// 1depth는 고유번호 없음.
 			}
+
 			$(".menu_add_form").css("display", "block");
 		});
 
@@ -239,7 +339,7 @@ var yUI = (function() {
 			$(".modal").css("display", "none");
 		});
 
-	}
+	} /* modal 제어 event 끝*/
 
 
 
@@ -270,25 +370,21 @@ var yUI = (function() {
 				"menuOrder"	:	menuOrder,
 				"parMenuIdx"	:	parMenuIdx
 			};
-
 			
 			/* 하위 메뉴 출력 정보 전송*/
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
 				success: function(e) {
-					if(e.status == "success"){
-						menuLoad(e)
-					}else{
-						console.log("[Error]");
-						console.log(e)
-					}
+					menuLoad(e)
 				},
 				error: function(e) {
 					console.log("[Error]");
 					console.log(e)
 				}
 			});
+
 		});
 	};
+	/* 메뉴 클릭 이벤트 > 하위 메뉴 호출 끝*/
 
 	/* 하위 메뉴 리스트 업 */
 	var menuLoad = function(e){
@@ -312,9 +408,13 @@ var yUI = (function() {
 			$(".box_ln").eq(i).html('');	// 하위 메뉴 초기화
 		}
 		$(".box_ln").eq(addDepth-1).html(addHTML);	// 메뉴 입력
+		menuEvent();	// menu 이벤트 추가 > 스크립트로 생성되는 메뉴의 이벤트 재설정
+	}
+	/* 하위 메뉴 리스트 업 끝*/
 
 
-		menuEvent();	// menu 이벤트 추가
+	var getAjaxInfo = function(u, param){
+
 	}
 
 

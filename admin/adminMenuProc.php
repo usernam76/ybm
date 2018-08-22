@@ -7,6 +7,15 @@
 //	foreach($arrayValid as $k=>$v){ ${$k} =$v;}
 	$proc = $arrayValid["proc"];
 	switch($proc){
+		case 'write':
+			$returnData = array("status"=>"success");
+			echo json_encode($returnData);
+		break;
+		case 'modify':
+			$returnData = array("status"=>"success");
+			echo json_encode($returnData);
+		break;
+
 		case 'getMenuLoadAjax':
 			$findMenuDepth = $arrayValid["menuDepth"] + 1;
 			$findParMenuIdx = $arrayValid["menuIdx"];
@@ -24,7 +33,7 @@
 
 			$returnData = array("status"=>"success","depth"=>$findMenuDepth, "data"=>$arrRows);
 			echo json_encode($returnData);
-			break;
+		break;
 		default:
 
 			break;

@@ -44,53 +44,6 @@
 ?>
 <body>
 
-<script type="text/javascript">
-$(document).ready(function () {
-
-	$('#writeFrm').validate({
-        onfocusout: false,
-        rules: {
-            admId: {
-                required: true    //필수조건
-			}, admName: {
-                required: true    //필수조건
-			}, tokenCode: {
-                required: true    //필수조건
-			}
-        }, messages: {
-			admId: {
-				required: "아이디를 입력해주세요."
-			}, admName: {
-				required: "이름을 입력해주세요."
-			}, tokenCode: {
-				required: "eToken을 입력해주세요."
-			}
-        }, errorPlacement: function (error, element) {
-            // $(element).removeClass('error');
-            // do nothing;
-        }, invalidHandler: function (form, validator) {
-            var errors = validator.numberOfInvalids();
-            if (errors) {
-                alert(validator.errorList[0].message);
-                validator.errorList[0].element.focus();
-            }
-        }
-    });
-
-	$("#writeBtn").click(function () {
-		$("#admId").val( $.trim($("#admId").val()) );
-
-		$('#writeFrm').submit();
-    });
-
-	$("#cancelBtn").click(function () {
-		location.href = "./memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
-	});
-	
-
-});
-</script>
-
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
@@ -246,6 +199,53 @@ $(document).ready(function () {
 	</div>
 </div>
 <!--right //-->
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+	$('#writeFrm').validate({
+        onfocusout: false,
+        rules: {
+            admId: {
+                required: true    //필수조건
+			}, admName: {
+                required: true    //필수조건
+			}, tokenCode: {
+                required: true    //필수조건
+			}
+        }, messages: {
+			admId: {
+				required: "아이디를 입력해주세요."
+			}, admName: {
+				required: "이름을 입력해주세요."
+			}, tokenCode: {
+				required: "eToken을 입력해주세요."
+			}
+        }, errorPlacement: function (error, element) {
+            // $(element).removeClass('error');
+            // do nothing;
+        }, invalidHandler: function (form, validator) {
+            var errors = validator.numberOfInvalids();
+            if (errors) {
+                alert(validator.errorList[0].message);
+                validator.errorList[0].element.focus();
+            }
+        }
+    });
+
+	$("#writeBtn").on("click", function () {
+		$("#admId").val( $.trim($("#admId").val()) );
+
+		$('#writeFrm').submit();
+    });
+
+	$("#cancelBtn").on("click", function () {
+		location.href = "./memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
+	});
+	
+
+});
+</script>
 
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/footer.php';

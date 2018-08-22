@@ -210,4 +210,28 @@
 		}
 		return $result;
 	}
+
+	/*
+		@auth : 남동현
+		@date : 2018-08-21
+		@desc : 
+			- 날짜 일수 차이 계산
+		@param : 
+			- $tDate : 타겟 날짜
+			- $sDate : 기준 날짜
+	*/
+	function fnDateDiff($tDate, $sDate){
+		$startDate	= new DateTime(date('Y-m-d'));				// 오늘 날짜입니다.
+		$targetDate	= new DateTime( substr($tDate, 0, 10) );	// 타겟 날짜를 지정합니다.
+
+		if( $sDate != "" ){
+			$startDate = new DateTime( substr($sDate, 0, 10) );
+		}
+
+		$interval = $startDate->diff($targetDate);
+ 
+		return $interval->days;
+	}
+
+
 ?>

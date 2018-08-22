@@ -89,10 +89,27 @@ $(document).ready(function () {
 
 	$("#writeBtn").click(function () {
 		location.href = "./memberWrite.php";
-	});
-	
+	});	
 
 });
+
+
+$.fn.extend({ 
+
+	goModify: function( str ) {
+		location.href = "./memberWrite.php?admId="+str;
+	},
+
+	goMenuSet: function( str ) {
+		location.href = "./memberWrite.php?admId="+str;
+	},
+
+	goDsbl: function( str ) {
+		location.href = "./memberWrite.php?admId="+str;
+	}
+
+});
+
 </script>
 
 <!--right -->
@@ -162,18 +179,18 @@ $(document).ready(function () {
 ?>
 							<tr>
 								<td><?=$no--?></td>
-								<td><a href="#"><?=$data['Adm_id']?></a></td>
+								<td><?=$data['Adm_id']?></td>
 								<td><?=$data['Adm_name']?></td>
 								<td><?=$data['Adm_Email']?></td>
 								<td></td>
-								<td><?=$data['Reg_day']?></td>
-								<td><?=$data['Password_day']?></td>
-								<td><?=$data['Login_day']?></td>
-								<td></td>
+								<td><?=substr($data['Reg_day'], 0, 10)?></td>
+								<td><?=fnCalDate($data['Password_day'], 'month', 1)?></td>
+								<td><?=substr($data['Login_day'], 0, 10)?></td>
+								<td><?=( fnDateDiff($data['Login_day'], '') <= 90 )? "Y": "N" ?></td>
 								<td>
-									<button type="button" class="btn_fill btn_sm">수정</button>
-									<button type="button" class="btn_line btn_sm">메뉴 설정</button>
-									<button type="button" class="btn_fill btn_sm">해제</button>								
+									<button type="button" class="btn_fill btn_sm" onclick="$.fn.goModify('<?=$data['Adm_id']?>');">수정</button>
+									<button type="button" class="btn_line btn_sm" onclick="$.fn.goMenuSet('<?=$data['Adm_id']?>');">메뉴 설정</button>
+									<button type="button" class="btn_fill btn_sm" onclick="$.fn.goDsbl('<?=$data['Adm_id']?>');">해제</button>								
 								</td>
 							</tr>
 <?php

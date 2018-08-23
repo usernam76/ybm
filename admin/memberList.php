@@ -48,70 +48,6 @@
 ?>
 <body>
 
-<script type="text/javascript">
-$(document).ready(function () {
-
-	$('#searchFrm').validate({
-        onfocusout: false,
-        rules: {
-            searchKey: {
-                required: true    //필수조건
-			}
-        }, messages: {
-			searchKey: {
-				required: "검색어를 입력해주세요."
-			}
-        }, errorPlacement: function (error, element) {
-            // $(element).removeClass('error');
-            // do nothing;
-        }, invalidHandler: function (form, validator) {
-            var errors = validator.numberOfInvalids();
-            if (errors) {
-                alert(validator.errorList[0].message);
-                validator.errorList[0].element.focus();
-            }
-        }
-    });
-
-	$("#searchBtn").click(function () {
-		$("#searchKey").val( $.trim($("#searchKey").val()) );
-
-		$('#searchFrm').submit();
-    });
-
-	$("#goPage").click(function () {
-		if( $("#goPageNo").val() > 0 && $("#goPageNo").val() <= <?=$totalPage?> ){
-			location.href = "<?=$_SERVER['SCRIPT_NAME'].fnGetParams()?>currentPage="+$("#goPageNo").val();
-		}else{
-			alert("1 ~ <?=$totalPage?> 사이의 숫자를 입력해 주세요.")
-		}
-    });
-
-	$("#writeBtn").click(function () {
-		location.href = "./memberWrite.php";
-	});	
-
-});
-
-
-$.fn.extend({ 
-
-	goModify: function( str ) {
-		location.href = "./memberWrite.php?admId="+str;
-	},
-
-	goMenuSet: function( str ) {
-		location.href = "./memberWrite.php?admId="+str;
-	},
-
-	goDsbl: function( str ) {
-		location.href = "./memberWrite.php?admId="+str;
-	}
-
-});
-
-</script>
-
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
@@ -188,9 +124,9 @@ $.fn.extend({
 								<td><?=substr($data['Login_day'], 0, 10)?></td>
 								<td><?=( fnDateDiff($data['Login_day'], '') <= 90 )? "Y": "N" ?></td>
 								<td>
-									<button type="button" class="btn_fill btn_sm" onclick="$.fn.goModify('<?=$data['Adm_id']?>');">수정</button>
-									<button type="button" class="btn_line btn_sm" onclick="$.fn.goMenuSet('<?=$data['Adm_id']?>');">메뉴 설정</button>
-									<button type="button" class="btn_fill btn_sm" onclick="$.fn.goDsbl('<?=$data['Adm_id']?>');">해제</button>								
+									<button type="button" class="btn_fill btn_sm modifyBtn">수정</button>
+									<button type="button" class="btn_line btn_sm menuSetBtn">메뉴 설정</button>
+									<button type="button" class="btn_fill btn_sm dsblBtn">해제</button>								
 								</td>
 							</tr>
 <?php
@@ -214,6 +150,72 @@ $.fn.extend({
 </div>
 <!--right //-->
 
+<script type="text/javascript">
+$(document).ready(function () {
+
+	$('#searchFrm').validate({
+        onfocusout: false,
+        rules: {
+            searchKey: {
+                required: true    //필수조건
+			}
+        }, messages: {
+			searchKey: {
+				required: "검색어를 입력해주세요."
+			}
+        }, errorPlacement: function (error, element) {
+            // $(element).removeClass('error');
+            // do nothing;
+        }, invalidHandler: function (form, validator) {
+            var errors = validator.numberOfInvalids();
+            if (errors) {
+                alert(validator.errorList[0].message);
+                validator.errorList[0].element.focus();
+            }
+        }
+    });
+
+	$("#searchBtn").on("click", function(){
+		$("#searchKey").val( $.trim($("#searchKey").val()) );
+
+		$('#searchFrm').submit();
+    });
+
+	$("#goPage").on("click", function () {
+		if( $("#goPageNo").val() > 0 && $("#goPageNo").val() <= <?=$totalPage?> ){
+			location.href = "<?=$_SERVER['SCRIPT_NAME'].fnGetParams()?>currentPage="+$("#goPageNo").val();
+		}else{
+			alert("1 ~ <?=$totalPage?> 사이의 숫자를 입력해 주세요.")
+		}
+    });
+
+	$("#writeBtn").on("click", function () {
+		location.href = "./memberWrite.php";
+	});
+
+	$(".modifyBtn").on("click", function () {
+		var admId = $(this).parents("tr").children().eq(1).text();
+
+		location.href = "./memberWrite.php?admId="+admId;
+	});
+
+	$(".menuSetBtn").on("click", function () {
+		var admId = $(this).parents("tr").children().eq(1).text();
+
+		location.href = "./memberWrite.php?admId="+admId;
+	});
+
+	$(".dsblBtn").on("click", function () {
+		var admId = $(this).parents("tr").children().eq(1).text();
+
+		location.href = "./memberWrite.php?admId="+admId;
+	});
+
+});
+
+</script>
+
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/footer.php';
 ?>
+

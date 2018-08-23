@@ -3,11 +3,16 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
-	$arrayValid = fnGetRequestParam();
+	$proc = fnNoInjection($_REQUEST['proc']);	
+
 //	foreach($arrayValid as $k=>$v){ ${$k} =$v;}
-	$proc = $arrayValid["proc"];
 	switch($proc){
 		case 'write':
+
+			$sql = 'insert into ';
+			$sql .= '[theExam].[dbo].[Menu_Info]';
+
+
 			$returnData = array("status"=>"success");
 			echo json_encode($returnData);
 		break;
@@ -17,9 +22,12 @@
 		break;
 
 		case 'getMenuLoadAjax':
-			$findMenuDepth = $arrayValid["menuDepth"] + 1;
-			$findParMenuIdx = $arrayValid["menuIdx"];
 
+			$valueValid = [];
+			$resultArray = fnGetRequestParam($valueValid);
+
+			$findMenuDepth = $pMenuDepth + 1;
+			$findParMenuIdx = $pMenuIdx;
 
 			$sql = ' SELECT ';
 			$sql .= ' [Menu_idx],[Menu_Name],[Menu_order],[Menu_depth],[Par_Menu_idx] ';

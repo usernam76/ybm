@@ -15,15 +15,19 @@
 
 	$admEmail1	= "";
 	$admEmail2	= "";
-	$admTel1	= "";
-	$admTel2	= "";
-	$admTel3	= "";
+	$useChk		= "O";
 
 	if ( $pAdmId != "" ){
-		$sql = ' SELECT ';
-		$sql .= ' Adm_id, Adm_name, Adm_Email, Reg_day, Login_day, Password_day ';
-		$sql .= ' FROM [theExam].[dbo].[Adm_info] ';
-		$sql .= ' WHERE Adm_id = :admId ';
+		$sql = " SELECT ";
+		$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Dept_Code, AI.Token_code, AI.Reg_day, AI.Login_day, AI.Password_day, AI.Adm_IP, AI.use_CHK ";
+		$sql .= "	, ISNULL( ADI4.Dept_Code, ADI3.Dept_Code ) AS detpLev1 ";
+		$sql .= "	, CASE WHEN ISNULL( ADI4.Dept_Code, '' ) = '' THEN ADI2.Dept_Code ELSE ADI3.Dept_Code END AS detpLev2 ";
+		$sql .= " FROM [theExam].[dbo].[Adm_info]  AS AI ";
+		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI1 (nolock) ON AI.Dept_Code = ADI1.Dept_Code ";
+		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI2 (nolock) ON ADI1.PDept_Code = ADI2.Dept_Code ";
+		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI3 (nolock) ON ADI2.PDept_Code = ADI3.Dept_Code ";
+		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI4 (nolock) ON ADI3.PDept_Code = ADI4.Dept_Code ";
+		$sql .= " WHERE Adm_id = :admId ";
 
 		$pArray[':admId'] = $pAdmId;
 
@@ -34,7 +38,13 @@
 			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
 		}else{
 			$proc = "modify";
-		}		
+
+			$useChk	= $arrRows[0][use_CHK];
+
+			$admEmail = explode("@",$arrRows[0][Adm_Email]);
+			$admEmail1 = $admEmail[0];
+			$admEmail2 = $admEmail[1];
+		}
 	}	
 ?>
 <?php
@@ -50,7 +60,7 @@
 		<div class="wid_fix"> 
 			<h3 class="title">계정관리</h3>
 
-<form name="writeFrm" id="writeFrm" action="./memberProc.php" method="post"> 
+<form name="frmWrite" id="frmWrite" action="./memberProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">
 
 			<!-- 세로형 테이블 -->
@@ -77,10 +87,13 @@
 								<td>
 									<div class="item">
 <?php	if( $proc == "write" ){		?>
-										<input style="width: 300px;" type="text" id="admId" name="admId" value="">
+										<input style="width: 300px;" type="text" id="admId" name="admId" value=""> 
+										<input type="hidden" id="idCheck" name="idCheck" value="">
+										<button type="button" class="btn_fill btn_sm" id="btnIdCheck">중복체크</button>
 <?php	}else{		?>
 										<?=$arrRows[0][Adm_id]?>
-										<input type="hidden" name="admId" value="<?=$arrRows[0][Adm_id]?>">
+										<input type="hidden" id="admId" name="admId" value="<?=$arrRows[0][Adm_id]?>">
+										<input type="hidden" id="idCheck" name="idCheck" value="Y">
 <?php	}		?>
 									</div>
 								</td>
@@ -88,6 +101,13 @@
 							<tr>
 								<th>비밀번호</th>
 								<td>
+<?php	if( $proc == "write" ){		?>
+										<span class="point">* 자동생성되어 입력한 이메일로 발송</span>
+<?php	}else{		?>
+										<input style="width: 300px;" type="password" value="**********" readonly>
+										<button type="button" class="btn_fill btn_sm" id="btnPassClear">초기화</button>
+										<span class="point">* * 영문, 숫자, 특수기호 조합으로 8자리 이상 15자리 이내</span>
+<?php	}		?>
 									<span class="point">* 자동생성되어 입력한 이메일로 발송</span>
 								</td>
 							</tr>
@@ -95,7 +115,7 @@
 								<th>이름</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text" id="admName" name="admName" value="<?=$arrRows[0][Adm_name]?>">
+										<input style="width: 300px;" type="text" name="admName" value="<?=$arrRows[0][Adm_name]?>">
 									</div>
 								</td>
 							</tr>
@@ -113,38 +133,20 @@
 									<div class="item">
 										<input style="width: 300px;" type="text" name="admEmail1" value="<?=$admEmail1?>">
 										@ 
-										<select style="width: 300px;" name="Adm_Email">  
-											<option>ybm.co.kr</option> 
-											<option>선택 둘</option> 
-											<option>선택 셋</option> 
+										<select name="admEmail2">  
+											<option value="ybm.co.kr"	<?=( $admEmail2 == 'ybm.co.kr'		)? "SELECTED": "" ?> >ybm.co.kr</option>
+											<option value="toeic.co.kr"	<?=( $admEmail2 == 'toeic.co.kr'	)? "SELECTED": "" ?> >toeic.co.kr</option
 										</select>
 									</div>
 								</td>
-							</tr>
-							<tr>
-								<th>전화번호</th>
-								<td>
-									<div class="item">
-										<input style="width: 150px;" type="text" name="admTel1" value="<?=$admTel1?>"> -
-										<input style="width: 150px;" type="text" name="admTel2" value="<?=$admTel2?>"> -
-										<input style="width: 150px;" type="text" name="admTel3" value="<?=$admTel3?>">
-									</div>
-								</td>
-							</tr>
+							</tr>							
 							<tr>
 								<th>소속회사/부서</th>
 								<td>
 									<div class="item">
-										<select style="width: 300px;">  
-											<option>선택</option> 
-											<option>선택 둘</option> 
-											<option>선택 셋</option> 
-										</select> &nbsp;
-										<select style="width: 300px;">  
-											<option>선택</option> 
-											<option>선택 둘</option> 
-											<option>선택 셋</option> 
-										</select>
+										<select id="detpLev1" name="detpLev1"></select> &nbsp;
+										<select id="detpLev2" name="detpLev2"></select> &nbsp;
+										<select id="deptCode" name="deptCode"></select>
 									</div>
 								</td>
 							</tr>
@@ -152,7 +154,7 @@
 								<th>컴퓨터IP</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text" name="Adm_Email" value="<?=$Adm_Email?>">
+										<input style="width: 300px;" type="text" name="admIp" value="<?=$arrRows[0][Adm_IP]?>">
 									</div>
 								</td>
 							</tr>
@@ -160,17 +162,8 @@
 								<th>개인정보 권한</th>
 								<td>
 									<div class="item">
-										<input class="i_unit" id="" type="radio"><label for="">부여</label>
-										<input class="i_unit" id="" type="radio"><label for="">부여안함</label>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>결제 권한</th>
-								<td>
-									<div class="item">
-										<input class="i_unit" id="" type="radio"><label for="">부여</label>
-										<input class="i_unit" id="" type="radio"><label for="">부여안함</label>
+										<input class="i_unit" id="" type="radio" value="O" <?=( $useChk == 'O' )? "CHECKED": "" ?>><label for="">부여</label>
+										<input class="i_unit" id="" type="radio" value="X" <?=( $useChk == 'X' )? "CHECKED": "" ?>><label for="">부여안함</label>
 									</div>
 								</td>
 							</tr>
@@ -178,11 +171,25 @@
 								<th>사용여부</th>
 								<td>
 									<div class="item">
-										<input class="i_unit" id="" type="radio"><label for="">사용</label>
-										<input class="i_unit" id="" type="radio"><label for="">부여안함</label>
+										<input class="i_unit" type="radio" name="useChk" value="O" <?=( $useChk == 'O' )? "CHECKED": "" ?> ><label for="">사용</label>
+										<input class="i_unit" type="radio" name="useChk" value="X" <?=( $useChk == 'X' )? "CHECKED": "" ?> ><label for="">부여안함</label>
 									</div>
 								</td>
 							</tr>
+<?php	if( $proc == "modify" ){		?>
+							<tr>
+								<th>등록일자</th>
+								<td><span><?=$arrRows[0][Reg_day]?></span></td>
+							</tr>
+							<tr>
+								<th>만료일자</th>
+								<td><span><?=fnCalDate($data['Password_day'], 'day', 30)?></span></td>
+							</tr>
+							<tr>
+								<th>최종수정일자</th>
+								<td><span><?=$arrRows[0][Reg_day]?></span></td>
+							</tr>
+<?php	}		?>
 						</tbody>
 					</table>
 				</div>
@@ -191,8 +198,8 @@
 			<!-- 세로형 테이블 //-->
 
 			<div class="wrap_btn">
-				<button type="button" class="btn_fill btn_lg" id="writeBtn">등록</button>
-				<button type="button" class="btn_line btn_lg" id="cancelBtn">취소</button>
+				<button type="button" class="btn_fill btn_lg" id="btnWrite">등록</button>
+				<button type="button" class="btn_line btn_lg" id="btnCancel">취소</button>
 			</div>
 
 		</div>
@@ -203,23 +210,35 @@
 <script type="text/javascript">
 $(document).ready(function () {
 
-	$('#writeFrm').validate({
+	$('#frmWrite').validate({
         onfocusout: false,
         rules: {
             admId: {
                 required: true    //필수조건
+			}, idCheck: {
+                required: true    //필수조건
 			}, admName: {
                 required: true    //필수조건
 			}, tokenCode: {
+                required: true    //필수조건
+			}, admEmail1: {
+                required: true    //필수조건
+			}, detpLev3: {
                 required: true    //필수조건
 			}
         }, messages: {
 			admId: {
 				required: "아이디를 입력해주세요."
+			}, idCheck: {
+				required: "아이디 중복체크를 해주세요."
 			}, admName: {
 				required: "이름을 입력해주세요."
 			}, tokenCode: {
 				required: "eToken을 입력해주세요."
+			}, admEmail1: {
+				required: "이메일을 입력해주세요."
+			}, detpLev3: {
+				required: "부서를 선택해주세요."
 			}
         }, errorPlacement: function (error, element) {
             // $(element).removeClass('error');
@@ -231,18 +250,100 @@ $(document).ready(function () {
                 validator.errorList[0].element.focus();
             }
         }
-    });
+    });!
 
-	$("#writeBtn").on("click", function () {
+	$("#btnWrite").on("click", function () {
 		$("#admId").val( $.trim($("#admId").val()) );
 
-		$('#writeFrm').submit();
+		if ( $("#admId").val() == ""){
+			alert("아이디를 입력해 주세요.");
+			return false;
+		}
+		if ( $("#idCheck").val() == ""){
+			alert("아이디 중복체크를 해주세요.");
+			return false;
+		}
+
+		$('#frmWrite').submit();
     });
 
-	$("#cancelBtn").on("click", function () {
+	$("#admId").keyup(function(event){		// 영문 숫자만 입력
+		if (!(event.keyCode >=37 && event.keyCode<=40)) {
+			var inputVal = $(this).val();
+			$(this).val(inputVal.replace(/[^a-z0-9]/gi,''));
+		}
+		$("#idCheck").val("");
+	});
+
+	$("#btnCancel").on("click", function () {
 		location.href = "./memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
 	});
+
+	$("#btnIdCheck").on("click", function(){
+		$("#admId").val( $.trim($("#admId").val()) );
+
+		if ( $("#admId").val() == ""){
+			alert("아이디를 입력해 주세요.");
+			return false;
+		}
+
+		var u = "/admin/memberProc.php";
+		var param = {
+			"proc"	: "idCheck",
+			"admId"	: $("#admId").val()
+		};
+
+		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+			success: function(resJson) {
+				if( resJson.data[0].cnt == 0 ){
+					alert("사용 가능한 아이디 입니다.");
+					$("#idCheck").val("Y");
+				}else{
+					alert("중복된 아이디가 존재 합니다.");
+				}
+			},
+			error: function(e) {
+				alert("현재 서버 통신이 원할하지 않습니다.");
+			}
+		});
+
+    });
+
+	$("#btnPassClear").on("click", function(){
+		var u = "/admin/memberProc.php";
+		var param = {
+			"proc"	: "passClear",
+			"admId"	: $("#admId").val()
+		};
+
+		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+			success: function(resJson) {
+				if( resJson.data[0].result == 0 ){
+					alert("비밀번호가 초기화 되었습니다.");
+				}else{
+					alert("비밀번호 초기화 실패 하였습니다.");
+				}
+			},
+			error: function(e) {
+				alert("현재 서버 통신이 원할하지 않습니다.");
+			}
+		});
+    });
 	
+	var param = {
+		"detpLev1" 			: "detpLev1"	// 1detp 부서정보
+		, "detpLev2" 		: "detpLev2"	// 2detp 부서정보
+		, "detpLev3" 		: "deptCode"	// 3detp 부서정보
+		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		, "firstOptVal"		: ""			// 상단 옵션  value
+		, "firstOptLable"	: "선택"			// 상단 옵션  text
+	}
+	common.sys.setDeptComboCreate(param);
+
+	$("#detpLev1").val("<?=$arrRows[0][detpLev1]?>").change();
+	$("#detpLev2").val("<?=$arrRows[0][detpLev2]?>").change();
+	$("#deptCode").val("<?=$arrRows[0][Dept_Code]?>");
+
 
 });
 </script>

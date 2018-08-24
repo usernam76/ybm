@@ -12,7 +12,7 @@
 
 
 	$sql = 'SELECT';
-	$sql .= ' [Menu_idx],[Menu_Name],[Menu_order],[Menu_depth] ';
+	$sql .= '[Menu_idx],[Menu_Name],[Menu_order],[Menu_depth] ';
 	$sql .= ' FROM [theExam].[dbo].[Menu_Info] ';
 	$sql .= ' WHERE Menu_depth = 1';
 	$sql .= ' ORDER BY Menu_order asc ';
@@ -287,11 +287,11 @@ var yUI = (function() {
 
 			$("form[name=frmModify]").find("[name=menu_name]").val(menuName);
 			$("form[name=frmModify]").find("[name=menu_url]").val(menuUrl);
-
 			$(".modalPopMoidfy").css("display", "block");
 
+			return ; /**/
 
-			return ;
+
 			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
 			var param = {	// 파라메터
 				"proc" : "modify",
@@ -314,9 +314,53 @@ var yUI = (function() {
 					console.log(e)
 				}
 			});
-
-
 		});
+
+		/* 메뉴 삭제 */
+		$(".btnDeleteMenu").off("click");
+		$(".btnDeleteMenu").on("click", function(){
+
+			if(confirm("삭제하시겠습니까?")){
+
+				var menuIdx = $(this).parent().prev().attr("menuIdx");	// 수정 선택 menu 고유번호
+				var menuDepth = $(this).parent().prev().attr("menuDepth");	// 수정 선택 menu 깊이
+
+				var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
+				var param = {	// 파라메터
+					"proc" : "delete",
+					"menuDepth"	:	menuDepth,
+					"menuIdx"	:	menuIdx
+				};
+
+				/* 데이터 비동기 전송*/
+				$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+					success: function(e) {
+
+						if(e.status == "fail"){
+							if(e.failcode == "90"){
+								alert("하위 메뉴가 존재합니다.");
+								return false;
+							}
+						}
+						else if(e.status == "success"){
+
+							alert("삭제 완료 >>문구수정>>삭제후프로세스진입");
+						}
+
+					},
+					error: function(e) {
+						alert("현재 서버 통신이 원활하지 않습니다.");
+					}
+				});
+
+				console.log($(this))
+			}else{
+				return;
+			}
+
+			
+		});
+
 
 		/* modal open event*/
 		$(".btnAddMenu").off("click");
@@ -334,6 +378,8 @@ var yUI = (function() {
 			}else{
 				var parentMenuObj ;	// 1depth는 고유번호 없음.
 			}
+
+			console.log(currentDepth)
 
 			$(".modalPopWrite").css("display", "block");
 		});
@@ -378,12 +424,12 @@ var yUI = (function() {
 			/* 하위 메뉴 출력 정보 전송*/
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
 				success: function(e) {
-					console.log(e);
+//					console.log(e);
 					menuLoad(e);
 				},
 				error: function(e) {
-					console.log("[Error]");
-					console.log(e)
+					alert("현재 서버 통신이 원활하지 않습니다.");
+					return false;
 				}
 			});
 

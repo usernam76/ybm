@@ -22,14 +22,16 @@
 		$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
 	}
 
-	$sql = ' SELECT ';
-	$sql .= ' (SELECT COUNT(*) FROM [theExam].[dbo].[Adm_info] WHERE 1=1 '. $where.' ) AS totalRecords ';
-	$sql .= ' , Adm_id, Adm_name, Adm_Email, Reg_day, Login_day, Password_day ';
-	$sql .= ' FROM [theExam].[dbo].[Adm_info] ';
-	$sql .= ' WHERE 1=1 '. $where;
-	$sql .= ' ORDER BY Reg_day DESC ';
-	$sql .= ' OFFSET ( '.$currentPage.' - 1 ) * '.$recordsPerPage.' ROWS ';
-	$sql .= ' FETCH NEXT '.$recordsPerPage.' ROWS ONLY ';
+	$sql = " SELECT ";
+	$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Adm_info] WHERE 1=1 ". $where." ) AS totalRecords ";
+	$sql .= " , Adm_id, Adm_name, Adm_Email, Reg_day, Login_day, Password_day ";
+	$sql .= " , ADI.Dept_Name";
+	$sql .= " FROM [theExam].[dbo].[Adm_info] AS AI ";
+	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
+	$sql .= " WHERE 1=1 ". $where;
+	$sql .= " ORDER BY Reg_day DESC ";
+	$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
+	$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -55,7 +57,7 @@
 			<h3 class="title">계정관리</h3>
 
 			<!-- sorting area -->
-<form name="searchFrm" id="searchFrm" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
+<form name="frmSearch" id="frmSearch" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
 			<div class="box_sort2">
 				<strong class="part_tit">검색</strong>
 				<div class="item line">
@@ -66,10 +68,10 @@
 						<option value="Adm_Email"	<?=( $pSearchKey == 'Adm_Email'	)? "SELECTED": "" ?> >소속부서</option> 
 					</select>
 					<input style="width:300px;" type="text" id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
-					<button class="btn_fill btn_md" type="button" id="searchBtn">검색</button>	
+					<button class="btn_fill btn_md" type="button" id="btnSearch">검색</button>	
 
 					<span class="fl_r">
-						<button class="btn_fill btn_md" type="button" id="writeBtn">등록</button>
+						<button class="btn_fill btn_md" type="button" id="btnWrite">등록</button>
 					</span>
 				</div>
 			</div>
@@ -118,15 +120,15 @@
 								<td><?=$data['Adm_id']?></td>
 								<td><?=$data['Adm_name']?></td>
 								<td><?=$data['Adm_Email']?></td>
-								<td></td>
+								<td><?=$data['Dept_Name']?></td>
 								<td><?=substr($data['Reg_day'], 0, 10)?></td>
-								<td><?=fnCalDate($data['Password_day'], 'month', 1)?></td>
+								<td><?=fnCalDate($data['Password_day'], 'day', 30)?></td>
 								<td><?=substr($data['Login_day'], 0, 10)?></td>
 								<td><?=( fnDateDiff($data['Login_day'], '') <= 90 )? "Y": "N" ?></td>
 								<td>
-									<button type="button" class="btn_fill btn_sm modifyBtn">수정</button>
-									<button type="button" class="btn_line btn_sm menuSetBtn">메뉴 설정</button>
-									<button type="button" class="btn_fill btn_sm dsblBtn">해제</button>								
+									<button type="button" class="btn_fill btn_sm btnModify">수정</button>
+									<button type="button" class="btn_line btn_sm btnMenuSet">메뉴 설정</button>
+									<button type="button" class="btn_fill btn_sm btnDsbl">해제</button>								
 								</td>
 							</tr>
 <?php
@@ -153,7 +155,7 @@
 <script type="text/javascript">
 $(document).ready(function () {
 
-	$('#searchFrm').validate({
+	$('#frmSearch').validate({
         onfocusout: false,
         rules: {
             searchKey: {
@@ -175,10 +177,10 @@ $(document).ready(function () {
         }
     });
 
-	$("#searchBtn").on("click", function(){
+	$("#btnSearch").on("click", function(){
 		$("#searchKey").val( $.trim($("#searchKey").val()) );
 
-		$('#searchFrm').submit();
+		$('#frmSearch').submit();
     });
 
 	$("#goPage").on("click", function () {
@@ -189,23 +191,23 @@ $(document).ready(function () {
 		}
     });
 
-	$("#writeBtn").on("click", function () {
+	$("#btnWrite").on("click", function () {
 		location.href = "./memberWrite.php";
 	});
 
-	$(".modifyBtn").on("click", function () {
+	$(".btnModify").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
 		location.href = "./memberWrite.php?admId="+admId;
 	});
 
-	$(".menuSetBtn").on("click", function () {
+	$(".btnMenuSet").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
 		location.href = "./memberWrite.php?admId="+admId;
 	});
 
-	$(".dsblBtn").on("click", function () {
+	$(".btnDsbl").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
 		location.href = "./memberWrite.php?admId="+admId;

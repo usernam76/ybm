@@ -3,6 +3,29 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
+
+	function getMenuList($pMenuDepth, $pParMenuIdx, $onMenuIdx=""){
+
+		$sql = ' SELECT ';
+		$sql .= ' A.[Menu_idx],A.[Menu_Name],A.[Menu_order],A.[Menu_depth],A.[Par_Menu_idx],B.[Page_URL] ';
+		$sql .= ' FROM ';
+		$sql .= ' [theExam].[dbo].[Menu_Info] as A join ';
+		$sql .= ' [theExam].[dbo].[Menu_Page] as B ';
+		$sql .= ' on A.Menu_idx = B.Menu_idx and A.use_CHk = \'O\' ';
+		$sql .= ' WHERE ';
+		$sql .= ' A.Menu_depth = \''.$pMenuDepth.'\' AND ';
+		$sql .= ' A.use_CHK = \'O\' AND';
+		$sql .= ' A.Par_Menu_idx = \''.$pParMenuIdx.'\'';
+		$sql .= ' ORDER BY A.Menu_order asc ';
+
+		$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+		$returnData = array("status"=>"success","depth"=>$pMenuDepth,"onMenuIdx"=>$onMenuIdx, "data"=>$arrRows);
+		echo json_encode($returnData);
+	}
+
+
 	$proc = fnNoInjection($_REQUEST['proc']);	
 
 //	foreach($arrayValid as $k=>$v){ ${$k} =$v;}
@@ -16,8 +39,8 @@
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 			$pMenuOrder = $arrRows[0]["pMenuOrder"] + 1;
-
 			$pIUD = "I";
+
 			if($pMenuDepth == 3){
 				$pMenuPageFirst = "X";
 			}else{
@@ -33,7 +56,7 @@
 			$pArray[':Menu_depth']		= $pMenuDepth;
 			$pArray[':Menu_order']		= $pMenuOrder;
 			$pArray[':Par_Menu_idx']		= $pParMenuIdx;
-			$pArray[':Page_URL']		= $pMenuUrl;
+			$pArray[':Page_URL']		= $pPageURL;
 			$pArray[':use_CHK']		= $pUseCHK;
 			$pArray[':Menu_Page_First']		= $pMenuPageFirst;
 
@@ -41,20 +64,9 @@
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 			$pArray = null;
 
-			$sql = ' SELECT ';
-			$sql .= ' [Menu_idx],[Menu_Name],[Menu_order],[Menu_depth],[Par_Menu_idx] ';
-			$sql .= ' FROM [theExam].[dbo].[Menu_Info] ';
-			$sql .= ' WHERE Menu_depth = \''.$pMenuDepth.'\'';
-			$sql .= ' and Par_Menu_idx = \''.$pParMenuIdx.'\'';
-			$sql .= ' ORDER BY Menu_order asc ';
+			getMenuList($pMenuDepth, $pParMenuIdx); // 새로 입력된 메뉴 부르기
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
-			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
-
-			$returnData = array("status"=>"success","depth"=>$pMenuDepth, "data"=>$arrRows);
-			echo json_encode($returnData);
 			exit;
-
 		break;
 		case 'modify':
 
@@ -62,35 +74,23 @@
 			$resultArray = fnGetRequestParam($valueValid);
 
 			/*수정 프로시저*/
-			/*
 			$sql = 'EXEC [theExam].[dbo].[p_Menu_info_IUD] :IUD, :Menu_idx,:Menu_Name,  :Menu_depth, :Menu_order, :Par_Menu_idx, :Page_URL, :use_CHK, :Menu_Page_First';	
 			$pArray[':IUD']		= 'U';
-			$pArray[':Menu_idx']		= null;
+			$pArray[':Menu_idx']		= $pMenuIdx;
 			$pArray[':Menu_Name']		= $pMenuName;
 			$pArray[':Menu_depth']		= $pMenuDepth;
 			$pArray[':Menu_order']		= $pMenuOrder;
 			$pArray[':Par_Menu_idx']		= $pParMenuIdx;
-			$pArray[':Page_URL']		= $pMenuUrl;
+			$pArray[':Page_URL']		= $pPageURL;
 			$pArray[':use_CHK']		= $pUseCHK;
-			$pArray[':Menu_Page_First']		= $pMenuPageFirst
+			$pArray[':Menu_Page_First']		= $pMenuPageFirst;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
-			$pArray = null;
 
-			$sql = ' SELECT ';
-			$sql .= ' [Menu_idx],[Menu_Name],[Menu_order],[Menu_depth],[Par_Menu_idx] ';
-			$sql .= ' FROM [theExam].[dbo].[Menu_Info] ';
-			$sql .= ' WHERE Menu_depth = \''.$pMenuDepth.'\'';
-			$sql .= ' and Par_Menu_idx = \''.$pParMenuIdx.'\'';
-			$sql .= ' ORDER BY Menu_order asc ';
+			getMenuList($pMenuDepth, $pParMenuIdx); // 수정된 메뉴 부르기
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
-			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
-*/
-			$returnData = array("status"=>"success","depth"=>$pMenuDepth, "data"=>$arrRows);
-			echo json_encode($returnData);
-
+			exit;
 		break;
 
 
@@ -116,11 +116,20 @@
 			}
 
 			/*삭제 프로시저*/
+			$sql = 'EXEC [theExam].[dbo].[p_Menu_info_IUD] :IUD, :Menu_idx,:Menu_Name,  :Menu_depth, :Menu_order, :Par_Menu_idx, :Page_URL, :use_CHK, :Menu_Page_First';
+			$pArray[':IUD']		= 'D';
+			$pArray[':Menu_idx']		= $pMenuIdx;
+			$pArray[':Menu_Name']		= $pMenuName;
+			$pArray[':Menu_depth']		= $pMenuDepth;
+			$pArray[':Menu_order']		= $pMenuOrder;
+			$pArray[':Par_Menu_idx']		= $pParMenuIdx;
+			$pArray[':Page_URL']		= $pPageURL;
+			$pArray[':use_CHK']		= $pUseCHK;
+			$pArray[':Menu_Page_First']		= $pMenuPageFirst;
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
-
-
-			$returnData = array("status"=>"success");
-			echo json_encode($returnData);
+			getMenuList($pMenuDepth, $pParMenuIdx); // 삭제된 메뉴 부르기
 		break;
 
 
@@ -132,7 +141,18 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
+			/*순서 변경 프로시저*/
+			$sql = 'EXEC [theExam].[dbo].[p_Menu_info_U] :targetMenuIdx, :targetMenuOrder,:changeMenuIdx,  :changeMenuOrder';	
+			$pArray[':targetMenuIdx']		= $pTargetMenuIdx;
+			$pArray[':targetMenuOrder']		= $pTargetMenuOrder;
+			$pArray[':changeMenuIdx']		= $pChangeMenuIdx;
+			$pArray[':changeMenuOrder']		= $pChangeMenuOrder;
 
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+
+			getMenuList($pChangeDepth, $pChangeParMenuIdx, $pChangeMenuIdx);	// 메뉴 부르기
+			exit;
 
 		break;
 
@@ -145,23 +165,9 @@
 			$findMenuDepth = $pMenuDepth + 1;
 			$findParMenuIdx = $pMenuIdx;
 
-			$sql = ' SELECT ';
-			$sql .= ' A.[Menu_idx],A.[Menu_Name],A.[Menu_order],A.[Menu_depth],B.[Page_URL] ';
-			$sql .= ' FROM ';
-			$sql .= ' [theExam].[dbo].[Menu_Info] as A join ';
-			$sql .= ' [theExam].[dbo].[Menu_Page] as B ';
-			$sql .= ' on A.Menu_idx = B.Menu_idx and A.use_CHk = \'O\' ';
-			$sql .= ' WHERE ';
-			$sql .= ' A.Menu_depth = \''.$findMenuDepth.'\' AND ';
-			$sql .= ' A.use_CHK = \'O\' AND';
-			$sql .= ' A.Par_Menu_idx = \''.$findParMenuIdx.'\'';
-			$sql .= ' ORDER BY A.Menu_order asc ';
+			getMenuList($findMenuDepth, $findParMenuIdx);	// 메뉴 부르기
+			exit;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
-			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
-
-			$returnData = array("status"=>"success","depth"=>$findMenuDepth, "data"=>$arrRows);
-			echo json_encode($returnData);
 		break;
 		default:
 		break;

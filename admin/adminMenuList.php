@@ -50,7 +50,7 @@
 								foreach($arrRows as $data) {
 							?>
 								<li>
-									<a href="#" menuIdx="<?=$data["Menu_idx"]?>" parMenuIdx="<?=$data["Par_Menu_idx"]?>" menuOrder ="<?=$data["Menu_order"]?>" menuDepth="<?=$data["Menu_depth"]?>" menuUrl="<?=$data["Menu_url"]?>"><?=$data["Menu_Name"]?></a>
+									<a href="#" menuIdx="<?=$data["Menu_idx"]?>" parMenuIdx="<?=$data["Par_Menu_idx"]?>" menuOrder ="<?=$data["Menu_order"]?>" menuDepth="<?=$data["Menu_depth"]?>" pageURL="<?=$data["Page_URL"]?>"><?=$data["Menu_Name"]?></a>
 									<span class="btn_r">
 										<button class="btn_sm_box btnModifyMenu" type="button">수정</button> 
 										<button class="btn_sm_box btnDeleteMenu" type="button">삭제</button>
@@ -62,8 +62,8 @@
 							</ul>
 						</div>
 						<p class="item fl_r">
-							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
-							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
+							<button class="btn_arr" type="button" data-depth="1" data-change-mode="up"><strong class="fs_sm">▲</strong></button>
+							<button class="btn_arr" type="button" data-depth="1" data-change-mode="down"><strong class="fs_sm">▼</strong></button>
 						</p>
 					</div>
 				</li>
@@ -77,8 +77,8 @@
 						<div class="box_ln">
 						</div>
 						<p class="item fl_r">
-							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
-							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
+							<button class="btn_arr" type="button" data-depth="2" data-change-mode="up"><strong class="fs_sm">▲</strong></button>
+							<button class="btn_arr" type="button" data-depth="2" data-change-mode="down"><strong class="fs_sm">▼</strong></button>
 						</p>
 					</div>
 				</li>
@@ -92,8 +92,8 @@
 						<div class="box_ln" >
 						</div>
 						<p class="item fl_r">
-							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
-							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
+							<button class="btn_arr" type="button" data-depth="3" data-change-mode="up"><strong class="fs_sm">▲</strong></button>
+							<button class="btn_arr" type="button" data-depth="3" data-change-mode="down"><strong class="fs_sm">▼</strong></button>
 						</p>
 					</div>
 				</li>
@@ -107,8 +107,8 @@
 						<div class="box_ln">
 						</div>
 						<p class="item fl_r">
-							<button class="btn_arr" type="button"><strong class="fs_sm">▲</strong></button>
-							<button class="btn_arr" type="button"><strong class="fs_sm">▼</strong></button>
+							<button class="btn_arr" type="button" data-depth="4" data-change-mode="up"><strong class="fs_sm">▲</strong></button>
+							<button class="btn_arr" type="button" data-depth="4" data-change-mode="down"><strong class="fs_sm">▼</strong></button>
 						</p>
 					</div>
 				</li>
@@ -149,7 +149,7 @@
 						<th>링크</th>
 						<td>
 							<div class="item">
-								<input style="width: 90%;" type="text"  name="menu_url">
+								<input style="width: 90%;" type="text"  name="page_url">
 							</div>
 						</td>
 					</tr>
@@ -198,7 +198,7 @@
 						<th>링크</th>
 						<td>
 							<div class="item">
-								<input style="width: 90%;" type="text"  name="menu_url">
+								<input style="width: 90%;" type="text"  name="page_url">
 							</div>
 						</td>
 					</tr>
@@ -217,27 +217,6 @@
 
 
 <script type="text/javascript">
-// Get the modal
-/*
-var modal = document.getElementById('myModal');
-
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
-*/
-// Get the <span> element that closes the modal
-/*
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal 
-/*btn.onclick = function() {
-    modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
-*/
 
 var yUI = (function() {
 	/*
@@ -246,11 +225,75 @@ var yUI = (function() {
 		@description : 관리자 메뉴 관리 이벤트 스크립트
 	*/
 
-	/* modal 제어 event*/
-	var modalMenuControlEvent = function(){
+	/* 메뉴 순서 변경 */
+	var menuOrderChangeEvent = function(){
+		
+		$(".btn_arr").off("click");
+		$(".btn_arr").on("click", function(){
+			var changeDepth = $(this).attr("data-depth");			// 바꾸는 메뉴의 depth
+			var changeMode = $(this).attr("data-change-mode");	// 바꾸는 메뉴 모드(up/down)
+			var changeMenu = $(".box_ln").eq(changeDepth-1).find("ul").find(".on");	// 진행하는 메뉴의 객체
+
+			var changeMenuIdx = changeMenu.attr("menuIdx");
+			var changeMenuOrder = changeMenu.attr("menuOrder");
+			if(changeMenu.length < 1){
+				alert("순서를 변경하려는 메뉴를 선택 해주세요");
+				return false;
+			}
+
+			var changeParMenuIdx = changeMenu.attr("parMenuIdx");	// 진행하는 메뉴의 상위메뉴 객체 idx
+
+			var targetMenu = null; 
+			if(changeMode == "up"){
+				targetMenu = changeMenu.parent().prev().find("a");
+			}else if(changeMode == "down"){
+				targetMenu = changeMenu.parent().next().find("a");
+			}
+
+			if(targetMenu.length < 1){
+				alert("순서를 변경할 수 없습니다.");
+				return false;
+			}
+
+			var targetMenuIdx = targetMenu.attr("menuIdx");
+			var targetMenuOrder = targetMenu.attr("menuOrder");
+
+			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
+			var param = {
+				"proc" : "getMenuOrderChange",
+				"changeDepth" : changeDepth, 
+				"changeParMenuIdx" : changeParMenuIdx, 
+				"changeMenuIdx" : changeMenuIdx,
+				"changeMenuOrder" : changeMenuOrder,
+				"targetMenuIdx" : targetMenuIdx,
+				"targetMenuOrder" : targetMenuOrder
+				,"targetMenuText" : targetMenu.text()
+				,"changeMenuText" : changeMenu.text()
+			}
+
+
+			/* 데이터 비동기 전송*/
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+				success: function(resJson) {
+					console.log(resJson)
+					menuLoad(resJson);
+				},
+				error: function(resJson) {
+					alert("현재 서버 통신이 원활하지 않습니다.");
+					console.log("[Error]");
+					console.log(resJson)
+				}
+			});
+		});
+	}
+
+
+	/* 메뉴 IUD 제어 event*/
+	var menuIUDControlEvent = function(){
 
 		var currentDepth = 1;			// 현재 선택한 메뉴의 depth
 		var currentParMenuIdx = 0;	//	현재 선택 상위메뉴의 고유번호
+		var currentMenuIdx = null;
 
 		/* 메뉴 등록 */
 
@@ -273,55 +316,67 @@ var yUI = (function() {
 			$(".modalPopWrite").css("display", "block");
 		});
 
-		// 메뉴 등록 및 수정
-		$(".btnOk").off("click");
-		$(".btnOk").on("click", function(){
-			var menuName = $("form[name=frmWrite]").find("[name=menu_name]").val();
-			var menuUrl = $("form[name=frmWrite]").find("[name=menu_url]").val();
-			var menuDepth = currentDepth;				// 입력하는 메뉴의 depth
-			var parMenuIdx = currentParMenuIdx;	// 입력하는 메뉴의 상위 메뉴 고유번호, 1depth는 0
-			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
-			if($(this).parent().parent().attr("name") == "frmWrite"){	// 상단 폼에 따라 proc 변경
-				var proc = "write";
-			}else{
-				var proc = "modify";
-			}
-
-			var param = {	// 파라메터
-				"proc" : "write",
-				"menuName"		:	menuName,
-				"menuUrl"	:	menuUrl,
-				"menuDepth"	:	menuDepth,
-				"parMenuIdx"	:	parMenuIdx
-			};
-			console.log(param)
-			/* 데이터 비동기 전송*/
-			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
-				success: function(e) {
-					console.log(e)
-					menuLoad(e);
-
-				},
-				error: function(e) {
-					console.log("[Error]");
-					console.log(e)
-				}
-			});
-		});
-
 		/* 메뉴수정 */
 		// 메뉴수정 팝업 노출
 		$(".btnModifyMenu").off("click");
 		$(".btnModifyMenu").on("click", function(){
 			var menuIdx = $(this).parent().prev().attr("menuIdx");	// 수정 선택 menu 고유번호
 			var menuName = $(this).parent().prev().text();	// 수정 선택 menu명
-			var menuUrl = $(this).parent().prev().attr("menuUrl");	// 수정 선택 menuURL
-
+			var pageURL = $(this).parent().prev().attr("pageURL");	// 수정 선택 pageURL
+			var menuDepth = $(this).parent().prev().attr("menuDepth");	// 수정 선택 pageURL
+			var parMenuIdx = $(this).parent().prev().attr("parMenuIdx");	// 수정 선택 pageURL
+			currentMenuIdx = menuIdx;
+			currentDepth = menuDepth;				// 수정하는 메뉴의 depth
+			currentParMenuIdx = parMenuIdx;	// 수정하는 메뉴의 상위 메뉴 고유번호, 1depth는 0
 			$("form[name=frmModify]").find("[name=menu_name]").val(menuName);
-			$("form[name=frmModify]").find("[name=menu_url]").val(menuUrl);
+			$("form[name=frmModify]").find("[name=page_url]").val(pageURL);
 			$(".modalPopMoidfy").css("display", "block");
+		});
 
-			return ; /**/
+
+		// 메뉴 팝업 등록 및 수정
+		$(".btnOk").off("click");
+		$(".btnOk").on("click", function(){
+			var menuDepth = currentDepth;				// 입력하는 메뉴의 depth
+			var parMenuIdx = currentParMenuIdx;	// 입력하는 메뉴의 상위 메뉴 고유번호, 1depth는 0
+
+			if($(this).parent().parent().attr("name") == "frmWrite"){	// 상단 폼에 따라 proc 변경
+				var proc = "write";
+				var menuName = $("form[name=frmWrite]").find("[name=menu_name]").val();
+				var pageURL = $("form[name=frmWrite]").find("[name=page_url]").val();
+				var menuIdx = null;
+			}else{
+				var proc = "modify";
+				var menuName = $("form[name=frmModify]").find("[name=menu_name]").val();
+				var pageURL = $("form[name=frmModify]").find("[name=page_url]").val();
+				var menuIdx = currentMenuIdx;
+			}
+
+			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
+
+			var param = {	// 파라메터
+				"proc" : proc,
+				"menuIdx" : menuIdx,
+				"menuName"		:	menuName,
+				"pageURL"	:	pageURL,
+				"menuDepth"	:	menuDepth,
+				"parMenuIdx"	:	parMenuIdx
+			};
+
+
+			/* 데이터 비동기 전송*/
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+				success: function(resJson) {
+//					console.log(resJson)
+					menuLoad(resJson);
+
+				},
+				error: function(resJson) {
+					alert("현재 서버 통신이 원활하지 않습니다.");
+//					console.log("[Error]");
+//					console.log(resJson)
+				}
+			});
 		});
 
 		/* 메뉴 삭제 */
@@ -342,34 +397,27 @@ var yUI = (function() {
 
 				/* 데이터 비동기 전송*/
 				$.ajax({ type:'post', url: u, dataType : 'json',data:param,
-					success: function(e) {
-
-						if(e.status == "fail"){
-							if(e.failcode == "90"){
+					success: function(resJson) {
+						if(resJson.status == "fail"){
+							if(resJson.failcode == "90"){
 								alert("하위 메뉴가 존재합니다.");
 								return false;
 							}
 						}
-						else if(e.status == "success"){
-
-							alert("삭제 완료 >>문구수정>>삭제후프로세스진입");
+						else if(resJson.status == "success"){
+							menuLoad(resJson)
+							return false;
 						}
-
 					},
-					error: function(e) {
+					error: function(resJson) {
+						console.log(resJson)
 						alert("현재 서버 통신이 원활하지 않습니다.");
 					}
 				});
-
-				console.log($(this))
 			}else{
 				return;
 			}
-
-			
 		});
-
-
 
 		/*modal close event*/
 		$(".close").on("click", function(){
@@ -379,21 +427,19 @@ var yUI = (function() {
 	} /* modal 제어 event 끝*/
 
 
-
-
 	/* 메뉴 클릭 이벤트 > 하위 메뉴 호출 */
 	var menuEvent = function(){
 		$(".box_ln > ul > li > a").off("click");
 		$(".box_ln > ul > li > a").on("click", function(){
 			var currentMenuDepth =parseInt( $(this).attr("menuDepth") , 10);
-			if(currentMenuDepth==4 ){
-				return; // 4depth 메뉴의 경우 하위 이벤트 설정x
-			}
 
 			var chkMenu = $(this).attr("menuIdx");
 			$(this).parent().parent().find("a").removeClass("on");
 			$(this).addClass("on");
 
+			if(currentMenuDepth==4 ){
+				return; // 4depth 메뉴의 경우 하위 이벤트 설정x
+			}
 			var menuIdx = $(this).attr("menuIdx");	// menu 고유번호
 			var menuDepth =$(this).attr("menuDepth");	// menu 메뉴단계
 			var menuOrder = $(this).attr("menuOrder");	//	menu 정렬순서
@@ -410,36 +456,43 @@ var yUI = (function() {
 			};
 			/* 하위 메뉴 출력 정보 전송*/
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
-				success: function(e) {
-					console.log(e);
-					menuLoad(e);
+				success: function(resJson) {
+					console.log(resJson);
+					menuLoad(resJson);
 				},
-				error: function(e) {
-					console.log(e);
+				error: function(resJson) {
+					console.log(resJson);
 					alert("현재 서버 통신이 원활하지 않습니다.");
 					return false;
 				}
 			});
-
 		});
 	};
+
 	/* 메뉴 클릭 이벤트 > 하위 메뉴 호출 끝*/
 
 	/*  메뉴 리스트 업 */
-	var menuLoad = function(e){
-		var addDepth = parseInt(e.depth,10);
-		var len = e.data.length;
+	var menuLoad = function(resJson){
+
+		var addDepth = parseInt(resJson.depth,10);
+		var onMenuIdx = resJson.onMenuIdx;
+		var len = resJson.data.length;
 		var addHTML = "";
 		addHTML = "<ul>"
+
 		for(var i=0; i<len; i++){
 			addHTML += '<li>';
 			addHTML += '<a href="#"';
-			addHTML += 'menuIdx="'+e.data[i].Menu_idx+'"';
-			addHTML += 'parMenuIdx="'+e.data[i].Par_Menu_idx+'"'; 
-			addHTML += 'menuOrder ="'+e.data[i].Menu_order+'"';
-			addHTML += 'menuDepth="'+e.data[i].Menu_depth+'"';
-			addHTML += '>'+e.data[i].Menu_Name+'</a>';
-			
+			addHTML += 'menuIdx="'+resJson.data[i].Menu_idx+'"';
+			addHTML += 'parMenuIdx="'+resJson.data[i].Par_Menu_idx+'"'; 
+			addHTML += 'menuOrder ="'+resJson.data[i].Menu_order+'"';
+			addHTML += 'menuDepth="'+resJson.data[i].Menu_depth+'"';
+			addHTML += 'pageURL="'+resJson.data[i].Page_URL+'"';
+
+			if( onMenuIdx == resJson.data[i].Menu_idx){
+				addHTML += ' class="on"';
+			}
+			addHTML += '>'+resJson.data[i].Menu_Name+'</a>';
 			addHTML += '<span class="btn_r">';
 			addHTML += '<button class="btn_sm_box btnModifyMenu" type="button">수정</button>';
 			addHTML += '<button class="btn_sm_box btnDeleteMenu" type="button">삭제</button>';
@@ -447,20 +500,21 @@ var yUI = (function() {
 			addHTML += '</li>';
 		}
 		addHTML += "</ul>";
+
 		var len = $(".box_ln").length;
 		for(var i=addDepth-1; i<len; i++){
 			$(".box_ln").eq(i).html('');	//  메뉴 초기화
 		}
 		$(".box_ln").eq(addDepth-1).html(addHTML);	// 메뉴 입력
-		//menuEvent();	// menu 이벤트 추가 > 스크립트로 생성되는 메뉴의 이벤트 재설정
 		init();
 	}
 	/* 하위 메뉴 리스트 업 끝*/
 
 
 	var init = function(){
-		menuEvent();	// 메뉴명 이벤트
-		modalMenuControlEvent();
+		menuEvent();	// 트리메뉴 이벤트
+		menuIUDControlEvent(); // IUD 이벤트
+		menuOrderChangeEvent(); // 순서변경 이벤트
 	};
 
 	return {

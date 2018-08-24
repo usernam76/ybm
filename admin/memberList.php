@@ -24,7 +24,7 @@
 
 	$sql = " SELECT ";
 	$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Adm_info] WHERE 1=1 ". $where." ) AS totalRecords ";
-	$sql .= " , Adm_id, Adm_name, Adm_Email, Reg_day, Login_day, Password_day ";
+	$sql .= " , AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Reg_day, AI.Login_day, AI.Password_day, AI.use_CHK ";
 	$sql .= " , ADI.Dept_Name";
 	$sql .= " FROM [theExam].[dbo].[Adm_info] AS AI ";
 	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
@@ -124,11 +124,11 @@
 								<td><?=substr($data['Reg_day'], 0, 10)?></td>
 								<td><?=fnCalDate($data['Password_day'], 'day', 30)?></td>
 								<td><?=substr($data['Login_day'], 0, 10)?></td>
-								<td><?=( fnDateDiff($data['Login_day'], '') <= 90 )? "Y": "N" ?></td>
+								<td><?=$data["use_CHK"]?></td>
 								<td>
 									<button type="button" class="btn_fill btn_sm btnModify">수정</button>
 									<button type="button" class="btn_line btn_sm btnMenuSet">메뉴 설정</button>
-									<button type="button" class="btn_fill btn_sm btnDsbl">해제</button>								
+									<button type="button" class="btn_fill btn_sm btnDsbl" <?=( $data["use_CHK"] == "O" )? "disabled style='color: #a4a8af'": "" ?>>해제</button>								
 								</td>
 							</tr>
 <?php
@@ -204,13 +204,13 @@ $(document).ready(function () {
 	$(".btnMenuSet").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
-		location.href = "./memberWrite.php?admId="+admId;
+		location.href = "./memberMenu.php?admId="+admId;
 	});
 
 	$(".btnDsbl").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
-		location.href = "./memberWrite.php?admId="+admId;
+//		location.href = "./memberWrite.php?admId="+admId;
 	});
 
 });

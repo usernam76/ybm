@@ -233,5 +233,101 @@
 		return $interval->days;
 	}
 
+	/*
+		@auth : 남동현
+		@date : 2018-08-24
+		@desc : 
+			- 메일 발송
+		@param : 
+			- $fromName		: 발신자
+			- $fromEmail	: 발신주소
+			- $toName		: 수신자
+			- $toEmail		: 수신주소
+			- $subject		: 제목
+			- $contents		: 메일내용 
+	*/
+	function fnSendMail($fromName, $fromEmail, $toName, $toEmail, $subject, $contents, $isDebug=0){
+		//Configuration
+		$smtp_host = "203.231.233.140"; // YBMNET SMTP HOST
+		//$smtp_host = "smtp.google.com";
+		$port = 25;
+		$type = "text/html";
+		$charSet = "UTF-8";
+		$sendmail_flag = false;
+	 
+		//Open Socket
+		$fp = @fsockopen($smtp_host, $port, $errno, $errstr, 1);
+		if($fp){
+			//Connection and Greetting
+			$returnMessage = fgets($fp, 128);
+			if($isDebug)
+			print "CONNECTING MSG:".$returnMessage."\n";
+			fputs($fp, "HELO YA\r\n");
+			$returnMessage = fgets($fp, 128);
+			if($isDebug)
+			print "GREETING MSG:".$returnMessage."\n";
+
+			// 이부분에 다음과 같이 로긴과정만 들어가면됩니다.
+			/*
+			fputs($fp, "auth login\r\n");
+			fgets($fp,128);
+			fputs($fp, base64_encode("hoodist0@gmail.com")."\r\n");
+			fgets($fp,128);
+			fputs($fp, base64_encode("jeongsu99")."\r\n");
+			fgets($fp,128);
+			*/
+
+			fputs($fp, "MAIL FROM: <".$fromEmail.">\r\n");
+			$returnvalue[0] = fgets($fp, 128);
+			fputs($fp, "rcpt to: <".$toEmail.">\r\n");
+			$returnvalue[1] = fgets($fp, 128);
+
+			if($isDebug){
+				print "returnvalue:";
+				print_r($returnvalue);
+			}
+
+			//Data
+			fputs($fp, "data\r\n");
+			$returnMessage = fgets($fp, 128);
+			if($isDebug)
+			print "data:".$returnMessage;
+			fputs($fp, "Return-Path: ".$fromEmail."\r\n");
+			$fromName = "=?UTF-8?B?".base64_encode($fromName)."?=";
+			$toName = "=?UTF-8?B?".base64_encode($toName)."?=";
+			fputs($fp, "From: ".$fromName." <".$fromEmail.">\r\n");
+			fputs($fp, "To: ".$toName." <".$toEmail.">\r\n");
+			$subject = "=?".$charSet."?B?".base64_encode($subject)."?=";
+
+			fputs($fp, "Subject: ".$subject."\r\n");
+			fputs($fp, "Content-Type: ".$type."; charset=\"".$charSet."\"\r\n");
+			fputs($fp, "Content-Transfer-Encoding: base64\r\n");
+			fputs($fp, "\r\n");
+			$contents= chunk_split(base64_encode($contents));
+
+			fputs($fp, $contents);
+			fputs($fp, "\r\n");
+			fputs($fp, "\r\n.\r\n");
+			$returnvalue[2] = fgets($fp, 128);
+
+			//Close Connection
+			fputs($fp, "quit\r\n");
+			fclose($fp);
+
+			//Message
+			if (preg_match("/^250/", $returnvalue[0])&&preg_match("/^250/", $returnvalue[1])){
+				$sendmail_flag = true;
+			}else {
+				$sendmail_flag = false;
+				print "NO :".$errno.", STR : ".$errstr;
+			}
+		}
+
+		if (! $sendmail_flag){
+			echo "메일 보내기 실패";
+		}
+		return $sendmail_flag;
+	}
+
 
 ?>

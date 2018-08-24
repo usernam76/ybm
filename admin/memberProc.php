@@ -28,7 +28,20 @@
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 			
-			if( $result[0][result] == 1 ){
+			if( $result[0][result] == 1 ){	//성공일때 메일 발송
+
+				$nameFrom = "관리자";
+				$mailFrom = "webmaster@ybm.co.kr";
+				$nameTo = $pAdmId;
+				$mailTo = $pAdmEmail1."@".$pAdmEmail2;
+				$cc = "";
+				$bcc = "";
+				$subject = "YBM 어학시험 통합 접수시스템 ";
+				$content = "비밀번호 : ".$pwd; 
+
+				// 메일 발송 임시 주석 처리
+				// fnSendMail($nameFrom, $mailFrom, $nameTo, $mailTo, $subject, $content);
+
 				fnShowAlertMsg("등록 되었습니다.", "location.href = './memberList.php';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
@@ -104,7 +117,23 @@
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
-			$returnData = array("status"=>"success", "result"=>$result);
+			$returnData = array("status"=>"success", "result"=>$result[0][result]);
+
+			if( $result[0][result] == 1 ){	//성공일때 메일 발송
+
+				$nameFrom = "관리자";
+				$mailFrom = "webmaster@ybm.co.kr";
+				$nameTo = $pAdmId;
+				$mailTo = $pAdmEmail;
+				$cc = "";
+				$bcc = "";
+				$subject = "YBM 어학시험 통합 접수시스템 ";
+				$content = "비밀번호 : ".$pwd; 
+
+				// 메일 발송 임시 주석 처리
+				// fnSendMail($nameFrom, $mailFrom, $nameTo, $mailTo, $subject, $content);
+			}
+
 			echo json_encode($returnData);
 
 			break;

@@ -157,22 +157,13 @@
 										<input style="width: 300px;" type="text" name="admIp" value="<?=$arrRows[0][Adm_IP]?>">
 									</div>
 								</td>
-							</tr>
-							<tr>
-								<th>개인정보 권한</th>
-								<td>
-									<div class="item">
-										<input class="i_unit" id="" type="radio" value="O" <?=( $useChk == 'O' )? "CHECKED": "" ?>><label for="">부여</label>
-										<input class="i_unit" id="" type="radio" value="X" <?=( $useChk == 'X' )? "CHECKED": "" ?>><label for="">부여안함</label>
-									</div>
-								</td>
-							</tr>
+							</tr>							
 							<tr>
 								<th>사용여부</th>
 								<td>
 									<div class="item">
-										<input class="i_unit" type="radio" name="useChk" value="O" <?=( $useChk == 'O' )? "CHECKED": "" ?> ><label for="">사용</label>
-										<input class="i_unit" type="radio" name="useChk" value="X" <?=( $useChk == 'X' )? "CHECKED": "" ?> ><label for="">부여안함</label>
+										<input class="i_unit" type="radio" name="useChk" value="O" <?=( $useChk == "O" )? "CHECKED": "" ?> ><label for="">사용</label>
+										<input class="i_unit" type="radio" name="useChk" value="X" <?=( $useChk == "X" )? "CHECKED": "" ?> ><label for="">사용안함</label>
 									</div>
 								</td>
 							</tr>
@@ -198,7 +189,7 @@
 			<!-- 세로형 테이블 //-->
 
 			<div class="wrap_btn">
-				<button type="button" class="btn_fill btn_lg" id="btnWrite">등록</button>
+				<button type="button" class="btn_fill btn_lg" id="btnWrite"><?=( $proc == "write" )? "등록": "확인" ?></button>
 				<button type="button" class="btn_line btn_lg" id="btnCancel">취소</button>
 			</div>
 
@@ -313,12 +304,13 @@ $(document).ready(function () {
 		var u = "/admin/memberProc.php";
 		var param = {
 			"proc"	: "passClear",
-			"admId"	: $("#admId").val()
+			"admId"	: $("#admId").val(),
+			"admEmail"	: "<?=$arrRows[0][Adm_Email]?>"
 		};
 
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
 			success: function(resJson) {
-				if( resJson.data[0].result == 0 ){
+				if( resJson.result == 1 ){
 					alert("비밀번호가 초기화 되었습니다.");
 				}else{
 					alert("비밀번호 초기화 실패 하였습니다.");

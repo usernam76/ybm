@@ -14,7 +14,7 @@
 			$pwdStr  = '!@#$%*&abcdefghijklmnpqrstuwxyzABCDEFGHJKLMNPQRSTUWXYZ23456789';
 			$pwd = substr(str_shuffle($pwdStr), 0, 12);
 
-			$sql = "EXEC p_Adm_info_IUD 'I', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
+			$sql = "EXEC p_Adm_info_IU 'I', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
 			$pArray[':admId']		= $pAdmId;
 			$pArray[':pwd']			= $pwd;
 			$pArray[':deptCode']	= $pDeptCode;
@@ -53,7 +53,7 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = "EXEC p_Adm_info_IUD 'U', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
+			$sql = "EXEC p_Adm_info_IU 'U', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
 			$pArray[':admId']		= $pAdmId;
 			$pArray[':pwd']			= "";
 			$pArray[':deptCode']	= $pDeptCode;
@@ -103,7 +103,7 @@
 			$pwdStr  = '!@#$%*&abcdefghijklmnpqrstuwxyzABCDEFGHJKLMNPQRSTUWXYZ23456789';
 			$pwd = substr(str_shuffle($pwdStr), 0, 12);
 
-			$sql = "EXEC p_Adm_info_IUD 'P', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
+			$sql = "EXEC p_Adm_info_IU 'P', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
 			$pArray[':admId']		= $pAdmId;
 			$pArray[':pwd']			= $pwd;
 			$pArray[':deptCode']	= "";
@@ -133,6 +133,29 @@
 				// 메일 발송 임시 주석 처리
 				// fnSendMail($nameFrom, $mailFrom, $nameTo, $mailTo, $subject, $content);
 			}
+
+			echo json_encode($returnData);
+
+			break;
+		case 'dsbl':
+			$valueValid = [];
+			$resultArray = fnGetRequestParam($valueValid);
+
+			$sql = "EXEC p_Adm_info_IU 'L', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
+			$pArray[':admId']		= $pAdmId;
+			$pArray[':pwd']			= "";
+			$pArray[':deptCode']	= "";
+			$pArray[':admName']		= "";
+			$pArray[':admEmail']	= "";
+			$pArray[':etc']			= "";
+			$pArray[':tokenCode']	= "";
+			$pArray[':admIp']		= "";
+			$pArray[':useChk']		= "";
+
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "result"=>$result[0][result]);
 
 			echo json_encode($returnData);
 

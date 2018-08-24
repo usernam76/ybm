@@ -230,7 +230,11 @@
 
 		$interval = $startDate->diff($targetDate);
  
-		return $interval->days;
+		if( $interval->invert){
+			return -1 * $interval->days;
+		}else{
+			return $interval->days;
+		}
 	}
 
 	/*

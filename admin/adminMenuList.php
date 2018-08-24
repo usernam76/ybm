@@ -11,11 +11,18 @@
 	];
 
 
-	$sql = 'SELECT';
-	$sql .= '[Menu_idx],[Menu_Name],[Menu_order],[Menu_depth] ';
-	$sql .= ' FROM [theExam].[dbo].[Menu_Info] ';
-	$sql .= ' WHERE Menu_depth = 1';
-	$sql .= ' ORDER BY Menu_order asc ';
+	$sql = ' SELECT ';
+	$sql .= ' A.[Menu_idx],A.[Menu_Name],A.[Menu_order],A.[Menu_depth],B.[Page_URL] ';
+	$sql .= ' FROM ';
+	$sql .= ' [theExam].[dbo].[Menu_Info] as A join ';
+	$sql .= ' [theExam].[dbo].[Menu_Page] as B ';
+	$sql .= ' on A.Menu_idx = B.Menu_idx and A.use_CHk = \'O\' ';
+	$sql .= ' WHERE ';
+	$sql .= ' A.Menu_depth = 1 AND ';
+	$sql .= ' A.use_CHK = \'O\'';
+	$sql .= ' ORDER BY A.Menu_order asc ';
+
+
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 	
@@ -245,7 +252,28 @@ var yUI = (function() {
 		var currentDepth = 1;			// 현재 선택한 메뉴의 depth
 		var currentParMenuIdx = 0;	//	현재 선택 상위메뉴의 고유번호
 
-		// 메뉴 등록
+		/* 메뉴 등록 */
+
+		// 메뉴등록 팝업 노출
+		$(".btnAddMenu").off("click");
+		$(".btnAddMenu").on("click", function(){
+			currentDepth = $(this).attr("data-depth"); // 추가 버튼 클릭한 메뉴 depth
+			currentDepth = parseInt(currentDepth, 10);
+			if(currentDepth != 1){	// 1dep 메뉴는 체크X
+				// 상위 메뉴 선택 체크
+				var parentMenuObj = $(".box_ln").eq(currentDepth-2).find("ul").find(".on");	// 상위 메뉴객체
+				if(parentMenuObj.length < 1){
+					alert("상위메뉴를 선택하셔야 합니다.");
+					return false;
+				}
+				currentParMenuIdx = parentMenuObj.attr("menuIdx");		// 상위 메뉴 고유번호
+			}else{
+				var parentMenuObj ;	// 1depth는 고유번호 없음.
+			}
+			$(".modalPopWrite").css("display", "block");
+		});
+
+		// 메뉴 등록 및 수정
 		$(".btnOk").off("click");
 		$(".btnOk").on("click", function(){
 			var menuName = $("form[name=frmWrite]").find("[name=menu_name]").val();
@@ -253,6 +281,12 @@ var yUI = (function() {
 			var menuDepth = currentDepth;				// 입력하는 메뉴의 depth
 			var parMenuIdx = currentParMenuIdx;	// 입력하는 메뉴의 상위 메뉴 고유번호, 1depth는 0
 			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
+			if($(this).parent().parent().attr("name") == "frmWrite"){	// 상단 폼에 따라 proc 변경
+				var proc = "write";
+			}else{
+				var proc = "modify";
+			}
+
 			var param = {	// 파라메터
 				"proc" : "write",
 				"menuName"		:	menuName,
@@ -260,14 +294,12 @@ var yUI = (function() {
 				"menuDepth"	:	menuDepth,
 				"parMenuIdx"	:	parMenuIdx
 			};
-
-			console.log(param) /*삭제예정*/
-
+			console.log(param)
 			/* 데이터 비동기 전송*/
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
 				success: function(e) {
 					console.log(e)
-//					menuLoad(e)
+					menuLoad(e);
 
 				},
 				error: function(e) {
@@ -275,10 +307,10 @@ var yUI = (function() {
 					console.log(e)
 				}
 			});
-
 		});
 
-		/* 메뉴 수정 */
+		/* 메뉴수정 */
+		// 메뉴수정 팝업 노출
 		$(".btnModifyMenu").off("click");
 		$(".btnModifyMenu").on("click", function(){
 			var menuIdx = $(this).parent().prev().attr("menuIdx");	// 수정 선택 menu 고유번호
@@ -290,30 +322,6 @@ var yUI = (function() {
 			$(".modalPopMoidfy").css("display", "block");
 
 			return ; /**/
-
-
-			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
-			var param = {	// 파라메터
-				"proc" : "modify",
-				"menuIdx"	:	menuIdx,
-				"menuName"		:	menuName,
-				"menuUrl"	:	menuUrl
-			};
-
-			console.log(param) /*삭제예정*/
-
-			/* 데이터 비동기 전송*/
-			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
-				success: function(e) {
-					console.log(e)
-//					menuLoad(e)
-
-				},
-				error: function(e) {
-					console.log("[Error]");
-					console.log(e)
-				}
-			});
 		});
 
 		/* 메뉴 삭제 */
@@ -362,27 +370,6 @@ var yUI = (function() {
 		});
 
 
-		/* modal open event*/
-		$(".btnAddMenu").off("click");
-		$(".btnAddMenu").on("click", function(){
-			currentDepth = $(this).attr("data-depth"); // 추가 버튼 클릭한 메뉴 depth
-			currentDepth = parseInt(currentDepth, 10);
-			if(currentDepth != 1){	// 1dep 메뉴는 체크X
-				// 상위 메뉴 선택 체크
-				var parentMenuObj = $(".box_ln").eq(currentDepth-2).find("ul").find(".on");	// 상위 메뉴객체
-				if(parentMenuObj.length < 1){
-					alert("상위메뉴를 선택하셔야 합니다.");
-					return false;
-				}
-				currentParMenuIdx = parentMenuObj.attr("menuIdx");		// 상위 메뉴 고유번호
-			}else{
-				var parentMenuObj ;	// 1depth는 고유번호 없음.
-			}
-
-			console.log(currentDepth)
-
-			$(".modalPopWrite").css("display", "block");
-		});
 
 		/*modal close event*/
 		$(".close").on("click", function(){
@@ -424,10 +411,11 @@ var yUI = (function() {
 			/* 하위 메뉴 출력 정보 전송*/
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
 				success: function(e) {
-//					console.log(e);
+					console.log(e);
 					menuLoad(e);
 				},
 				error: function(e) {
+					console.log(e);
 					alert("현재 서버 통신이 원활하지 않습니다.");
 					return false;
 				}
@@ -437,7 +425,7 @@ var yUI = (function() {
 	};
 	/* 메뉴 클릭 이벤트 > 하위 메뉴 호출 끝*/
 
-	/* 하위 메뉴 리스트 업 */
+	/*  메뉴 리스트 업 */
 	var menuLoad = function(e){
 		var addDepth = parseInt(e.depth,10);
 		var len = e.data.length;
@@ -461,7 +449,7 @@ var yUI = (function() {
 		addHTML += "</ul>";
 		var len = $(".box_ln").length;
 		for(var i=addDepth-1; i<len; i++){
-			$(".box_ln").eq(i).html('');	// 하위 메뉴 초기화
+			$(".box_ln").eq(i).html('');	//  메뉴 초기화
 		}
 		$(".box_ln").eq(addDepth-1).html(addHTML);	// 메뉴 입력
 		//menuEvent();	// menu 이벤트 추가 > 스크립트로 생성되는 메뉴의 이벤트 재설정

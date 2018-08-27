@@ -122,13 +122,13 @@
 								<td><?=$data['Adm_Email']?></td>
 								<td><?=$data['Dept_Name']?></td>
 								<td><?=substr($data['Reg_day'], 0, 10)?></td>
-								<td><?=fnCalDate($data['Password_day'], 'day', 30)?></td>
+								<td><?=fnCalDate($data['Login_day'], 'month', 3)?></td>
 								<td><?=substr($data['Login_day'], 0, 10)?></td>
 								<td><?=$data["use_CHK"]?></td>
 								<td>
 									<button type="button" class="btn_fill btn_sm btnModify">수정</button>
 									<button type="button" class="btn_line btn_sm btnMenuSet">메뉴 설정</button>
-									<button type="button" class="btn_fill btn_sm btnDsbl" <?=( $data["use_CHK"] == "O" )? "disabled style='color: #a4a8af'": "" ?>>해제</button>								
+									<button type="button" class="btn_fill btn_sm btnDsbl" <?=( fnDateDiff( fnCalDate($data['Login_day'], 'month', 3), '') >= 0 )? "disabled style='color: #a4a8af'": "" ?>>해제</button>
 								</td>
 							</tr>
 <?php
@@ -210,7 +210,25 @@ $(document).ready(function () {
 	$(".btnDsbl").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
-//		location.href = "./memberWrite.php?admId="+admId;
+		var u = "/admin/memberProc.php";
+		var param = {
+			"proc"	: "dsbl",
+			"admId"	: admId
+		};
+
+		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+			success: function(resJson) {
+				if( resJson.result == 1 ){
+					alert("해제 되었습니다.");
+					location.reload();
+				}else{
+					alert("해제 실패 하였습니다.");
+				}
+			},
+			error: function(e) {
+				alert("현재 서버 통신이 원할하지 않습니다.");
+			}
+		});
 	});
 
 });

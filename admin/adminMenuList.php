@@ -424,7 +424,7 @@ var yUI = (function() {
 			$(".modal").css("display", "none");
 		});
 
-	} /* modal 제어 event 끝*/
+	} /* 메뉴 삭제 끝*/
 
 
 	/* 메뉴 클릭 이벤트 > 하위 메뉴 호출 */

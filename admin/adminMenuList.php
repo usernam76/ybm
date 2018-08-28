@@ -32,6 +32,7 @@
 ?>
 
 <style>
+/*on class 모니터 밝기 때문에 안보여서 강제로 넣음. 완료시 삭제*/
 .on{background-color:red !important; font-weight:700 !important;}
 </style>
 <!--right -->
@@ -311,8 +312,10 @@ var yUI = (function() {
 				}
 				currentParMenuIdx = parentMenuObj.attr("menuIdx");		// 상위 메뉴 고유번호
 			}else{
-				var parentMenuObj ;	// 1depth는 고유번호 없음.
+				var parentMenuObj ;	// 1depth는 상위메뉴가 없음.
 			}
+			$("form[name=frmWrite]").find("[name=menu_name]").val('');
+			$("form[name=frmWrite]").find("[name=page_url]").val('');
 			$(".modalPopWrite").css("display", "block");
 		});
 
@@ -410,13 +413,18 @@ var yUI = (function() {
 						}
 					},
 					error: function(resJson) {
-						console.log(resJson)
+//						console.log(resJson)
 						alert("현재 서버 통신이 원활하지 않습니다.");
 					}
 				});
 			}else{
 				return;
 			}
+		});
+
+		/*modal close event*/
+		$(".btnCancel").on("click", function(){
+			$(".modal").css("display", "none");
 		});
 
 		/*modal close event*/

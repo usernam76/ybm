@@ -28,12 +28,12 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);	
 
-//	foreach($arrayValid as $k=>$v){ ${$k} =$v;}
+	$valueValid = [];
+	$resultArray = fnGetRequestParam($valueValid);
+
 	switch($proc){
 		case 'write':
 
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql =" SELECT max(Menu_order) as pMenuOrder FROM Menu_info where Menu_depth ='$pMenuDepth'";
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -70,9 +70,6 @@
 		break;
 		case 'modify':
 
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
-
 			/*수정 프로시저*/
 			$sql = 'EXEC [theExam].[dbo].[p_Menu_info_IUD] :IUD, :Menu_idx,:Menu_Name,  :Menu_depth, :Menu_order, :Par_Menu_idx, :Page_URL, :use_CHK, :Menu_Page_First';	
 			$pArray[':IUD']		= 'U';
@@ -95,9 +92,6 @@
 
 
 		case 'delete':
-
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 
 			/* 하위 메뉴 존재 여부 검색 > 4dep은 바로 삭제 진입*/
@@ -138,9 +132,6 @@
 
 			/*메뉴 순서 변경*/
 
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
-
 			/*순서 변경 프로시저*/
 			$sql = 'EXEC [theExam].[dbo].[p_Menu_info_U] :targetMenuIdx, :targetMenuOrder,:changeMenuIdx,  :changeMenuOrder';	
 			$pArray[':targetMenuIdx']		= $pTargetMenuIdx;
@@ -158,9 +149,6 @@
 
 
 		case 'getMenuLoadAjax':
-
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$findMenuDepth = $pMenuDepth + 1;
 			$findParMenuIdx = $pMenuIdx;

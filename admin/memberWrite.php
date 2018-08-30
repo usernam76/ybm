@@ -19,7 +19,7 @@
 
 	if ( $pAdmId != "" ){
 		$sql = " SELECT ";
-		$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Dept_Code, AI.Token_code, AI.Reg_day, AI.Login_day, AI.Password_day, AI.Adm_IP, AI.use_CHK ";
+		$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Dept_Code, AI.Token_code, AI.Reg_day, AI.Login_day, AI.Password_day, AI.Adm_IP, AI.use_CHK, AI.Update_day ";
 		$sql .= "	, ISNULL( ADI4.Dept_Code, ADI3.Dept_Code ) AS detpLev1 ";
 		$sql .= "	, CASE WHEN ISNULL( ADI4.Dept_Code, '' ) = '' THEN ADI2.Dept_Code ELSE ADI3.Dept_Code END AS detpLev2 ";
 		$sql .= " FROM [theExam].[dbo].[Adm_info]  AS AI ";
@@ -60,7 +60,7 @@
 		<div class="wid_fix"> 
 			<h3 class="title">계정관리</h3>
 
-<form name="frmWrite" id="frmWrite" action="./memberProc.php" method="post"> 
+<form name="frmWrite" id="frmWrite" action="/admin/memberProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">
 
 			<!-- 세로형 테이블 -->
@@ -178,7 +178,7 @@
 							</tr>
 							<tr>
 								<th>최종수정일자</th>
-								<td><span><?=$arrRows[0][Reg_day]?></span></td>
+								<td><span><?=$arrRows[0][Update_day]?></span></td>
 							</tr>
 <?php	}		?>
 						</tbody>
@@ -241,7 +241,7 @@ $(document).ready(function () {
                 validator.errorList[0].element.focus();
             }
         }
-    });!
+    });
 
 	$("#btnWrite").on("click", function () {
 		$("#admId").val( $.trim($("#admId").val()) );
@@ -267,7 +267,7 @@ $(document).ready(function () {
 	});
 
 	$("#btnCancel").on("click", function () {
-		location.href = "./memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
+		location.href = "/admin/memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
 	});
 
 	$("#btnIdCheck").on("click", function(){

@@ -192,19 +192,19 @@ $(document).ready(function () {
     });
 
 	$("#btnWrite").on("click", function () {
-		location.href = "./memberWrite.php";
+		location.href = "/admin/memberWrite.php";
 	});
 
 	$(".btnModify").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
-		location.href = "./memberWrite.php?admId="+admId;
+		location.href = "/admin/memberWrite.php?admId="+admId;
 	});
 
 	$(".btnMenuSet").on("click", function () {
 		var admId = $(this).parents("tr").children().eq(1).text();
 
-		location.href = "./memberMenu.php?admId="+admId;
+		location.href = "/admin/memberMenu.php?admId="+admId;
 	});
 
 	$(".btnDsbl").on("click", function () {

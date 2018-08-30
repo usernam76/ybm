@@ -355,6 +355,16 @@ var yUI = (function() {
 				var menuIdx = currentMenuIdx;
 			}
 
+			if(menuName == ""){
+				alert("메뉴명을 입력 해주세요");
+				return false;
+			}
+
+			if(pageURL == ""){
+				alert("메뉴 URL을 입력 해주세요");
+				return false;
+			}
+
 			var u = "./adminMenuProc.php";				// 비동기 전송 파일 URL
 
 			var param = {	// 파라메터

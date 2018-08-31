@@ -161,16 +161,17 @@ $(document).ready(function () {
     });
 
 	var param = {
-		"areaLev1" 			: "areaLev1"	// 1detp 부서정보
+		"areaLev1" 		: "areaLev1"	// 1detp 부서정보
 		, "areaLev2" 		: "areaLev2"	// 2detp 부서정보
 		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
-		, "firstOptVal"		: ""			// 상단 옵션  value
+		, "firstOptVal"	: ""			// 상단 옵션  value
 		, "firstOptLable"	: "선택"			// 상단 옵션  text
 	}
 	common.sys.setAreaComboCreate(param);
 
-//	$("#areaLev1").val().change();
-//	$("#areaLev2").val().change();
+
+	$("#areaLev1").val('<?=$pAreaLev1?>').change();
+	$("#areaLev2").val('<?=$pAreaLev2?>').change();
 
 
 });

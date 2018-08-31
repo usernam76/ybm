@@ -39,7 +39,25 @@
 
 	switch($proc){
 		case 'write':
+			$pSBValue = $pAreaLev2;
+			$pSBName = $pAreaLev1."#".$pAreaLev2;
 
+			$sql = " SELECT count(SB_kind) as cnt FROM [theExam].[dbo].[SB_Info] where SB_kind = 'area' and SB_name =  :SB_name and SB_value= :SB_value ";
+			$pArray[':SB_name']		= $pSBName;
+			$pArray[':SB_value']		= $pSBValue;
+
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+			$cnt = $arrRows[0]["cnt"] ;
+
+			if($cnt > 0){
+				$returnData = array("status"=>"fail","failcode"=>"90");
+				echo json_encode($returnData);
+				exit;
+			}
+
+
+			$pArray = null;
 			$sql =" SELECT max(SB_order) as pSBOrder FROM [theExam].[dbo].[SB_Info] where SB_kind = 'area' and left(SB_name, CHARINDEX('#',SB_name,1)-1 ) = :areaLev1 ";
 			$pArray[':areaLev1'] = $pAreaLev1;
 
@@ -49,8 +67,6 @@
 
 
 			$pIUD = "I";
-			$pSBValue = $pAreaLev2;
-			$pSBName = $pAreaLev1."#".$pAreaLev2;
 
 			$pArray = null;
 			/*입력 프로시저*/

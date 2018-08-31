@@ -225,13 +225,20 @@ $(function(){
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param,
 			success: function(resJson) {
 				if(resJson.status == "success"){
-					console.log(resJson)
+//					console.log(resJson)
 					areaLoad(resJson);
 					return false;
 				}
+				else if(resJson.status == "fail"){
+//					console.log(resJson)
+					if(resJson.failcode=="90"){
+						alert("이미 등록된 지역 입니다.");
+						return false;
+					}
+				}
 			},
 			error: function(resJson) {
-				//console.log(resJson)
+//				console.log(resJson)
 				alert("현재 서버 통신이 원활하지 않습니다.");
 			}
 		});
@@ -282,10 +289,12 @@ $(function(){
 		var len = resJson.data.length;
 		var addHTML = "";
 		var totalCenterCount = 0;
+
+
 		for(var i=0; i<len; i++){
 			addHTML += '<tr>';
 			addHTML += '<td>'+(i+1)+'</td>';
-			addHTML += '<td><a class="countAreaLev2">'+resJson.data[i].SB_value+'</a></td>';
+			addHTML += '<td><a href="./examSetDef.php?areaLev1='+resJson.data[i].areaLev1+'&areaLev2='+resJson.data[i].SB_value+'" class="countAreaLev2">'+resJson.data[i].SB_value+'</a></td>';
 			addHTML += '<td>'+resJson.data[i].centerCount+'</td>';
 			addHTML += '</tr>';
 		totalCenterCount += parseInt(resJson.data[i].centerCount, 10);

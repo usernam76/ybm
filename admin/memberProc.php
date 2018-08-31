@@ -165,8 +165,11 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = "EXEC p_Adm_Menu_ID 'I', :admId, :copyId";	
+			$sql = "EXEC p_Adm_Menu_ID 'C', :admId, :admType, :menuIdx, :roleRw, :copyId";	
 			$pArray[':admId']		= $pAdmId;
+			$pArray[':admType']		= $pAdmType;
+			$pArray[':menuIdx']		= "";
+			$pArray[':roleRw']		= "";
 			$pArray[':copyId']		= $pCopyId;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -185,9 +188,12 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = "EXEC p_Adm_Menu_ID 'C', :admId, :copyId";	
+			$sql = "EXEC p_Adm_Menu_ID 'I', :admId, :admType, :menuIdx, :roleRw, :copyId";	
 			$pArray[':admId']		= $pAdmId;
-			$pArray[':copyId']		= $pCopyId;
+			$pArray[':admType']		= $pAdmType;
+			$pArray[':menuIdx']		= implode(",", $pMenuIdx).",";
+			$pArray[':roleRw']		= implode(",", $pRoleRw).",";
+			$pArray[':copyId']		= "";
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행

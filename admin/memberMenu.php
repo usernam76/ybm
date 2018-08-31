@@ -9,6 +9,7 @@
 	];
 	$resultArray = fnGetRequestParam($valueValid);
 
+	//계정정보
 	$sql = " SELECT ";
 	$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, ADI.Dept_Name";
 	$sql .= " FROM [theExam].[dbo].[Adm_info]  AS AI ";
@@ -22,15 +23,24 @@
 
 	if( count($arrRows) == 0 ){
 		fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
-	}else{
-		$proc = "modify";
-
-		$useChk	= $arrRows[0][use_CHK];
-
-		$admEmail = explode("@",$arrRows[0][Adm_Email]);
-		$admEmail1 = $admEmail[0];
-		$admEmail2 = $admEmail[1];
 	}
+
+	// 계정 메뉴권한 정보
+	$sql = " SELECT ";
+	$sql .= "	Menu_Name1, Menu_idx1 ";
+	$sql .= "	, ( SELECT COUNT(*) FROM [theExam].[dbo].v_Menu_Info WHERE ISNULL(Menu_idx4, '') != '' AND Menu_idx1 = VMI.Menu_idx1 ) AS MenuCnt1 ";
+	$sql .= "	, Menu_Name2, Menu_idx2 ";
+	$sql .= "	, ( SELECT COUNT(*) FROM [theExam].[dbo].v_Menu_Info WHERE ISNULL(Menu_idx4, '') != '' AND Menu_idx2 = VMI.Menu_idx2 ) AS MenuCnt2 ";
+	$sql .= "	, Menu_Name3, Menu_idx3 ";
+	$sql .= "	, ( SELECT COUNT(*) FROM [theExam].[dbo].v_Menu_Info WHERE ISNULL(Menu_idx4, '') != '' AND Menu_idx3 = VMI.Menu_idx3 ) AS MenuCnt3 ";
+	$sql .= "	, Menu_Name4, Menu_idx4 ";
+	$sql .= "	, AM.[Role_RW] ";
+	$sql .= " FROM [theExam].[dbo].v_Menu_Info VMI ";
+	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMI.Menu_idx4 AND Adm_id = :admId ";
+	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' ";
+
+	$arrRowsMenu = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
 ?>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
@@ -73,98 +83,46 @@
 					  </tbody>
 					</table>
 				</div>
-				<div class="wrap_box_tree">
-					<div class="l_cont">
-						<p class="mtit">전체 메뉴</p>
-							<div class="box_tree">
-								<!-- tree -->
-								<div class="nav_tree">
-									<ul>
-										<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">시험관리</a> 
-											<ul>
-												<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC</a> 
-													<ul>
-														<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">접수현황통계</a>
-															<ul>
-																<li class="nav_tree_off"><a class="nav_tree_label" href="#">일별 접수통계</a></li>
-																<li class="nav_tree_off"><a class="nav_tree_label none" href="#">월별 접수통계</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">연도별 접수통계</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">지역/고사장 현황</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">단체별 현황</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label none" href="#">접수 예상 인원</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label" href="#">접수자 추이 통계</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label" href="#">접수자 성향 통계</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_labe none" href="#">목표달성현황</a></li>
-															</ul>
-														</li>
-														<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">접수관리</a></li>
-														<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">시험세팅</a></li>
-													</ul>
-												</li>
-												<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
-												<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
-											</ul>
-										</li>
-									</ul>
-								</div>
-								<!-- //tree-->
-							</div>
-						</div>
-						<div class="c_cont">
-							<div class="item"> 
-								<p><button class="btn_arr" type="button"><strong class="fs_sm">▶</strong></button><br>추가</p>
-								<p class="pad_t20"><button class="btn_arr" type="button"><strong class="fs_sm">◀</strong></button><br>제거</p>
-							</div>
-						</div>
-						<div class="r_cont">
-							<p class="mtit">사용자 지정메뉴</p>
-								<div class="box_tree">
-									<!-- tree -->
-								<div class="nav_tree">
-									<ul>
-										<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">시험관리</a> 
-											<ul>
-												<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC</a> 
-													<ul>
-														<li class="nav_tree_on"><button type="button">+</button><a class="nav_tree_label" href="#">접수현황통계</a>
-															<ul>
-																<li class="nav_tree_off"><a class="nav_tree_label" href="#">일별 접수통계</a></li>
-																<li class="nav_tree_off"><a class="nav_tree_label" href="#">지역/고사장 현황</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label" href="#">단체별 현황</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label" href="#">접수 예상 인원</a></li>
-																<li class="nav_tree_last"><a class="nav_tree_label" href="#">목표달성현황</a></li>
-															</ul>
-														</li>
-														<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">접수관리</a></li>
-														<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">시험세팅</a></li>
-													</ul>
-												</li>
-												<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
-												<li class="nav_tree_last nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">TOEIC Speaking</a></li>
-											</ul>
-										</li>
-										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">성적표발급</a></li>
-										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">어학공통</a></li>
-										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">수험자관리</a></li>
-										<li class="nav_tree_off"><button type="button">+</button><a class="nav_tree_label" href="#">PLAZA관리</a></li>
-									</ul>
-								</div>
-								<!-- //tree-->
-								</div>
-						</div>
-					</div>
+<form name="frmCopy" id="frmCopy" action="/admin/memberProc.php" method="post"> 
+<input type="hidden" name="proc" value="menuCopy">
+<input type="hidden" name="admId" value="<?=$arrRows[0][Adm_id]?>">
+<div class="wrap_box_tree">					
 					<div class="wrap_tbl pad_t20">
 						<table class="type01">
 							<tbody><tr>
 								<td class="headline">
 									<strong><?=$arrRows[0][Adm_id]?></strong> 에게
-									<input style="width: 100px;" type="text"> 과 동일한 권한 주기 &nbsp;&nbsp;
+									<input style="width: 100px;" type="text" id="copyId" name="copyId"> 과 동일한 권한 주기 &nbsp;&nbsp;
 									<button class="btn_fill btn_md" type="button" id="btnCopy">확인</button>
 								</td>
 							</tr>
 						</tbody></table>
 					</div>
 				</div>
+</form> 
+<form name="frmWrite" id="frmWrite" action="/admin/memberProc.php" method="post"> 
+<input type="hidden" name="proc" value="menuSave">
+<input type="hidden" name="admId" value="<?=$arrRows[0][Adm_id]?>">
+<?php
+	$old_Menu_idx1	= "";
+	$old_Menu_idx2	= "";
+	$old_Menu_idx3	= "";
+
+	foreach($arrRowsMenu as $data) {
+		if( $old_Menu_idx != $data['Menu_idx1'] ){
+			echo "";
+		}
+
+?>
+<?=$data['Menu_Name1']?>
+<?=$data['Menu_idx1']?>
+<?=$data['MenuCnt1']?>
+<?php
+	}
+?>
+			</div>
+</form> 
+
 			<!-- //테이블2-->
 			<!-- 버튼 -->
 			<div class="wrap_btn">
@@ -180,18 +138,47 @@
 <script type="text/javascript">
 $(document).ready(function () {
 
-	$("#btnCopy").on("click", function () {
+	$('#frmCopy').validate({
+        onfocusout: false,
+        rules: {
+            copyId: {
+                required: true    //필수조건
+			}
+        }, messages: {
+			copyId: {
+				required: "아이디를 입력해주세요."
+			}
+        }, errorPlacement: function (error, element) {
+            // $(element).removeClass('error');
+            // do nothing;
+        }, invalidHandler: function (form, validator) {
+            var errors = validator.numberOfInvalids();
+            if (errors) {
+                alert(validator.errorList[0].message);
+                validator.errorList[0].element.focus();
+            }
+        }
+    });
 
-//		$('#frmWrite').submit();
+
+	$("#btnCopy").on("click", function () {
+		$("#copyId").val( $.trim($("#copyId").val()) );
+
+		if ( $("#copyId").val() == ""){
+			alert("아이디를 입력해 주세요.");
+			return false;
+		}
+
+		$('#frmCopy').submit();
     });
 
 	$("#btnWrite").on("click", function () {
 
-//		$('#frmWrite').submit();
+		$('#frmWrite').submit();
     });
 
 	$("#btnCancel").on("click", function () {
-		location.href = "./memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
+		location.href = "/admin/memberList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
 	});
 
 

@@ -1,97 +1,58 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
-<head>
-<title>어학시험 admin</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<link rel="stylesheet" type="text/css" href="../_resources/css/default.css" media="all">
-<link rel="stylesheet" type="text/css" href="../_resources/css/nanumbarungothic.css" media="all">
-<!--[if lt IE 9]>
-	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-<script type="text/javascript" src="../_resources/js/jquery.js"></script>
-<script type="text/javascript" src="../_resources/js/common.js"></script>
-</head>
+<?php
+	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/config.php';
+	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
+	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
+	
+	// validation 체크를 따로 안할 경우 빈 배열로 선언
+	$valueValid = [];
 
-<body>
-<form action="" method="post"> 
-<fieldset> 
-<!-- header -->
-<div class="wrap_top_bg">
-	<div class="wrap_top">
-		<h1 class="logo">
-			<img src="../_resources/images/logo.png">
-		</h1>
-		<ul class="nav">
-			<li><a href="#" class="on">시험관리</a></li>
-			<li><a href="#">성적표발급</a></li>
-			<li><a href="#">어학공통</a></li>
-			<li><a href="#">수험자관리</a></li>
-			<li><a href="#">사이트관리</a></li>
-		</ul>
-		<div class="info dropdown">
-		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
-		  <div class="dropdown-content">
-			<a href="#">내용</a>
-			<a href="#">내용 2</a>
-			<a href="#">내용 3</a>
-		  </div>
-		</div>
-	</div>
-</div>
-<!-- header //-->
-<!--left -->
-<div id="left_area">
-	<div class="item"> 
-		<select style="width:100%">  
-			<option>TOEIC</option> 
-			<option>TOEIC Speaking</option> 
-			<option>TOEFL ITP</option> 
-			<option>TOEIC Bridge</option> 
-			<option>JET</option> 
-			<option>JET-SW</option> 
-			<option>JPT</option> 
-			<option>JPT-JAPAN</option> 
-			<option>일본어검정</option> 
-			<option>SJPT</option> 
-			<option>TSC</option> 
-			<option>상무한검</option> 
-			<option>KPE</option> 
-		</select>
-	</div>
-	<div class="wrap_lnb">
-		<h3>· 접수현황통계</h3>
-		<ul>
-			<li><a href="day_register.html" class="on">일별 접수통계</a></li>
-			<li><a href="month_register.html">월별 접수통계</a></li>
-			<li><a href="year_register.html">연도별 접수통계</a></li>
-			<li><a href="exam_place.html">지역/고사장 현황</a></li>
-			<li><a href="group.html">단체별 현황</a></li>
-			<li><a href="number_register.html">접수 예상 인원</a></li>
-			<li><a href="number_state.html">접수자 추이 통계</a></li>
-			<li><a href="register_state.html">접수자 성향 통계</a></li>
-			<li><a href="aim_list.html">목표달성현황</a></li>
-			<li><a href="center_state.html">센터별운영통계</a></li>
-		</ul>
-		<h3>· 접수관리</h3>
-		<ul>
-			<li><a href="search_register.html">접수자 검색</a></li>
-			<li><a href="#">접수자 리스트</a></li>
-			<li><a href="#">고사장별 접수리스트</a></li>
-			<li><a href="#">단체별 접수리스트</a></li>
-			<li><a href="#">편의지원신청</a></li>
-			<li><a href="#">수동접수</a></li>
-			<li><a href="#">환불신청리스트</a></li>
-		</ul>
-		<h3>· 시험세팅</h3>
-		<ul>
-			<li><a href="#">지역/고사장관리</a></li>
-			<li><a href="#">시험일정관리</a></li>
-			<li><a href="#">회차별 고사장세팅</a></li>
-		</ul>
-	</div>
-</div>
-<!--left //-->
+	$resultArray = fnGetRequestParam($valueValid);
+	
+	$totalRecords	= 0;		// 총 레코드 수
+	$recordsPerPage	= 10;		// 한 페이지에 보일 레코드 수
+	$pagePerBlock	= 10;		// 한번에 보일 페이지 블럭 수
+	$currentPage	= 1;		// 현재 페이지
+	$totalPage		= 1;
+	if( $pCurrentPage > 0 ){
+		$currentPage = $pCurrentPage;
+	}
+
+	$where		= "";
+	if( $pSearchKey != "" ){
+		$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
+	}
+
+	$sql = " SELECT  ";
+	$sql .= " left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) as areaLev1, ";
+	$sql .= " count(SB_name) as countArea, ";
+	$sql .= " sum(centerCount) as countCenter ";
+	$sql .= " FROM  ";
+	$sql .= " (SELECT  ";
+	$sql .= " SB_name, ";
+	$sql .= " (SELECT count(*) FROM [theExam].[dbo].[Def_exam_center] where SB_area=SBI.SB_value) as centerCount ";
+	$sql .= " FROM ";
+	$sql .= " [theExam].[dbo].[SB_Info] AS SBI ";
+	$sql .= " where SB_kind='area') AS A ";
+	$sql .= " group by left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) ";
+
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
+?>
+
+<style>
+.countArea{
+	cursor:pointer;
+	_cursor:hand;
+}
+.countArea .on{
+	background-color:#eee;
+}
+</style>
+
 
 <!--right -->
 <div id="right_area">
@@ -119,75 +80,25 @@
 										</tr>
 									</thead>
 									<tbody>
+
+<?php
+foreach($arrRows as $data) {
+?>
+
 										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
+											<td><?=$data["areaLev1"]?></td>
+											<td><a class="countArea"><?=$data["countArea"]?></a></td>
+											<td><?=$data["countCenter"]?></td>
 										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
+<?php
+	$totalCountArea += $data["countArea"];
+	$totalCountCenter += $data["countCenter"];
+}
+?>
 										<tr>
 											<td class="total">합계</td>
-											<td class="total">00</td>
-											<td class="total">00</td>
+											<td class="total"><?=$totalCountArea?></td>
+											<td class="total"><?=$totalCountCenter?></td>
 										</tr>
 									</tbody>
 								</table>
@@ -196,13 +107,13 @@
 						<span class="arr"></span>
 						<div class="r_cont">
 							<p class="s_title">
-							강원
+							<span id="areaTitle"></span>
 							<span class="fl_r">
-								<button class="btn_fill btn_md" type="button" id="myBtn">지역추가</button>
+								<button class="btn_fill btn_md" type="button" id="btnLoadWrite">지역추가</button>
 							</span>
 							</p>
 							<div class="wrap_tbl">
-								<table class="type01">
+								<table class="type01" id="areaLev2Tbl">
 									<caption></caption>
 									<colgroup>
 										<col style="width: auto;">
@@ -210,82 +121,12 @@
 									</colgroup>
 									<thead>
 										<tr>
-											<th>시도</th>
+											<th>번호</th>
 											<th>시군구</th>
 											<th>총고사장 및 센터수</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td>강원</td>
-											<td>12</td>
-											<td>00</td>
-										</tr>
-										<tr>
-											<td class="total">합계</td>
-											<td class="total">00</td>
-											<td class="total">00</td>
-										</tr>
 									</tbody>
 								</table>
 							</div>
@@ -299,7 +140,7 @@
 <!--right //-->
 <!-- modal 팝업 :: goal-->
 <div id="myModal" class="modal">
-
+<form name="frmWrite" method="post">
   <!-- Modal content -->
   <div class="modal-content" style="height:250px;">
    	<h2 class="p_title">지역추가</h2>
@@ -318,11 +159,7 @@
 						<th>시도</th>
 						<td>
 							<div class="item">
-							   <select style="width: 200px;">  
-									<option>강원</option> 
-									<option>선택 둘</option> 
-									<option>선택 셋</option> 
-							   </select>
+								<select name="areaLev1" style="width: 200px;" id="areaLev1"></select>
 							</div>
 						</td>
 					</tr>
@@ -330,8 +167,8 @@
 						<th>시군구</th>
 						<td>
 							<div class="item">
-								<input style="width: 300px;" type="text">
-								<button class="btn_fill btn_md" type="button">조회</button>	
+								<input style="width: 300px;" name="areaLev2" type="text">
+								<button class="btn_fill btn_md" type="button" id="btnWrite">추가</button>	
 							</div>
 						</td>
 					</tr>
@@ -341,30 +178,139 @@
 	</div>
    <!-- 팝업내용 :: goal //-->
   </div>
+</form>
 </div>
 
 <script type="text/javascript">
 // Get the modal
 var modal = document.getElementById('myModal');
 
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
-
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-    modal.style.display = "block";
-}
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
     modal.style.display = "none";
 }
 
+$(function(){
+	
+	/* 지역 등록 추가*/
+	$("#btnWrite").on("click", function(){
+
+		if(!confirm("지역을 추가하시겠습니까?")){
+			return false;
+		}
+
+		var areaLev1 = $("form[name=frmWrite]").find("select[name=areaLev1]").val();
+		var areaLev2 = $.trim($("form[name=frmWrite]").find(" input[name=areaLev2]").val());
+
+		if(areaLev1 == ""){
+			alert("시도를 선택해 주세요");
+			return false;
+		}
+		if(areaLev2 == ""){
+			alert("시군구를 입력해 주세요");
+			return false;
+		}
+
+		var u = "./examSetAreaProc.php";				// 비동기 전송 파일 URL
+		var param = {	// 파라메터
+			"proc" : "write",
+			"areaLev1" : areaLev1,
+			"areaLev2" : areaLev2
+		};
+
+		/* 데이터 비동기 전송*/
+		$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+			success: function(resJson) {
+				if(resJson.status == "success"){
+					console.log(resJson)
+					areaLoad(resJson);
+					return false;
+				}
+			},
+			error: function(resJson) {
+				//console.log(resJson)
+				alert("현재 서버 통신이 원활하지 않습니다.");
+			}
+		});
+
+	});
+
+	/* 지역 추가 팝업 노출*/
+	$("#btnLoadWrite").on("click", function(){
+		var modal = document.getElementById('myModal');
+		modal.style.display = "block";
+
+
+		var areaLev1 = $("form[name=frmWrite]").find("select[name=areaLev1]").val('');
+		var areaLev2 = $.trim($("form[name=frmWrite]").find(" input[name=areaLev2]").val(''));
+	});
+
+
+
+	/*시도 클릭시 시군구 리스트업 이벤트*/
+	$(".countArea").on("click", function(){
+		var areaLev1 = $(this).parent().prev().text();
+		var u = "./examSetAreaProc.php";				// 비동기 전송 파일 URL
+		var param = {	// 파라메터
+			"proc" : "getAreaLoadAjax",
+			"areaLev1" : areaLev1
+		};
+		/* 데이터 비동기 전송*/
+		$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+			success: function(resJson) {
+				if(resJson.status == "success"){
+					//console.log(resJson)
+					areaLoad(resJson)
+					return false;
+				}
+			},
+			error: function(resJson) {
+				alert("현재 서버 통신이 원활하지 않습니다.");
+			}
+		});
+	});
+
+
+	/* 시도클릭 > 시군구 리스트업 */
+	var areaLoad = function(resJson){
+		console.log(resJson);
+		$('#areaLev2Tbl > tbody > tr').remove();
+		$("#areaTitle").html(resJson.areaLev1);
+		var len = resJson.data.length;
+		var addHTML = "";
+		var totalCenterCount = 0;
+		for(var i=0; i<len; i++){
+			addHTML += '<tr>';
+			addHTML += '<td>'+(i+1)+'</td>';
+			addHTML += '<td><a class="countAreaLev2">'+resJson.data[i].SB_value+'</a></td>';
+			addHTML += '<td>'+resJson.data[i].centerCount+'</td>';
+			addHTML += '</tr>';
+		totalCenterCount += parseInt(resJson.data[i].centerCount, 10);
+		}
+		addHTML += '<tr>';
+		addHTML += '<td class="total" colspan="2">합계</td>';
+		addHTML += '<td class="total">'+totalCenterCount+'</td>';
+		addHTML += '</tr>';
+		$('#areaLev2Tbl > tbody:first').append(addHTML);
+	}
+	/* 시도클릭 > 시군구 리스트업 끝*/
+
+	var param = {
+		"areaLev1" 			: "areaLev1"	// 1detp 부서정보
+		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		, "firstOptVal"		: ""			// 상단 옵션  value
+		, "firstOptLable"	: "선택"			// 상단 옵션  text
+	}
+	common.sys.setAreaComboCreate(param);
+
+});
+
+
 </script>
-</fieldset>
-</form> 
-</body>
-</html>
+
+<?php
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/footer.php';
+?>

@@ -408,6 +408,8 @@
 		 * common.sys.setDeptComboCreate(param);
 		 * **/
 		setDeptComboCreate : function(obj) {
+
+
 			// 1detp 부서정보 Set
 			$('#'+obj.detpLev1).html( common.sys.setComboOptHtml(
 												common.sys.getDetpLev1List()
@@ -511,6 +513,89 @@
 					returnVal = resJson.data;
 				},
 				error: function(e) {
+					alert("현재 서버 통신이 원할하지 않습니다.");
+					returnVal = "";
+				}
+			});
+
+			return returnVal;
+		},
+
+
+		/** 지역 정보 세팅
+		 * obj     		: 파라미터 객체
+		 * var param = {
+		 *		"areaLev1" 			: "areaLev1"	// 1detp 시도
+		 *		, "areaLev2" 		: "areaLev2"	// 2detp 군구
+		 *		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		 *		, "firstOptVal"		: ""			// 상단 옵션  value
+		 *		, "firstOptLable"	: "전체"			// 상단 옵션  text
+		 * }
+		 * common.sys.setAreaComboCreate(param);
+		 * **/
+		setAreaComboCreate : function(obj) {
+			// 1detp 지역정보 Set
+			$('#'+obj.areaLev1).html( common.sys.setComboOptHtml(
+												common.sys.getAreaLev1List()
+												, obj.optYn
+												, obj.firstOptVal
+												, obj.firstOptLable));
+
+			//2detp 지역정보 초기화
+			$('#'+obj.areaLev2).empty();
+			$('#'+obj.areaLev2).html( common.sys.setEmpty( obj.optYn, obj.firstOptVal, obj.firstOptLable) );
+
+
+			// 1detp onChange
+			$('#'+obj.areaLev1).change(function(){
+				//2detp 지역정보 초기화 및 데이터 가져오기
+				$('#'+obj.areaLev2).empty();
+				$('#'+obj.areaLev2).html( common.sys.setComboOptHtml(
+											common.sys.getAreaLev2List( $('#'+obj.areaLev1).val() )
+											, obj.optYn
+											, obj.firstOptVal
+											, obj.firstOptLable));
+			});
+		},
+
+		// 1detp data 가져오기
+		getAreaLev1List : function() {
+			var returnVal = "";
+			var u = "/common/commonAjaxProc.php";
+			var param = {				
+				"proc" : "areaLev1Ajax"
+			};	
+
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+				success: function(resJson) {
+					returnVal = resJson.data;
+				},
+				error: function(e) {
+					alert("현재 서버 통신이 원할하지 않습니다.");
+//					console.log("[Error]");
+//					console.log(e);
+					returnVal = "";
+				}
+			});
+
+			return returnVal;
+		},
+		
+		// 2detp data 가져오기
+		getAreaLev2List : function( areaLev1 ) {
+			var returnVal = "";
+			var u = "/common/commonAjaxProc.php";
+			var param = {
+				"proc"		: "areaLev2Ajax",
+				"areaLev1"	: areaLev1
+			};
+
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+				success: function(resJson) {					
+					returnVal = resJson.data;
+				},
+				error: function(e) {
+					console.log(e)
 					alert("현재 서버 통신이 원할하지 않습니다.");
 					returnVal = "";
 				}

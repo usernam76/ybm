@@ -78,6 +78,42 @@
 
 			break;
 
+		case 'areaLev1Ajax':
+
+			$sql = " SELECT ";
+			$sql .= " left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) AS cd , left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) AS cdNm";
+			$sql .= " FROM  ";
+			$sql .= " [theExam].[dbo].[SB_Info] ";
+			$sql .= " where SB_kind='area' ";
+			$sql .= " group by left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) ";
+			$sql .= " order by cd asc ";
+
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "data"=>$arrRows);
+			echo json_encode($returnData);
+
+			break;
+
+		case 'areaLev2Ajax':
+
+			$sql = " SELECT right(SB_name,len(SB_name) - CHARINDEX('#', SB_name, 0)) as cd, SB_value as cdNm";
+			$sql .= " FROM [theExam].[dbo].[SB_Info] ";
+			$sql .= " where SB_kind='area' ";
+			$sql .= " and left(SB_name,CHARINDEX('#', SB_name, 1) -1 )=:areaLev1 ";
+			$sql .= " order by SB_order asc ";
+
+			$pArray[':areaLev1'] = $pAreaLev1;
+
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "data"=>$arrRows);
+			echo json_encode($returnData);
+
+			break;
+
 		default:
 
 		break;

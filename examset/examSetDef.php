@@ -64,14 +64,8 @@
 				</div>
 				<strong class="part_tit">필터</strong>
 				<div class="item">
-					<select style="width:100px;">  
-						<option>강원</option> 
-						<option>경기</option> 
-					</select>
-					<select style="width:100px;">  
-						<option>인천</option> 
-						<option>강릉</option> 
-					</select>
+					<select id="areaLev1" ></select>
+					<select id="areaLev2"></select>
 				</div>
 			</div>
 </form>
@@ -163,9 +157,20 @@ $(document).ready(function () {
 
 	$("#btnSearch").on("click", function(){
 		$("#searchKey").val( $.trim($("#searchKey").val()) );
-
 		$('#frmSearch').submit();
     });
+
+	var param = {
+		"areaLev1" 			: "areaLev1"	// 1detp 부서정보
+		, "areaLev2" 		: "areaLev2"	// 2detp 부서정보
+		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		, "firstOptVal"		: ""			// 상단 옵션  value
+		, "firstOptLable"	: "선택"			// 상단 옵션  text
+	}
+	common.sys.setAreaComboCreate(param);
+
+//	$("#areaLev1").val().change();
+//	$("#areaLev2").val().change();
 
 
 });

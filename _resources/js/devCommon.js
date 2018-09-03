@@ -10,6 +10,8 @@
 		 * @param str 문자열
 		 * @return 앞뒤 공백문자가 제거된 문자열
 		 */
+		/** input 숫자만 입력하게 **/
+
 		trim : function(str) {
 			return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 		},
@@ -339,6 +341,17 @@
 			return parseFloat(Math.round(parseFloat(float_val)*num_format)/num_format);
 		},
 
+
+		/** 
+		* 숫자만 입력 
+		* @  ex) common.string.onlyNumber($("input[name=roomCount]"));
+		**/
+		onlyNumber : function(obj){
+			obj.attr("style", "ime-mode:disabled");
+			obj.keypress(function(){if (event.which && (event.which <= 47 || event.which >= 58) && event.which != 8) {event.preventDefault();}});
+			obj.keyup(function(){event = event || window.event;var keyID = (event.which) ? event.which : event.keyCode;if ( keyID == 8 || keyID == 46 || keyID == 37 || keyID == 39 ){return;}else{event.target.value = event.target.value.replace(/[^0-9]/g, "");}});
+		},
+
 		/** 공백제거 **/
 		nvl:function(val,defVal){
 				if(val!=undefined && val!=null && val.length>0){
@@ -347,6 +360,7 @@
 					return defVal;
 				}
 		 },
+
 
 		dummy : function() {
 			// not used

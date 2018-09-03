@@ -173,7 +173,9 @@ $(document).ready(function () {
 	$("#areaLev1").val('<?=$pAreaLev1?>').change();
 	$("#areaLev2").val('<?=$pAreaLev2?>').change();
 
-
+	$("#areaLev2").on("change", function(){
+		alert('t')
+	})
 });
 
 </script>

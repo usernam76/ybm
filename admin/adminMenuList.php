@@ -31,10 +31,6 @@
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
 ?>
 
-<style>
-/*on class 모니터 밝기 때문에 안보여서 강제로 넣음. 완료시 삭제*/
-.on{background-color:red !important; font-weight:700 !important;}
-</style>
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">

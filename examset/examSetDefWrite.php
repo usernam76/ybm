@@ -8,6 +8,7 @@
 
 	$resultArray = fnGetRequestParam($valueValid);
 	
+	$proc = "write";
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
@@ -42,6 +43,7 @@ function getZipcodeSearch(){
 			<div class="box_bs">
 <form name="frmWrite" id="frmWrite" action="./examSetProc.php" method="post"> 
 	<input type="hidden" name="proc" value="<?=$proc?>">
+	<input type="hidden" name="centerCate" value="PBT">
 				<div class="wrap_tbl">
 					<table class="type02">
 						<caption></caption>
@@ -54,7 +56,7 @@ function getZipcodeSearch(){
 								<th>고사장코드</th>
 								<td>
 									<div class="item">
-										<input style="width: 100px;" type="text">
+										<input style="width: 100px;" type="text" name="linkCenterName">
 									</div>
 								</td>
 							</tr>
@@ -62,16 +64,8 @@ function getZipcodeSearch(){
 								<th>지역선택</th>
 								<td>
 									<div class="item"> 
-										<select style="width:200px;" name="areaA">  
-											<option>시도</option> 
-											<option value="서울">서울특별시</option> 
-											<option value="경기">경기도</option> 
-										</select>
-										<select style="width:200px;" name="areaB">  
-											<option>시군구</option> 
-											<option value="강남">강남</option> 
-											<option value="강북">강북</option> 
-										</select>
+										<select style="width:200px;" name="areaLev1" id="areaLev1"></select>
+										<select style="width:200px;" name="areaLev2" id="areaLev2"></select>
 									</div>
 								</td>
 							</tr>
@@ -102,7 +96,7 @@ function getZipcodeSearch(){
 								<th>지도 URL</th>
 								<td>
 									<div class="item">
-										<input style="width: 80%;" type="text">
+										<input style="width: 80%;" type="text" name="mapUrl">
 									</div>
 								</td>
 							</tr>
@@ -141,7 +135,7 @@ function getZipcodeSearch(){
 				</div>
 </form>
 				<div class="wrap_btn">
-					<button class="btn_fill btn_md" type="button"  id="btnWrite"><?=( $proc == "write" )? "등록": "확인" ?></button>
+					<button class="btn_fill btn_md" type="button"  id="btnWrite"><?=( $proc == "write" )? "등록": "수정" ?></button>
 					<button class="btn_line btn_md" type="button"  id="btnCancel">취소</button>
 				</div>
 			</div>
@@ -197,36 +191,46 @@ $(document).ready(function () {
     });
 
 	$("#btnWrite").on("click", function(){
-		
-		
+		$("#frmWrite").submit();
 	});
 
 
-	$("input[name=roomCount]").on("change", function(){
+	/*고사실 좌석수 계산*/
+	$("input[name=roomCount]").on("keyup", function(){
 		var roomCount = $(this).val();
 		var roomSeat = $("input[name=roomSeat]:checked").val();
 		totalCount(roomCount, roomSeat);
 	});
-
-
 	$(".i_unit").on("click", function(){
 		var roomCount = $("input[name=roomCount]").val();
 		var roomSeat = $(this).val();
 		totalCount(roomCount, roomSeat);
 	});
-
 	var totalCount = function(rc, rs){
-		if(typeof rc == "undefined" || typeof rs == "undefined"){
-			return false;
-		}
+		if(typeof rc == "undefined" || typeof rs == "undefined"){ return false; }
 		var totalCount = parseInt(rc,10) * parseInt(rs, 10);
-
-		if(isNaN(totalCount)){
-			return false;
-		}
-
+		if(isNaN(totalCount)){ return false; }
 		$("#totalRoom").text(totalCount);
 	}
+	/*고사실 좌석수 계산 끝*/
+
+
+	/*지역정보 공용*/
+	var param = {
+		"areaLev1" 		: "areaLev1"	// 1detp 부서정보
+		, "areaLev2" 		: "areaLev2"	// 2detp 부서정보
+		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		, "firstOptVal"	: ""			// 상단 옵션  value
+		, "firstOptLable"	: "선택"			// 상단 옵션  text
+	}
+	common.sys.setAreaComboCreate(param);
+	$("#areaLev1").val('<?=$pAreaLev1?>').change();
+	$("#areaLev2").val('<?=$pAreaLev2?>').change();
+	/*지역정보 공용 끝*/
+
+	/*숫자만 입력*/
+	common.string.onlyNumber($("input[name=roomCount]"));
+
 });
 </script>
 

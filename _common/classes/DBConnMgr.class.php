@@ -159,6 +159,7 @@
 					}
 					$sqlText = 'DECLARE @result INT; EXEC @result = '.$sqlText.'; SELECT @result AS result;';
 				}
+
 				$this->_result = $this->_conn->prepare($sqlText);
 				$this->_result->execute($paramArray); 
 				$this->_result = $this->_result->fetchAll(PDO::FETCH_ASSOC);

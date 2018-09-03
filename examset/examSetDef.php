@@ -19,8 +19,13 @@
 
 	$where		= "";
 	if( $pSearchKey != "" ){
-		$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
+		$where .= " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
 	}
+
+	if($pAreaLev1 != "" && $pAreaLev2 !=""){
+		$where .= "AND SB_area = '".$pAreaLev2."'";
+	}
+
 
 	$sql = " SELECT ";
 	$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE 1=1 ". $where." ) AS totalRecords ";
@@ -53,14 +58,14 @@
 			<div class="box_sort2">
 				<strong class="part_tit">검색</strong>
 				<div class="item line">
-					<select style="width:100px;">  
+					<select name="searchType" style="width:100px;">  
 						<option value="center_name "		<?=( $pSearchKey == '	center_name '	)? "SELECTED": "" ?>>고사장명</option> 
 						<option value="	link_center_code "		<?=( $pSearchKey == '	link_center_code '	)? "SELECTED": "" ?>>고사장코드</option> 
 						<option value="address "		<?=( $pSearchKey == 'address '	)? "SELECTED": "" ?>>주소</option> 
 					</select>
 					<input style="width:200px;" type="text"  id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>	
-					<span class="fl_r"><button class="btn_line btn_md" type="button">고사장 추가</button></span>
+					<span class="fl_r"><button class="btn_line btn_md" type="button" id="btnWrite">고사장 추가</button></span>
 				</div>
 				<strong class="part_tit">필터</strong>
 				<div class="item">
@@ -160,6 +165,7 @@ $(document).ready(function () {
 		$('#frmSearch').submit();
     });
 
+	/*지역정보 공용*/
 	var param = {
 		"areaLev1" 		: "areaLev1"	// 1detp 부서정보
 		, "areaLev2" 		: "areaLev2"	// 2detp 부서정보
@@ -168,13 +174,24 @@ $(document).ready(function () {
 		, "firstOptLable"	: "선택"			// 상단 옵션  text
 	}
 	common.sys.setAreaComboCreate(param);
-
-
 	$("#areaLev1").val('<?=$pAreaLev1?>').change();
 	$("#areaLev2").val('<?=$pAreaLev2?>').change();
+	/*지역정보 공용 끝*/
 
+	/* 필터 검색 */
 	$("#areaLev2").on("change", function(){
-		alert('t')
+
+		var searchType = $("select[name=searchType]").val();
+		var searchKey = $("input[name=searchKey]").val();
+		var areaLev1 = $("#areaLev1").val();
+		var areaLev2 = $("#areaLev2").val();
+
+		location.href = "?searchType="+searchType+"&searchKey="+searchKey+"&areaLev1="+areaLev1+"&areaLev2="+areaLev2;
+	})
+
+	/* 고사장 추가*/
+	$("#btnWrite").on("click", function(){
+		location.href = "./examSetDefWrite.php";
 	})
 });
 

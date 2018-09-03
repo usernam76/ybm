@@ -378,7 +378,8 @@ var yUI = (function() {
 				success: function(resJson) {
 //					console.log(resJson)
 					menuLoad(resJson);
-
+					$(".modalPopWrite").css("display", "none");
+					$(".modalPopMoidfy").css("display", "none");
 				},
 				error: function(resJson) {
 					alert("현재 서버 통신이 원활하지 않습니다.");

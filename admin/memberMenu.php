@@ -3,6 +3,9 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
+	$cPageMenuIdx = "192";	//메뉴고유번호
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [
 		'admId' => ['type' => 'string', 'notnull' => true, 'default' => '', 'min' => 0, 'max' => 30]
@@ -18,7 +21,6 @@
 
 	$pArray[':admId'] = $pAdmId;
 
-	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 	if( count($arrRows) == 0 ){
@@ -28,7 +30,7 @@
 	// 계정 메뉴권한 정보
 	$sql = " SELECT ";
 	$sql .= "	Menu_Name1, Menu_idx1, Menu_Name2, Menu_idx2, Menu_Name3, Menu_idx3, Menu_Name4, Menu_idx4 ";
-	$sql .= "	, ( SELECT COUNT(*) FROM [theExam].[dbo].Menu_Info WHERE Par_Menu_idx = VMI.Menu_idx2) AS MenuCnt";
+	$sql .= "	, ( SELECT COUNT(*) FROM [theExam].[dbo].Menu_Info VMI2 WHERE Par_Menu_idx = VMI.Menu_idx2 AND ( SELECT COUNT(*) FROM [theExam].[dbo].Menu_Info WHERE Par_Menu_idx = VMI2.Menu_idx ) > 0 ) AS MenuCnt";
 	$sql .= "	, AM.[Role_RW] ";
 	$sql .= " FROM [theExam].[dbo].v_Menu_Info VMI ";
 	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMI.Menu_idx4 AND Adm_id = :admId ";

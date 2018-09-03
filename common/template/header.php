@@ -1,3 +1,63 @@
+<?php
+	//현재 페이지 및 상위 메뉴 정보
+	$sql = " SELECT ";
+	$sql .= "	Menu_idx1, Menu_idx2, Menu_idx3, Menu_idx4 ";
+	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
+	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND Menu_idx4 = :menuIdx4 ";
+
+	$pArrayMenu[':menuIdx4'] = $cPageMenuIdx;
+
+	$cArrRowsMenu = $dbConn->fnSQLPrepare($sql, $pArrayMenu, ''); // 쿼리 실행
+
+	$cMenuIdx1	= $cArrRowsMenu[0][Menu_idx1];
+	$cMenuIdx2	= $cArrRowsMenu[0][Menu_idx2];
+	$cMenuIdx3	= $cArrRowsMenu[0][Menu_idx3];
+	$cMenuIdx4	= $cArrRowsMenu[0][Menu_idx4];
+
+	$sql = " SELECT ";
+	$sql .= "	Menu_idx1, Menu_Name1, Page_url1";
+	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
+	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' ";
+	$sql .= " GROUP BY Menu_idx1, Menu_Name1, Page_url1 ";
+
+	$cArrayMenu[':loginId'] = "test";
+
+	$cArrRowsMenu1 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
+
+	$sql = " SELECT ";
+	$sql .= "	Menu_idx2, Menu_Name2, Page_url2";
+	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
+	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' AND Menu_idx1 = :menuIdx1 ";
+	$sql .= " GROUP BY Menu_idx2, Menu_Name2, Page_url2 ";
+
+	$cArrayMenu[':menuIdx1'] = $cMenuIdx1;
+
+	$cArrRowsMenu2 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
+
+	$sql = " SELECT ";
+	$sql .= "	Menu_idx3, Menu_Name3, Page_url3";
+	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
+	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' AND Menu_idx1 = :menuIdx1 AND Menu_idx2 = :menuIdx2 ";
+	$sql .= " GROUP BY Menu_idx3, Menu_Name3, Page_url3 ";
+	
+	$cArrayMenu[':menuIdx2'] = $cMenuIdx2;
+
+	$cArrRowsMenu3 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
+
+	$sql = " SELECT ";
+	$sql .= "	Menu_idx4, Menu_Name4, Page_url4";
+	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
+	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != ''  AND Menu_idx1 = :menuIdx1 AND Menu_idx2 = :menuIdx2 AND Menu_idx3 = :menuIdx3 ";
+
+	$cArrayMenu[':menuIdx3'] = $cMenuIdx3;
+
+	$cArrRowsMenu4 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
+?>
+
 <body>
 <!-- header -->
 <div class="wrap_top_bg">
@@ -6,7 +66,15 @@
 			<img src="/_resources/images/logo.png">
 		</h1>
 		<ul class="nav">
-			<li><a href="#" class="on">시험관리</a></li>
+<?php
+	foreach($cArrRowsMenu1 as $data) {
+		if( $cMenuIdx1 == $data['Menu_idx1'] ){
+			echo "<li><a href='".$data['Page_url1']."' class='on'>".$data['Menu_Name1']."</a></li>";
+		}else{
+			echo "<li><a href='".$data['Page_url1']."'>".$data['Menu_Name1']."</a></li>";
+		}
+	}
+?>
 			<li><a href="#">성적표발급</a></li>
 			<li><a href="#">어학공통</a></li>
 			<li><a href="#">수험자관리</a></li>

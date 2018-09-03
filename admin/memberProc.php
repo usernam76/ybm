@@ -3,6 +3,9 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
+	$cPageMenuIdx = "192";	//메뉴고유번호
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+
 	$proc = fnNoInjection($_REQUEST['proc']);	
 
 	switch($proc){
@@ -25,7 +28,6 @@
 			$pArray[':admIp']		= $pAdmIp;
 			$pArray[':useChk']		= $pUseChk;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 			
 			if( $result[0][result] == 1 ){	//성공일때 메일 발송
@@ -64,7 +66,6 @@
 			$pArray[':admIp']		= $pAdmIp;
 			$pArray[':useChk']		= $pUseChk;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
 			if( $result[0][result] == 1 ){
@@ -89,7 +90,6 @@
 
 			$pArray[':admId'] = $pAdmId;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "data"=>$arrRows);
@@ -114,7 +114,6 @@
 			$pArray[':admIp']		= "";
 			$pArray[':useChk']		= "";
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "result"=>$result[0][result]);
@@ -152,7 +151,6 @@
 			$pArray[':admIp']		= "";
 			$pArray[':useChk']		= "";
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "result"=>$result[0][result]);
@@ -172,7 +170,6 @@
 			$pArray[':roleRw']		= "";
 			$pArray[':copyId']		= $pCopyId;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
 			if( $result[0][result] == 1 ){
@@ -195,7 +192,6 @@
 			$pArray[':roleRw']		= implode(",", $pRoleRw).",";
 			$pArray[':copyId']		= "";
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
 			if( $result[0][result] == 1 ){

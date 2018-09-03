@@ -3,6 +3,8 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+
 	$proc = fnNoInjection($_REQUEST['proc']);	
 
 	$valueValid = [];
@@ -23,7 +25,6 @@
 			$sql .= " FROM [theExam].[dbo].[v_Dept_Tree] ";
 			$sql .= " GROUP BY Dept_Name1, Dept_Code1 ";
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "data"=>$arrRows);
@@ -46,7 +47,6 @@
 
 			$pArray[':detpLev1'] = $pDetpLev1;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "data"=>$arrRows);
@@ -70,7 +70,6 @@
 
 			$pArray[':detpLev2'] = $pDetpLev2;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "data"=>$arrRows);
@@ -88,7 +87,6 @@
 			$sql .= " group by left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) ";
 			$sql .= " order by cd asc ";
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "data"=>$arrRows);
@@ -106,7 +104,6 @@
 
 			$pArray[':areaLev1'] = $pAreaLev1;
 
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 			$returnData = array("status"=>"success", "data"=>$arrRows);

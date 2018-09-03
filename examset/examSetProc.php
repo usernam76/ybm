@@ -6,6 +6,17 @@
 	$proc = fnNoInjection($_REQUEST['proc']);	
 	$valueValid = [];
 	$resultArray = fnGetRequestParam($valueValid);
+	
+	/*
+
+	@ 최상운 2018.09.03
+
+	pLinkCenterCode --- 고사장이랑 연계되는 고유코드
+	> DB 명세서 에는 본사 전산실에서 가져오는 코드라 적혀있음
+	> 기획자 진경란 과장은 자동생성되는 코드라고 함.
+	> 그냥 max값에 +1하면 되는거면 굳이 작성폼에서 보여줄 필요가 있나?
+	> 그리고 테이블에 지도 URL 칼럼 없음(프로시저포함)
+	*/
 
 	switch($proc){
 		case 'write':

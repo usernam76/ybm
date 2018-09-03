@@ -5,9 +5,8 @@
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [];
-
 	$resultArray = fnGetRequestParam($valueValid);
-	
+
 	$proc = "write";
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';

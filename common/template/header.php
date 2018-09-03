@@ -19,7 +19,8 @@
 	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
 	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' ";
-	$sql .= " GROUP BY Menu_idx1, Menu_Name1, Page_url1 ";
+	$sql .= " GROUP BY Menu_idx1, Menu_Name1, Page_url1, Menu_order1 ";
+	$sql .= " ORDER BY Menu_order1 ";
 
 	$cArrayMenu[':loginId'] = "test";
 
@@ -30,7 +31,8 @@
 	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
 	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' AND Menu_idx1 = :menuIdx1 ";
-	$sql .= " GROUP BY Menu_idx2, Menu_Name2, Page_url2 ";
+	$sql .= " GROUP BY Menu_idx2, Menu_Name2, Page_url2, Menu_order2 ";
+	$sql .= " ORDER BY Menu_order2 ";
 
 	$cArrayMenu[':menuIdx1'] = $cMenuIdx1;
 
@@ -41,7 +43,8 @@
 	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
 	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' AND Menu_idx1 = :menuIdx1 AND Menu_idx2 = :menuIdx2 ";
-	$sql .= " GROUP BY Menu_idx3, Menu_Name3, Page_url3 ";
+	$sql .= " GROUP BY Menu_idx3, Menu_Name3, Page_url3, Menu_order3 ";
+	$sql .= " ORDER BY Menu_order3 ";
 	
 	$cArrayMenu[':menuIdx2'] = $cMenuIdx2;
 
@@ -52,6 +55,7 @@
 	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
 	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != ''  AND Menu_idx1 = :menuIdx1 AND Menu_idx2 = :menuIdx2 AND Menu_idx3 = :menuIdx3 ";
+	$sql .= " ORDER BY Menu_order4 ";
 
 	$cArrayMenu[':menuIdx3'] = $cMenuIdx3;
 
@@ -75,10 +79,6 @@
 		}
 	}
 ?>
-			<li><a href="#">성적표발급</a></li>
-			<li><a href="#">어학공통</a></li>
-			<li><a href="#">수험자관리</a></li>
-			<li><a href="#">사이트관리</a></li>
 		</ul>
 		<div class="info dropdown">
 		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>

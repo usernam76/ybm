@@ -333,5 +333,25 @@
 		return $sendmail_flag;
 	}
 
+	/*
+		@auth : 남동현
+		@date : 2018-09-03
+		@desc : 
+			- 버튼 생성
+		@param : 
+			- $role : 권한
+			- $class : class
+			- $id : id
+			- $name : 버튼명
+	*/
+	function fnButtonCreate($role, $attr, $name){
+		$result = '';
+		if( $role == "W" ){
+			$result = "<button ".$attr." type='button'>".$name."</button>";
+		}
+
+		return $result;
+	}
+
 
 ?>

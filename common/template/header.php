@@ -1,18 +1,26 @@
 <?php
 	//현재 페이지 및 상위 메뉴 정보
 	$sql = " SELECT ";
-	$sql .= "	Menu_idx1, Menu_idx2, Menu_idx3, Menu_idx4 ";
+	$sql .= "	Menu_idx1, Menu_idx2, Menu_idx3, Menu_idx4, AM.Role_RW ";
 	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
+	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.Menu_idx = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND Menu_idx4 = :menuIdx4 ";
 
-	$pArrayMenu[':menuIdx4'] = $cPageMenuIdx;
+	$cArrayPageMenu[':loginId'] = "test";
+	$cArrayPageMenu[':menuIdx4'] = $cPageMenuIdx;
 
-	$cArrRowsMenu = $dbConn->fnSQLPrepare($sql, $pArrayMenu, ''); // 쿼리 실행
+	$cArrRowsPageMenu = $dbConn->fnSQLPrepare($sql, $cArrayPageMenu, ''); // 쿼리 실행
 
-	$cMenuIdx1	= $cArrRowsMenu[0][Menu_idx1];
-	$cMenuIdx2	= $cArrRowsMenu[0][Menu_idx2];
-	$cMenuIdx3	= $cArrRowsMenu[0][Menu_idx3];
-	$cMenuIdx4	= $cArrRowsMenu[0][Menu_idx4];
+	$cPageMenuIdx1	= $cArrRowsPageMenu[0][Menu_idx1];
+	$cPageMenuIdx2	= $cArrRowsPageMenu[0][Menu_idx2];
+	$cPageMenuIdx3	= $cArrRowsPageMenu[0][Menu_idx3];
+	$cPageMenuIdx4	= $cArrRowsPageMenu[0][Menu_idx4];
+	$cPageRoleRw	= $cArrRowsPageMenu[0][Role_RW];
+	$cPageRoleRw	= "W";
+
+	if( $cPageRoleRw == "" ){	//권한없음
+		fnShowAlertMsg("페이지 조회 권한이 없습니다.", "location.href = '/index.php';", true);
+	}
 
 	$sql = " SELECT ";
 	$sql .= "	Menu_idx1, Menu_Name1, Page_url1";
@@ -34,7 +42,7 @@
 	$sql .= " GROUP BY Menu_idx2, Menu_Name2, Page_url2, Menu_order2 ";
 	$sql .= " ORDER BY Menu_order2 ";
 
-	$cArrayMenu[':menuIdx1'] = $cMenuIdx1;
+	$cArrayMenu[':menuIdx1'] = $cPageMenuIdx1;
 
 	$cArrRowsMenu2 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
 
@@ -46,7 +54,7 @@
 	$sql .= " GROUP BY Menu_idx3, Menu_Name3, Page_url3, Menu_order3 ";
 	$sql .= " ORDER BY Menu_order3 ";
 	
-	$cArrayMenu[':menuIdx2'] = $cMenuIdx2;
+	$cArrayMenu[':menuIdx2'] = $cPageMenuIdx2;
 
 	$cArrRowsMenu3 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
 
@@ -57,7 +65,7 @@
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != ''  AND Menu_idx1 = :menuIdx1 AND Menu_idx2 = :menuIdx2 AND Menu_idx3 = :menuIdx3 ";
 	$sql .= " ORDER BY Menu_order4 ";
 
-	$cArrayMenu[':menuIdx3'] = $cMenuIdx3;
+	$cArrayMenu[':menuIdx3'] = $cPageMenuIdx3;
 
 	$cArrRowsMenu4 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
 ?>
@@ -72,7 +80,7 @@
 		<ul class="nav">
 <?php
 	foreach($cArrRowsMenu1 as $data) {
-		if( $cMenuIdx1 == $data['Menu_idx1'] ){
+		if( $cPageMenuIdx1 == $data['Menu_idx1'] ){
 			echo "<li><a href='".$data['Page_url1']."' class='on'>".$data['Menu_Name1']."</a></li>";
 		}else{
 			echo "<li><a href='".$data['Page_url1']."'>".$data['Menu_Name1']."</a></li>";

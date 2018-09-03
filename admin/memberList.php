@@ -36,7 +36,6 @@
 	$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
 	$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
 
-	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 	if ( count($arrRows) > 0 ){
@@ -74,7 +73,7 @@
 					<button class="btn_fill btn_md" type="button" id="btnSearch">검색</button>	
 
 					<span class="fl_r">
-						<button class="btn_fill btn_md" type="button" id="btnWrite">등록</button>
+						<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md' id='btnWrite'", "등록")?>
 					</span>
 				</div>
 			</div>
@@ -117,6 +116,11 @@
 <?php
 	$no = $totalRecords - ( ( $currentPage - 1 ) * $recordsPerPage );
 	foreach($arrRows as $data) {
+		$btnDsblStyle = "";
+		if( fnDateDiff( fnCalDate($data['Login_day'], 'month', 3), '') >= 0 ){
+			$btnDsblStyle = "disabled style='color: #a4a8af'";
+		}
+
 ?>
 							<tr>
 								<td><?=$no--?></td>
@@ -129,9 +133,9 @@
 								<td><?=substr($data['Login_day'], 0, 10)?></td>
 								<td><?=$data["use_CHK"]?></td>
 								<td>
-									<button type="button" class="btn_fill btn_sm btnModify">수정</button>
-									<button type="button" class="btn_line btn_sm btnMenuSet">메뉴 설정</button>
-									<button type="button" class="btn_fill btn_sm btnDsbl" <?=( fnDateDiff( fnCalDate($data['Login_day'], 'month', 3), '') >= 0 )? "disabled style='color: #a4a8af'": "" ?>>해제</button>
+									<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnModify'", "수정")?>
+									<?=fnButtonCreate($cPageRoleRw, "class='btn_line btn_sm btnMenuSet'", "메뉴 설정")?>
+									<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnDsbl' ".$btnDsblStyle, "해제")?>
 								</td>
 							</tr>
 <?php

@@ -60,7 +60,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">계정관리</h3>
+			<h3 class="title">계정<?=( $proc == "write" )? "등록": "수정" ?></h3>
 
 <form name="frmWrite" id="frmWrite" action="/admin/memberProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">

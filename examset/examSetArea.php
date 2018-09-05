@@ -3,6 +3,9 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
+	$cPageMenuIdx = "192";	//메뉴고유번호
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
+
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [];
 
@@ -42,17 +45,6 @@
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
 ?>
-
-<style>
-.countArea{
-	cursor:pointer;
-	_cursor:hand;
-}
-.countArea .on{
-	background-color:#eee;
-}
-</style>
-
 
 <!--right -->
 <div id="right_area">
@@ -108,9 +100,7 @@ foreach($arrRows as $data) {
 						<div class="r_cont">
 							<p class="s_title">
 							<span id="areaTitle"></span>
-							<span class="fl_r">
-								<button class="btn_fill btn_md" type="button" id="btnLoadWrite">지역추가</button>
-							</span>
+							<span class="fl_r"><?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md' id='btnLoadWrite'", "지역추가")?></span>
 							</p>
 							<div class="wrap_tbl">
 								<table class="type01" id="areaLev2Tbl">

@@ -12,22 +12,27 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);
 	if(empty($proc)) $proc = "write";
-	$pCenterCate = "PBT";	// 해당 페이지에서는 PBT만 입력한다.
+	$pCenterCate = "CBT";	// 해당 페이지에서는 CBT만 입력한다.
+
+	/*
+	@ ETSCerti 어떻게 하지?
+
+	*/
 
 	if($proc == "modify"){
 		
 		$sql = " SELECT ";
 		$sql .= " (SELECT left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) FROM [theExam].[dbo].[SB_Info] WHERE SB_kind='area' AND SB_value = DEC.SB_area) as areaLev1, ";
-		$sql .= " DEC.SB_area, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, DCP.room_count, DCP.room_seat";
+		$sql .= " DEC.SB_area, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, ";
+		$sql .= " DCC.STN_CenterName, DCC.STN_CenterID,DCC.STN_username,DCC.STN_password,DCC.PC_count,DCC.certi_PC,DCC.use_PC,DCC.ETS_certi"; 
 		$sql .= " FROM ";
-		$sql .= " [theExam].[dbo].[Def_exam_center] as DEC ";
-		$sql .= " left outer join ";
-		$sql .= " [theExam].[dbo].[Def_center_PBT] as DCP ";
-		$sql .= " on DEC.center_code = DCP.center_code ";
+		$sql .= " [theExam].[dbo].[Def_exam_center] AS [DEC] ";
+		$sql .= " inner join ";
+		$sql .= " [theExam].[dbo].[Def_center_CBT] AS [DCC] ";
+		$sql .= " on DEC.center_code = DCC.center_code ";
 		$sql .= " WHERE ";
 		$sql .= " DEC.center_code = :centerCode ";
 		$pArray[':centerCode'] = $pCenterCode;
-
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 	
 		if( count($arrRows) == 0 ){
@@ -38,12 +43,17 @@
 			$areaLev2 = $arrRows[0]["SB_area"];
 			$linkCenterCode = $arrRows[0]["link_center_code"];
 			$centerName = $arrRows[0]["center_name"];
-			$zipCode = $arrRows[0]["zipcode"];
-			$mapUrl = $arrRows[0]["mapUrl"];
-			$address = $arrRows[0]["address"];
 			$memo = $arrRows[0]["memo"];
-			$roomCount = $arrRows[0]["room_count"];
-			$roomSeat = $arrRows[0]["room_seat"];
+			$STNCenterName = $arrRows[0]["STN_CenterName"];
+			$STNCenterId = $arrRows[0]["STN_CenterID"];
+			$STNUserName = $arrRows[0]["STN_username"];
+			$STNPassword = $arrRows[0]["STN_password"];
+			$mapUrl = $arrRows[0]["mapUrl"];
+			$PCCount = $arrRows[0]["PC_count"];
+			$certiPC = $arrRows[0]["certi_PC"];
+			$usePC = $arrRows[0]["use_PC"];
+			$ETSCerti = $arrRows[0]["ETS_certi"];
+
 		}
 	}
 
@@ -75,7 +85,7 @@ function getZipcodeSearch(){
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">지역/고사장 관리 - 고사장 관리 <span class="sm_tit">( 입력 )</span></h3>
+			<h3 class="title">지역/고사장 관리 - 센터 관리 <span class="sm_tit">( 입력 )</span></h3>
 			<!-- 테이블1 -->
 			<div class="box_bs">
 <form name="frmWrite" id="frmWrite" action="./examSetProc.php" method="post"> 
@@ -83,6 +93,120 @@ function getZipcodeSearch(){
 	<input type="hidden" name="centerCode" value="<?=$pCenterCode?>">
 	<input type="hidden" name="centerCate" value="<?=$pCenterCate?>">
 				<div class="wrap_tbl">
+					<div class="box_inform">
+						<p class="txt_l">
+							<strong class="s_tit">센터 기본정보</strong>
+						</p>
+					</div>
+					<table class="type02">
+						<caption></caption>
+						<colgroup>
+							<col style="width: 180px;">
+							<col style="width: auto;">
+							<col style="width: 180px;">
+							<col style="width: auto;">
+							<col style="width: 180px;">
+							<col style="width: auto;">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>센터코드</th>
+								<td colspan="5">
+									<div class="item">
+										<input style="width: 100px;" type="text" name="linkCenterCode" value="<?=$linkCenterCode?>">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>지역선택</th>
+								<td colspan="5">
+									<div class="item"> 
+										<select style="width:200px;" name="areaLev1" id="areaLev1"></select>
+										<select style="width:200px;" name="areaLev2" id="areaLev2"></select>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>센터 그룹</th>
+								<td colspan="5">
+									<div class="item"> 
+										<select style="width:400px;" name="centerGroupCode" id="centerGroupCode"></select>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>센터명</th>
+								<td colspan="5">
+									<div class="item">
+										<input style="width: 300px;" type="text" name="centerName" value="<?=$centerName?>">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>STN CenterName</th>
+								<td colspan="2">
+									<div class="item">
+										<input style="width: 150px;" type="text" name="STNCenterName" value="<?=$STNCenterName?>">
+									</div>
+								</td>
+								<th>STN CenterID</th>
+								<td colspan="2">
+									<div class="item">
+										<input style="width: 150px;" type="text" name="STNCenterId" value="<?=$STNCenterId?>">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>STN username</th>
+								<td colspan="2">
+									<div class="item">
+										<input style="width: 150px;" type="text" name="STNUserName" value="<?=$STNUserName?>">
+									</div>
+								</td>
+								<th>STN password</th>
+								<td colspan="2">
+									<div class="item">
+										<input style="width: 150px;" type="password" name="STNPassword" value="<?=$STNPassword?>">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>지도 URL</th>
+								<td colspan="5">
+									<div class="item">
+										<input style="width: 80%;" type="text" name="mapUrl" value="<?=$mapUrl?>">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>보유 PC 수</th>
+								<td>
+									<div class="item">
+										<input style="width: 100px;" type="text" name="PCCount" value="<?=$PCCount?>">
+									</div>
+								</td>
+								<th>인증 PC 수</th>
+								<td>
+									<div class="item">
+										<input style="width: 100px;" type="text" name="certiPC" value="<?=$certiPC?>">
+									</div>
+								</td>
+								<th>접수가능 PC 수</th>
+								<td>
+									<div class="item">
+										<input style="width: 100px;" type="text" name="usePC" value="<?=$usePC?>">
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="box_inform" style="margin-top:20px;">
+						<p class="txt_l">
+							<strong class="s_tit">기타 관리정보</strong>
+						</p>
+					</div>
+
 					<table class="type02">
 						<caption></caption>
 						<colgroup>
@@ -91,81 +215,37 @@ function getZipcodeSearch(){
 						</colgroup>
 						<tbody>
 							<tr>
-								<th>고사장코드</th>
+								<th>싱테</th>
 								<td>
 									<div class="item">
-										<input style="width: 100px;" type="text" name="linkCenterCode" value="<?=$linkCenterCode?>">
+										<select style="width:200px;" name="ETSCerti">
+											<option <?=( $ETSCerti == "신청" )? "selected": "" ?> value="신청">신청</option>
+											<option <?=( $ETSCerti == "인증" )? "selected": "" ?> value="인증">인증</option>
+											<option <?=( $ETSCerti == "인증불가" )? "selected": "" ?> value="인증불가">인증불가</option>
+											<option <?=( $ETSCerti == "보류" )? "selected": "" ?> value="보류">보류</option>
+											<option <?=( $ETSCerti == "삭제" )? "selected": "" ?> value="삭제">삭제</option>
+										</select>
 									</div>
 								</td>
 							</tr>
 							<tr>
-								<th>지역선택</th>
-								<td>
-									<div class="item"> 
-										<select style="width:200px;" name="areaLev1" id="areaLev1"></select>
-										<select style="width:200px;" name="areaLev2" id="areaLev2"></select>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>고사장명</th>
-								<td>
-									<div class="item">
-										<input style="width: 300px;" type="text" name="centerName" value="<?=$centerName?>">
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>주소</th>
-								<td>
-									<div class="item">
-										<input style="width: 200px;" type="text" name="zipcode" id="zip1" value="<?=$zipCode?>">
-										<button class="btn_sm_bg_grey" type="button" onclick="getZipcodeSearch()">우편번호 검색</button>
-									</div>
-									<div class="item pad_t5">
-										<input style="width: 80%;" type="text" name="address1" id="addr1" value="<?=$address?>">
-									</div>
-									<div class="item pad_t5">
-										<input style="width: 80%;" type="text" name="address2" id="addr2">
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>지도 URL</th>
-								<td>
-									<div class="item">
-										<input style="width: 80%;" type="text" name="mapUrl" value="<?=$mapUr?>">
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>고사실수</th>
-								<td>
-									<div class="item">
-										<input style="width: 100px;" type="text" name="roomCount" value="<?=$roomCount?>">
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>좌석수</th>
-								<td>
-									<div class="item">
-										<input class="i_unit" id="20" type="radio" name="roomSeat" value="20" <?=( $roomSeat == "20" )? "checked": "" ?>><label for="20">20</label>
-										<input class="i_unit" id="25" type="radio" name="roomSeat" value="25" <?=( $roomSeat == "25" )? "checked": "" ?>><label for="25">25</label>
-										<input class="i_unit" id="30" type="radio" name="roomSeat" value="30" <?=( $roomSeat == "30" )? "checked": "" ?>><label for="30">30</label>
-										<input class="i_unit" id="35" type="radio" name="roomSeat" value="35" <?=( $roomSeat == "35" )? "checked": "" ?>><label for="35">35</label>
-										<input class="i_unit" id="40" type="radio" name="roomSeat" value="40" <?=( $roomSeat == "40" )? "checked": "" ?>><label for="40">40</label>
-										<input class="i_unit" id="60" type="radio" name="roomSeat" value="60" <?=( $roomSeat == "60" )? "checked": "" ?>><label for="60">60</label>
-										<span class="fl_r">(총좌석수 : <span id="totalRoom"><?=($roomCount * $roomSeat)?></span>)</span>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>특이사항</th>
+								<th>메모</th>
 								<td>
 									<div class="item">
 										<input style="width: 300px;" type="text" name="memo" value="<?=$memo?>">
 									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>ETS전송</th>
+								<td>
+									<div class="item">실패</div>
+								</td>
+							</tr>
+							<tr>
+								<th>신청일자</th>
+								<td>
+									<div class="item">1999-12-31 오후 11:59:59</div>
 								</td>
 							</tr>
 						</tbody>
@@ -206,11 +286,7 @@ $(document).ready(function () {
 			}, areaLev2: {
 				required: "지역을 선택 해주세요."
 			}, centerName: {
-				required: "고사장명을 입력 해주세요."
-			}, roomCount: {
-				required: "고사실수를 입력 해주세요."
-			}, roomSeat: {
-				required: "좌석수를 선택 해주세요."
+				required: "센터명을 입력 해주세요."
 			}
         }, errorPlacement: function (error, element) {
             // $(element).removeClass('error');

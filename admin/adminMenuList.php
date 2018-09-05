@@ -3,6 +3,9 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
+	$cPageMenuIdx = "192";	//메뉴고유번호
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
+
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	//$valueValid = [];
 	$valueValid = [
@@ -40,7 +43,7 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">1Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey btnAddMenu" data-depth="1" type="button" style="width:100%" id="myBtn">+ 메뉴 추가하기</button></p>
+						<p><?=fnButtonCreate($cPageRoleRw, "class='btn_sm_bg_grey btnAddMenu'  style='width:100%' data-depth='1' ".$btnDsblStyle, "+ 메뉴 추가하기")?></p>
 						<div class="box_ln">
 							<ul>
 							<?php
@@ -70,7 +73,7 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">2Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey btnAddMenu" data-depth="2" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
+						<p><?=fnButtonCreate($cPageRoleRw, "class='btn_sm_bg_grey btnAddMenu'  style='width:100%' data-depth='2' ".$btnDsblStyle, "+ 메뉴 추가하기")?></p>
 						<div class="box_ln">
 						</div>
 						<p class="item fl_r">
@@ -85,7 +88,7 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">3Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey btnAddMenu" data-depth="3" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
+						<p><?=fnButtonCreate($cPageRoleRw, "class='btn_sm_bg_grey btnAddMenu'  style='width:100%' data-depth='3' ".$btnDsblStyle, "+ 메뉴 추가하기")?></p>
 						<div class="box_ln" >
 						</div>
 						<p class="item fl_r">
@@ -100,7 +103,7 @@
 				<li>
 					<div class="box_bs">
 						<p class="stit">4Depth 메뉴</p>
-						<p><button class="btn_sm_bg_grey btnAddMenu" data-depth="4" type="button" style="width:100%">+ 메뉴 추가하기</button></p>
+						<p><?=fnButtonCreate($cPageRoleRw, "class='btn_sm_bg_grey btnAddMenu'  style='width:100%' data-depth='4' ".$btnDsblStyle, "+ 메뉴 추가하기")?></p>
 						<div class="box_ln">
 						</div>
 						<p class="item fl_r">

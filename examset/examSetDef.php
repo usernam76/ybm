@@ -3,10 +3,14 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
+	$cPageMenuIdx = "192";	//메뉴고유번호
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
+	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [];
-
 	$resultArray = fnGetRequestParam($valueValid);
+	$pCenterCate = "CBT";	// 고사장/센터 구분
+
 	
 	$totalRecords	= 0;		// 총 레코드 수
 	$recordsPerPage	= 10;		// 한 페이지에 보일 레코드 수
@@ -16,6 +20,7 @@
 	if( $pCurrentPage > 0 ){
 		$currentPage = $pCurrentPage;
 	}
+
 
 	$where		= "";
 	if( $pSearchKey != "" ){
@@ -27,14 +32,29 @@
 	}
 
 
-	$sql = " SELECT ";
-	$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE 1=1 ". $where." ) AS totalRecords ";
-	$sql .= " , [center_code] ,[SB_center_cate] ,[link_center_code] ,[center_group_code] ,[SB_area] ,[center_name] ,[zipcode] ,[address],[memo] ,[use_CHK] ,[update_day] ,[ok_id] ,[okType] ";
-	$sql .= " FROM [theExam].[dbo].[Def_exam_center]";
-	$sql .= " WHERE use_CHK='O' ". $where;
-	$sql .= " ORDER BY update_day DESC ";
-	$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
-	$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
+	if($pCenterCate == "PBT"){
+		$sql = " SELECT ";
+		$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE 1=1 ". $where." ) AS totalRecords ";
+		$sql .= " , [center_code] ,[SB_center_cate] ,[link_center_code] ,[center_group_code] ,[SB_area] ,[center_name] ,[zipcode] ,[address],[memo] ,[use_CHK] ,[update_day] ,[ok_id] ,[okType] ";
+		$sql .= " FROM [theExam].[dbo].[Def_exam_center]";
+		$sql .= " WHERE SB_center_cate='".$pCenterCate."' AND use_CHK='O' ". $where;
+		$sql .= " ORDER BY update_day DESC ";
+		$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
+		$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
+	}else if($pCenterCate == "CBT"){
+
+		/*
+		@ 센터그룹관련 개발 완료 후 쿼리 수정 필요 합니다!!!!!!!!!
+		*/
+		$sql = " SELECT ";
+		$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE 1=1 ". $where." ) AS totalRecords ";
+		$sql .= " , [center_code] ,[SB_center_cate] ,[link_center_code] ,[center_group_code] ,[SB_area] ,[center_name] ,[zipcode] ,[address],[memo] ,[use_CHK] ,[update_day] ,[ok_id] ,[okType] ";
+		$sql .= " FROM [theExam].[dbo].[Def_exam_center]";
+		$sql .= " WHERE SB_center_cate='".$pCenterCate."' AND use_CHK='O' ". $where;
+		$sql .= " ORDER BY update_day DESC ";
+		$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
+		$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
+	}
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -59,13 +79,13 @@
 				<strong class="part_tit">검색</strong>
 				<div class="item line">
 					<select name="searchType" style="width:100px;">  
-						<option value="center_name "		<?=( $pSearchKey == '	center_name '	)? "SELECTED": "" ?>>고사장명</option> 
-						<option value="	link_center_code "		<?=( $pSearchKey == '	link_center_code '	)? "SELECTED": "" ?>>고사장코드</option> 
-						<option value="address "		<?=( $pSearchKey == 'address '	)? "SELECTED": "" ?>>주소</option> 
+						<option value="center_name "		<?=( $pSearchType == '	center_name '	)? "SELECTED": "" ?>>고사장명</option> 
+						<option value="	link_center_code "		<?=( $pSearchType == '	link_center_code '	)? "SELECTED": "" ?>>고사장코드</option> 
+						<option value="address "		<?=( $pSearchType == 'address '	)? "SELECTED": "" ?>>주소</option> 
 					</select>
 					<input style="width:200px;" type="text"  id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>	
-					<span class="fl_r"><button class="btn_line btn_md" type="button" id="btnWrite">고사장 추가</button></span>
+					<span class="fl_r"><?=fnButtonCreate($cPageRoleRw, "class='btn_line btn_md' id='btnWrite".$pCenterCate."' ".$btnDsblStyle, "+ 고사장 추가")?></span>
 				</div>
 				<strong class="part_tit">필터</strong>
 				<div class="item">
@@ -112,7 +132,7 @@
 								<td><?=$data['center_name']?></td>
 								<td>[<?=$data['zipcode']?>] <?=$data['address']?></td>
 								<td>
-									<button type="button" class="btn_fill btn_sm btnModify">수정</button>
+									<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnModify".$pCenterCate."' data-centerCode='".$data["center_code"]."'", "수정")?>
 								</td>
 							</tr>
 <?php
@@ -180,18 +200,28 @@ $(document).ready(function () {
 
 	/* 필터 검색 */
 	$("#areaLev2").on("change", function(){
-
 		var searchType = $("select[name=searchType]").val();
 		var searchKey = $("input[name=searchKey]").val();
 		var areaLev1 = $("#areaLev1").val();
 		var areaLev2 = $("#areaLev2").val();
-
 		location.href = "?searchType="+searchType+"&searchKey="+searchKey+"&areaLev1="+areaLev1+"&areaLev2="+areaLev2;
 	})
 
-	/* 고사장 추가*/
-	$("#btnWrite").on("click", function(){
+	/* 고사장 추가 PBT*/
+	$("#btnWritePBT").on("click", function(){
 		location.href = "./examSetDefWrite.php";
+	})
+	/* 고사장 추가 CBT*/
+	$("#btnWriteCBT").on("click", function(){
+		location.href = "./examSetCenterWrite.php";
+	})
+	/* 고사장 수정 PBT*/
+	$(".btnModifyPBT").on("click", function(){
+		location.href = "./examSetDefWrite.php?proc=modify&centerCode="+$(this).attr("data-centerCode");
+	})
+	/* 고사장 수정 CBT*/
+	$(".btnModifyCBT").on("click", function(){
+		location.href = "./examSetCenterWrite.php?proc=modify&centerCode="+$(this).attr("data-centerCode");
 	})
 });
 

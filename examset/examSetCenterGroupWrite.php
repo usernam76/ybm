@@ -12,38 +12,32 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);
 	if(empty($proc)) $proc = "write";
-	$pCenterCate = "PBT";	// 해당 페이지에서는 PBT만 입력한다.
+
 
 	if($proc == "modify"){
-		
-		$sql = " SELECT ";
-		$sql .= " (SELECT left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) FROM [theExam].[dbo].[SB_Info] WHERE SB_kind='area' AND SB_value = DEC.SB_area) as areaLev1, ";
-		$sql .= " DEC.SB_area, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, DCP.room_count, DCP.room_seat";
-		$sql .= " FROM ";
-		$sql .= " [theExam].[dbo].[Def_exam_center] as DEC ";
-		$sql .= " left outer join ";
-		$sql .= " [theExam].[dbo].[Def_center_PBT] as DCP ";
-		$sql .= " on DEC.center_code = DCP.center_code ";
+		$pArray = null;
+		$sql = " SELECT* FROM [theExam].[dbo].[Def_exam_center_Group] ";
 		$sql .= " WHERE ";
-		$sql .= " DEC.center_code = :centerCode ";
-		$pArray[':centerCode'] = $pCenterCode;
+		$sql .= " center_group_code = :centerGroupCode ";
+		$pArray[':centerGroupCode'] = $pCenterGroupCode;
+
 
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 	
 		if( count($arrRows) == 0 ){
 			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
 		}else{
-			$useChk	= $arrRows[0]["use_CHK"];
-			$areaLev1 = $arrRows[0]["areaLev1"];
-			$areaLev2 = $arrRows[0]["SB_area"];
-			$linkCenterCode = $arrRows[0]["link_center_code"];
-			$centerName = $arrRows[0]["center_name"];
+
+			print_r($arrRows[0]);
+
+			$centerGroupName = $arrRows[0]["center_group_name"];
+			$SBCenterGroup = $arrRows[0]["SB_center_group"];
+			$centerMap = $arrRows[0]["center_map"];
+			$BEP = $arrRows[0]["BEP"];
+			$useCHK	= $arrRows[0]["use_CHK"];
 			$zipCode = $arrRows[0]["zipcode"];
-			$mapUrl = $arrRows[0]["mapUrl"];
 			$address = $arrRows[0]["address"];
 			$memo = $arrRows[0]["memo"];
-			$roomCount = $arrRows[0]["room_count"];
-			$roomSeat = $arrRows[0]["room_seat"];
 		}
 	}
 
@@ -71,17 +65,17 @@ function getZipcodeSearch(){
 	}());
 }
 </script>
+
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">지역/고사장 관리 - 고사장 관리 <span class="sm_tit">( 입력 )</span></h3>
+			<h3 class="title">센터그룹관리 <span class="sm_tit">( 입력 )</span></h3>
 			<!-- 테이블1 -->
 			<div class="box_bs">
-<form name="frmWrite" id="frmWrite" action="./examSetProc.php" method="post"> 
+<form name="frmWrite" id="frmWrite" action="./examSetCenterGroupProc.php" method="post"> 
 	<input type="hidden" name="proc" value="<?=$proc?>">
-	<input type="hidden" name="centerCode" value="<?=$pCenterCode?>">
-	<input type="hidden" name="centerCate" value="<?=$pCenterCate?>">
+	<input type="hidden" name="centerGroupCode" value="<?=$pCenterGroupCode?>">
 				<div class="wrap_tbl">
 					<table class="type02">
 						<caption></caption>
@@ -91,27 +85,34 @@ function getZipcodeSearch(){
 						</colgroup>
 						<tbody>
 							<tr>
-								<th>고사장코드</th>
+								<th>그룹명</th>
 								<td>
 									<div class="item">
-										<input style="width: 100px;" type="text" name="linkCenterCode" value="<?=$linkCenterCode?>">
+										<input style="width: 300px;" type="text" name="centerGroupName" value="<?=$centerGroupName?>">
 									</div>
 								</td>
 							</tr>
 							<tr>
-								<th>지역선택</th>
+								<th>그룹종류</th>
+								<td>
+									<div class="item">
+										<select style="width:200px;"  name="SBCenterGroup">  
+											<option>전체</option> 
+											<option <?=($SBCenterGroup == "YBM직영CBT") ? "selected" : ""; ?> value="YBM직영CBT">YBM직영CBT</option> 
+											<option <?=($SBCenterGroup == "YBM어학원CBT") ? "selected" : ""; ?> value="YBM어학원CBT">YBM어학원CBT</option> 
+											<option <?=($SBCenterGroup == "4년제대학") ? "selected" : ""; ?> value="4년제대학">4년제대학</option> 
+											<option <?=($SBCenterGroup == "2~3년제대학") ? "selected" : ""; ?> value="2~3년제대학">2~3년제대학</option> 
+											<option <?=($SBCenterGroup == "중고교") ? "selected" : ""; ?> value="중고교">중고교</option> 
+											<option <?=($SBCenterGroup == "직업학교학원") ? "selected" : ""; ?> value="직업학교학원">직업학교학원</option> 
+										</select>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>센터약도</th>
 								<td>
 									<div class="item"> 
-										<select style="width:200px;" name="areaLev1" id="areaLev1"></select>
-										<select style="width:200px;" name="areaLev2" id="areaLev2"></select>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>고사장명</th>
-								<td>
-									<div class="item">
-										<input style="width: 300px;" type="text" name="centerName" value="<?=$centerName?>">
+										<input style="width: 300px;" type="text" name="centerMap" value="<?=$centerMap?>">
 									</div>
 								</td>
 							</tr>
@@ -131,32 +132,28 @@ function getZipcodeSearch(){
 								</td>
 							</tr>
 							<tr>
-								<th>지도 URL</th>
+								<th>사용제한</th>
 								<td>
 									<div class="item">
-										<input style="width: 80%;" type="text" name="mapUrl" value="<?=$mapUr?>">
+										<input class="i_unit" id="일반" type="radio" name="사용제한" value="일반" <?=( $사용제한 == "일반" )? "checked": "" ?>><label for="일반">일반</label>
+										<input class="i_unit" id="지정" type="radio" name="사용제한" value="지정" <?=( $사용제한 == "지정" )? "checked": "" ?>><label for="지정">지정고사장 (단체접수 등)</label>
 									</div>
 								</td>
 							</tr>
 							<tr>
-								<th>고사실수</th>
+								<th>사용여부</th>
 								<td>
 									<div class="item">
-										<input style="width: 100px;" type="text" name="roomCount" value="<?=$roomCount?>">
+										<input class="i_unit" id="O" type="radio" name="useCHK" value="O" <?=( $useCHK == "O" )? "checked": "" ?>><label for="O">사용</label>
+										<input class="i_unit" id="X" type="radio" name="useCHK" value="X" <?=( $useCHK == "X" )? "checked": "" ?>><label for="X">사용 안함</label>
 									</div>
 								</td>
 							</tr>
 							<tr>
-								<th>좌석수</th>
+								<th>BEP</th>
 								<td>
 									<div class="item">
-										<input class="i_unit" id="20" type="radio" name="roomSeat" value="20" <?=( $roomSeat == "20" )? "checked": "" ?>><label for="20">20</label>
-										<input class="i_unit" id="25" type="radio" name="roomSeat" value="25" <?=( $roomSeat == "25" )? "checked": "" ?>><label for="25">25</label>
-										<input class="i_unit" id="30" type="radio" name="roomSeat" value="30" <?=( $roomSeat == "30" )? "checked": "" ?>><label for="30">30</label>
-										<input class="i_unit" id="35" type="radio" name="roomSeat" value="35" <?=( $roomSeat == "35" )? "checked": "" ?>><label for="35">35</label>
-										<input class="i_unit" id="40" type="radio" name="roomSeat" value="40" <?=( $roomSeat == "40" )? "checked": "" ?>><label for="40">40</label>
-										<input class="i_unit" id="60" type="radio" name="roomSeat" value="60" <?=( $roomSeat == "60" )? "checked": "" ?>><label for="60">60</label>
-										<span class="fl_r">(총좌석수 : <span id="totalRoom"><?=($roomCount * $roomSeat)?></span>)</span>
+										<input style="width: 100px;" type="text" name="BEP" value="<?=$BEP?>">
 									</div>
 								</td>
 							</tr>
@@ -170,14 +167,21 @@ function getZipcodeSearch(){
 							</tr>
 						</tbody>
 					</table>
+			<!-- //테이블1-->
 				</div>
 </form>
 				<div class="wrap_btn">
 					<button class="btn_fill btn_md" type="button"  id="btnWrite"><?=( $proc == "write" )? "등록": "수정" ?></button>
 					<button class="btn_line btn_md" type="button"  id="btnCancel">취소</button>
+					<?php
+					if($proc == "modify"){
+					?>
+					<button class="btn_fill btn_md" type="button"  id="btnDelete" style="float:right">삭제</button>
+					<?php
+					}
+					?>
 				</div>
 			</div>
-			<!-- //테이블1-->
 		</div>
 	</div>
 </div>
@@ -228,48 +232,23 @@ $(document).ready(function () {
 		$("#frmWrite").submit();
 	});
 
+	$("#btnDelete").on("click", function(){
+		if(confirm("삭제하시겠습니까?")){
+			var centerGroupCode = $("input[name=centerGroupCode]").val();
+			location.href = "examSetCenterGroupProc.php?proc=delete&centerGroupCode="+centerGroupCode;
+		}else{
+			return false;
+		}
 
-	/*고사실 좌석수 계산*/
-	$("input[name=roomCount]").on("keyup", function(){
-		var roomCount = $(this).val();
-		var roomSeat = $("input[name=roomSeat]:checked").val();
-		totalCount(roomCount, roomSeat);
 	});
-	$(".i_unit").on("click", function(){
-		var roomCount = $("input[name=roomCount]").val();
-		var roomSeat = $(this).val();
-		totalCount(roomCount, roomSeat);
-	});
-	var totalCount = function(rc, rs){
-		if(typeof rc == "undefined" || typeof rs == "undefined"){ return false; }
-		var totalCount = parseInt(rc,10) * parseInt(rs, 10);
-		if(isNaN(totalCount)){ return false; }
-		$("#totalRoom").text(totalCount);
-	}
-	/*고사실 좌석수 계산 끝*/
-
-
-	/*지역정보 공용*/
-	var param = {
-		"areaLev1" 		: "areaLev1"	// 1detp 부서정보
-		, "areaLev2" 		: "areaLev2"	// 2detp 부서정보
-		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
-		, "firstOptVal"	: ""			// 상단 옵션  value
-		, "firstOptLable"	: "선택"			// 상단 옵션  text
-	}
-	common.sys.setAreaComboCreate(param);
-	$("#areaLev1").val('<?=$areaLev1?>').change();
-	$("#areaLev2").val('<?=$areaLev2?>').change();
-	/*지역정보 공용 끝*/
 
 	/*숫자만 입력*/
-	common.string.onlyNumber($("input[name=roomCount]"));
+	common.string.onlyNumber($("input[name=BEP]"));
 
 });
 </script>
 
 <!--right //-->
-
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/footer.php';
 ?>

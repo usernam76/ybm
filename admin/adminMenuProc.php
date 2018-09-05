@@ -3,6 +3,8 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
+	$cPageMenuIdx = "192";	//메뉴고유번호
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 
 	function getMenuList($pMenuDepth, $pParMenuIdx, $onMenuIdx=""){
 

@@ -7,7 +7,8 @@
 	$sql .= " GROUP BY Menu_idx1, Menu_Name1, Page_url1, Menu_order1 ";
 	$sql .= " ORDER BY Menu_order1 ";
 
-	$cArrayMenu[':loginId'] = "test";
+//	$cArrayMenu[':loginId'] = "test";
+	$cArrayMenu[':loginId'] = $_SESSION["admId"];
 
 	$cArrRowsMenu1 = $dbConn->fnSQLPrepare($sql, $cArrayMenu, ''); // 쿼리 실행
 
@@ -66,11 +67,10 @@
 ?>
 		</ul>
 		<div class="info dropdown">
-		  <button class="dropbtn">홍길동 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
+		  <button class="dropbtn"><?=$_SESSION["admNm"]?> 님 &nbsp;&nbsp; <span class="fs_sm">▼</span> </button>
 		  <div class="dropdown-content">
-			<a href="#">내용</a>
-			<a href="#">내용 2</a>
-			<a href="#">내용 3</a>
+			<a href="/password.php">비밀번호변경</a>
+			<a href="/logout.php">로그아웃</a>
 		  </div>
 		</div>
 	</div>

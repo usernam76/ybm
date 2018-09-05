@@ -129,7 +129,7 @@
 								<td><?=$data['Adm_Email']?></td>
 								<td><?=$data['Dept_Name']?></td>
 								<td><?=substr($data['Reg_day'], 0, 10)?></td>
-								<td><?=fnCalDate($data['Login_day'], 'month', 3)?></td>
+								<td><?=fnCalDate($data['Password_day'], 'day', 90)?></td>
 								<td><?=substr($data['Login_day'], 0, 10)?></td>
 								<td><?=$data["use_CHK"]?></td>
 								<td>

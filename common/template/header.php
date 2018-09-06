@@ -1,8 +1,8 @@
 <?php
 	$sql = " SELECT ";
 	$sql .= "	Menu_idx1, Menu_Name1, Page_url1";
-	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
-	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " FROM v_Menu_Page VMP ";
+	$sql .= " INNER JOIN Adm_Menu AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' ";
 	$sql .= " GROUP BY Menu_idx1, Menu_Name1, Page_url1, Menu_order1 ";
 	$sql .= " ORDER BY Menu_order1 ";
@@ -14,8 +14,8 @@
 
 	$sql = " SELECT ";
 	$sql .= "	Menu_idx2, Menu_Name2, Page_url2";
-	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
-	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " FROM v_Menu_Page VMP ";
+	$sql .= " INNER JOIN Adm_Menu AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' AND Menu_idx1 = :menuIdx1 ";
 	$sql .= " GROUP BY Menu_idx2, Menu_Name2, Page_url2, Menu_order2 ";
 	$sql .= " ORDER BY Menu_order2 ";
@@ -26,8 +26,8 @@
 
 	$sql = " SELECT ";
 	$sql .= "	Menu_idx3, Menu_Name3, Page_url3";
-	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
-	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " FROM v_Menu_Page VMP ";
+	$sql .= " INNER JOIN Adm_Menu AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != '' AND Menu_idx1 = :menuIdx1 AND Menu_idx2 = :menuIdx2 ";
 	$sql .= " GROUP BY Menu_idx3, Menu_Name3, Page_url3, Menu_order3 ";
 	$sql .= " ORDER BY Menu_order3 ";
@@ -38,8 +38,8 @@
 
 	$sql = " SELECT ";
 	$sql .= "	Menu_idx4, Menu_Name4, Page_url4";
-	$sql .= " FROM [theExam].[dbo].v_Menu_Page VMP ";
-	$sql .= " INNER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " FROM v_Menu_Page VMP ";
+	$sql .= " INNER JOIN Adm_Menu AM ON AM.[Menu_idx] = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND ISNULL(AM.Role_RW, '') != ''  AND Menu_idx1 = :menuIdx1 AND Menu_idx2 = :menuIdx2 AND Menu_idx3 = :menuIdx3 ";
 	$sql .= " ORDER BY Menu_order4 ";
 

@@ -21,15 +21,15 @@
 	$useChk		= "O";
 
 	if ( $pAdmId != "" ){
-		$sql = " SELECT ";
+		$sql  = " SELECT ";
 		$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Dept_Code, AI.Token_code, AI.Reg_day, AI.Login_day, AI.Password_day, AI.Adm_IP, AI.use_CHK, AI.Update_day ";
 		$sql .= "	, ISNULL( ADI4.Dept_Code, ADI3.Dept_Code ) AS detpLev1 ";
 		$sql .= "	, CASE WHEN ISNULL( ADI4.Dept_Code, '' ) = '' THEN ADI2.Dept_Code ELSE ADI3.Dept_Code END AS detpLev2 ";
-		$sql .= " FROM [theExam].[dbo].[Adm_info]  AS AI ";
-		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI1 (nolock) ON AI.Dept_Code = ADI1.Dept_Code ";
-		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI2 (nolock) ON ADI1.PDept_Code = ADI2.Dept_Code ";
-		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI3 (nolock) ON ADI2.PDept_Code = ADI3.Dept_Code ";
-		$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI4 (nolock) ON ADI3.PDept_Code = ADI4.Dept_Code ";
+		$sql .= " FROM Adm_info AS AI ";
+		$sql .= " JOIN Adm_Dept_Info AS ADI1 (nolock) ON AI.Dept_Code = ADI1.Dept_Code ";
+		$sql .= " JOIN Adm_Dept_Info AS ADI2 (nolock) ON ADI1.PDept_Code = ADI2.Dept_Code ";
+		$sql .= " JOIN Adm_Dept_Info AS ADI3 (nolock) ON ADI2.PDept_Code = ADI3.Dept_Code ";
+		$sql .= " LEFT OUTER JOIN Adm_Dept_Info AS ADI4 (nolock) ON ADI3.PDept_Code = ADI4.Dept_Code ";
 		$sql .= " WHERE Adm_id = :admId ";
 
 		$pArray[':admId'] = $pAdmId;
@@ -41,9 +41,9 @@
 		}else{
 			$proc = "modify";
 
-			$useChk	= $arrRows[0][use_CHK];
+			$useChk	= $arrRows[0]['use_CHK'];
 
-			$admEmail = explode("@",$arrRows[0][Adm_Email]);
+			$admEmail = explode("@",$arrRows[0]['Adm_Email']);
 			$admEmail1 = $admEmail[0];
 			$admEmail2 = $admEmail[1];
 		}
@@ -93,8 +93,8 @@
 										<input type="hidden" id="idCheck" name="idCheck" value="">
 										<button type="button" class="btn_fill btn_sm" id="btnIdCheck">중복체크</button>
 <?php	}else{		?>
-										<?=$arrRows[0][Adm_id]?>
-										<input type="hidden" id="admId" name="admId" value="<?=$arrRows[0][Adm_id]?>">
+										<?=$arrRows[0]['Adm_id']?>
+										<input type="hidden" id="admId" name="admId" value="<?=$arrRows[0]['Adm_id']?>">
 										<input type="hidden" id="idCheck" name="idCheck" value="Y">
 <?php	}		?>
 									</div>
@@ -117,7 +117,7 @@
 								<th>이름</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text" name="admName" value="<?=$arrRows[0][Adm_name]?>">
+										<input style="width: 300px;" type="text" name="admName" value="<?=$arrRows[0]['Adm_name']?>">
 									</div>
 								</td>
 							</tr>
@@ -125,7 +125,7 @@
 								<th>eToken</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text" name="tokenCode" value="<?=$arrRows[0][Token_code]?>">
+										<input style="width: 300px;" type="text" name="tokenCode" value="<?=$arrRows[0]['Token_code']?>">
 									</div>
 								</td>
 							</tr>
@@ -156,7 +156,7 @@
 								<th>컴퓨터IP</th>
 								<td>
 									<div class="item">
-										<input style="width: 300px;" type="text" name="admIp" value="<?=$arrRows[0][Adm_IP]?>">
+										<input style="width: 300px;" type="text" name="admIp" value="<?=$arrRows[0]['Adm_IP']?>">
 									</div>
 								</td>
 							</tr>							
@@ -172,7 +172,7 @@
 <?php	if( $proc == "modify" ){		?>
 							<tr>
 								<th>등록일자</th>
-								<td><span><?=$arrRows[0][Reg_day]?></span></td>
+								<td><span><?=$arrRows[0]['Reg_day']?></span></td>
 							</tr>
 							<tr>
 								<th>만료일자</th>
@@ -180,7 +180,7 @@
 							</tr>
 							<tr>
 								<th>최종수정일자</th>
-								<td><span><?=$arrRows[0][Update_day]?></span></td>
+								<td><span><?=$arrRows[0]['Update_day']?></span></td>
 							</tr>
 <?php	}		?>
 						</tbody>
@@ -307,7 +307,7 @@ $(document).ready(function () {
 		var param = {
 			"proc"	: "passClear",
 			"admId"	: $("#admId").val(),
-			"admEmail"	: "<?=$arrRows[0][Adm_Email]?>"
+			"admEmail"	: "<?=$arrRows[0]['Adm_Email']?>"
 		};
 
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
@@ -334,9 +334,9 @@ $(document).ready(function () {
 	}
 	common.sys.setDeptComboCreate(param);
 
-	$("#detpLev1").val("<?=$arrRows[0][detpLev1]?>").change();
-	$("#detpLev2").val("<?=$arrRows[0][detpLev2]?>").change();
-	$("#deptCode").val("<?=$arrRows[0][Dept_Code]?>");
+	$("#detpLev1").val("<?=$arrRows[0]['detpLev1']?>").change();
+	$("#detpLev2").val("<?=$arrRows[0]['detpLev2']?>").change();
+	$("#deptCode").val("<?=$arrRows[0]['Dept_Code']?>");
 
 
 });

@@ -83,9 +83,9 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = " SELECT ";
+			$sql  = " SELECT ";
 			$sql .= "	COUNT(*) AS cnt ";
-			$sql .= " FROM [theExam].[dbo].[Adm_info] ";
+			$sql .= " FROM Adm_info ";
 			$sql .= " WHERE Adm_id = :admId ";
 
 			$pArray[':admId'] = $pAdmId;

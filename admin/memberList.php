@@ -25,12 +25,17 @@
 		$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
 	}
 
-	$sql = " SELECT ";
-	$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Adm_info] WHERE 1=1 ". $where." ) AS totalRecords ";
-	$sql .= " , AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Reg_day, AI.Login_day, AI.Password_day, AI.use_CHK ";
-	$sql .= " , ADI.Dept_Name";
-	$sql .= " FROM [theExam].[dbo].[Adm_info] AS AI ";
-	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
+	$sql  = " SELECT COUNT(*) AS totalRecords ";
+	$sql .= " FROM Adm_info AS AI	";
+	$sql .= " JOIN Adm_Dept_Info AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code	";
+	$sql .= " WHERE 1=1 ". $where."	";
+	$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+	$sql  = " SELECT ";
+	$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Reg_day, AI.Login_day, AI.Password_day, AI.use_CHK ";
+	$sql .= "	, ADI.Dept_Name";
+	$sql .= " FROM Adm_info AS AI ";
+	$sql .= " JOIN Adm_Dept_Info AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
 	$sql .= " WHERE 1=1 ". $where;
 	$sql .= " ORDER BY Reg_day DESC ";
 	$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
@@ -39,7 +44,7 @@
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 	if ( count($arrRows) > 0 ){
-		$totalRecords	= $arrRows[0][totalRecords];
+		$totalRecords	= $arrRowsTotal[0]['totalRecords'];
 		$totalPage		= ceil($totalRecords / $recordsPerPage);
 	}
 
@@ -64,10 +69,10 @@
 				<strong class="part_tit">검색</strong>
 				<div class="item line">
 					<select style="width:200px;" name="searchType">  
-						<option value="Adm_id"		<?=( $pSearchKey == 'Adm_id'	)? "SELECTED": "" ?> >아이디</option> 
-						<option value="Adm_name"	<?=( $pSearchKey == 'Adm_name'	)? "SELECTED": "" ?> >이름</option> 
-						<option value="Adm_Email"	<?=( $pSearchKey == 'Adm_Email'	)? "SELECTED": "" ?> >이메일</option> 
-						<option value="Adm_Email"	<?=( $pSearchKey == 'Adm_Email'	)? "SELECTED": "" ?> >소속부서</option> 
+						<option value="Adm_id"		<?=( $pSearchType == 'Adm_id'	)? "SELECTED": "" ?> >아이디</option> 
+						<option value="Adm_name"	<?=( $pSearchType == 'Adm_name'	)? "SELECTED": "" ?> >이름</option> 
+						<option value="Adm_Email"	<?=( $pSearchType == 'Adm_Email'	)? "SELECTED": "" ?> >이메일</option> 
+						<option value="ADI.Dept_Name"	<?=( $pSearchType == 'ADI.Dept_Name'	)? "SELECTED": "" ?> >소속부서</option> 
 					</select>
 					<input style="width:300px;" type="text" id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">검색</button>	
@@ -131,7 +136,7 @@
 								<td><?=substr($data['Reg_day'], 0, 10)?></td>
 								<td><?=fnCalDate($data['Password_day'], 'day', 90)?></td>
 								<td><?=substr($data['Login_day'], 0, 10)?></td>
-								<td><?=$data["use_CHK"]?></td>
+								<td><?=$data['use_CHK']?></td>
 								<td>
 									<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnModify'", "수정")?>
 									<?=fnButtonCreate($cPageRoleRw, "class='btn_line btn_sm btnMenuSet'", "메뉴 설정")?>

@@ -15,8 +15,8 @@
 			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = " SELECT ";
-			$sql .= "	Adm_name, CONVERT(NVARCHAR, Password) AS admPw, Login_day, Password_day, pass_CHK_count, use_CHK ";
-			$sql .= " FROM [theExam].[dbo].[Adm_info] ";
+			$sql .= "	Adm_name, CONVERT(NVARCHAR, Password) AS admPw, AdmType, Login_day, Password_day, pass_CHK_count, use_CHK ";
+			$sql .= " FROM Adm_info ";
 			$sql .= " WHERE Adm_id = :admId ";
 
 			$pArray[':admId'] = $pAdmId;
@@ -75,7 +75,8 @@
 
 				//세션 생성
 				$_SESSION["admId"]		= $pAdmId;
-				$_SESSION["admNm"]		= $arrRows[0][Adm_name];
+				$_SESSION["admNm"]		= $arrRows[0]['Adm_name'];
+				$_SESSION["admType"]	= $arrRows[0]['AdmType'];
 				$_SESSION["admPwChk"]	= "Y";
 				$_SESSION["admPwFail"]	= "";
 

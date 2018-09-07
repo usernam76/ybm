@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "192";	//메뉴고유번호
+	$cPageMenuIdx = "204";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -160,7 +160,7 @@
 								<td><?=$data['coup_count']-$data['use_count']?></td>
 								<td><?=$okChkNm?></td>
 								<td>
-									<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnIssuedList'", "발급리스트")?>
+									<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnIssuedList' data-coupCode='".$data['Coup_code']."' ", "발급리스트")?>
 								</td>
 							</tr>
 <?php
@@ -227,8 +227,8 @@ $(document).ready(function () {
 		location.href = "/language/couponWrite.php";
 	});
 
-	$("#btnIssuedList").on("click", function () {
-		location.href = "/language/couponIssuedList.php?admId="+admId;
+	$(".btnIssuedList").on("click", function () {
+		location.href = "/language/couponIssuedList.php?coupCode="+$(this).attr("data-coupCode");
 	});
 
 });

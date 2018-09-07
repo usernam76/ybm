@@ -184,14 +184,12 @@ span.onclick = function() {
 }
 
 $(function(){
-	
+
 	/* 지역 등록 추가*/
 	$("#btnWrite").on("click", function(){
-
 		if(!confirm("지역을 추가하시겠습니까?")){
 			return false;
 		}
-
 		var areaLev1 = $("form[name=frmWrite]").find("select[name=areaLev1]").val();
 		var areaLev2 = $.trim($("form[name=frmWrite]").find(" input[name=areaLev2]").val());
 
@@ -239,7 +237,6 @@ $(function(){
 	$("#btnLoadWrite").on("click", function(){
 		var modal = document.getElementById('myModal');
 		modal.style.display = "block";
-
 
 		var areaLev1 = $("form[name=frmWrite]").find("select[name=areaLev1]").val('');
 		var areaLev2 = $.trim($("form[name=frmWrite]").find(" input[name=areaLev2]").val(''));

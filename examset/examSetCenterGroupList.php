@@ -20,7 +20,7 @@
 	$where		= "";
 	if( $pSearchKey != "" ){
 		if($pSearchType == "center_name"){
-			$where = " AND STUFF( (SELECT '^' + center_name AS [text()] FROM [theExam].[dbo].[Def_exam_center] WITH (NOLOCK) WHERE center_group_code=DEG.center_group_code  FOR XML PATH('')), 1, 1, '') LIKE '%". $pSearchKey ."%' ";
+			$where = " AND STUFF( (SELECT '^' + center_name AS [text()] FROM [theExam].[dbo].[Def_exam_center] WITH (NOLOCK) WHERE center_group_code=DEG.center_group_code AND SB_center_cate='CBT'  FOR XML PATH('')), 1, 1, '') LIKE '%". $pSearchKey ."%' ";
 		}else{
 			$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
 		}
@@ -45,7 +45,7 @@
 	$sql .= " STUFF( ";
 	$sql .= " (SELECT '^' + center_name AS [text()] FROM [theExam].[dbo].[Def_exam_center] ";
 	$sql .= " WITH (NOLOCK) ";
-	$sql .= " WHERE center_group_code=DEG.center_group_code ";
+	$sql .= " WHERE center_group_code=DEG.center_group_code and SB_center_cate='CBT' ";
 	$sql .= " FOR XML PATH('')), 1, 1, '') AS CBTCenterNames ";
 	$sql .= "  from [theExam].[dbo].[Def_exam_center_Group] AS DEG ";
 	$sql .= " WHERE 1=1 ". $where;
@@ -141,7 +141,7 @@
 								<td><?=$data["일반"]?></td>
 								<td><?=$data["BEP"]?></td>
 								<td><?=$groupCenter?></td>
-								<td><a href="#" id="myBtn">센터변경</a></td>
+								<td><a href="#" data-centerGroupCode="<?=$data["center_group_code"]?>" data-centerGroupName="<?=$data["center_group_name"]?>" class="centerChange">센터변경</a></td>
 							</tr>
 <?php
 	}
@@ -155,20 +155,23 @@
 	</div>
 </div>
 <!--right //-->
+
+
+
 <!-- modal 팝업 :: goal-->
 <div id="myModal" class="modal">
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close"><img src="../resources/images/btn_x.png"></span>
+    <span class="close"><img src="../_resources/images/btn_x.png"></span>
     <!-- 팝업내용 -->
 	<div class="wrap_tbl">
 		<div class="box_inform">
 			<p class="txt_l">
-				<strong>[단체] 경북전문대학교/공학3관 1층</strong>
+				<strong id="thisCenterGroupName"></strong>
 			</p>
 		</div>
 		<div class="item pad_tb15">
-			<input class="i_unit" id="agree" type="checkbox"><label for="agree">그룹 미지정 센터만 보기</label>
+			<input class="i_unit" id="agree" type="checkbox" checked><label for="agree">그룹 미지정 센터만 보기</label>
 		</div>
 		<div class="colm2">
 			<div class="l_cont">
@@ -180,14 +183,7 @@
 							</tr>
 							<tr>
 								<td>
-									<ul class="list_area"><!--선택시 on-->
-										<li><a href="#" class="on">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
+									<ul class="list_area" id="leftCenterList"><!--선택시 on-->
 									</ul>
 								</td>
 							</tr>
@@ -196,8 +192,8 @@
 				</div>
 			</div>
 			<span class="arr_btn_sm">
-				<button class="btn_arr" type="button"><strong class="fs_sm">▶</strong></button><br>
-				<button class="btn_arr" type="button" style="margin-top:5px;"><strong class="fs_sm">◀</strong></button>
+				<button class="btn_arr" type="button" id="groupInCenter"><strong class="fs_sm">▶</strong></button><br>
+				<button class="btn_arr" type="button" id="groupOutCenter" style="margin-top:5px;"><strong class="fs_sm">◀</strong></button>
 			</span>
 			<div class="r_cont">
 				<div class="wrap_tbl">
@@ -208,14 +204,7 @@
 							</tr>
 							<tr>
 								<td>
-									<ul class="list_area">
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
-										<li><a href="#">[단체]경북전문대학교/공학3관 1층A</a></li>
+									<ul class="list_area"  id="rightCenterList">
 									</ul>
 								</td>
 							</tr>
@@ -224,7 +213,6 @@
 				</div>
 			</div>
 		</div>
-		
 	</div>
    <!-- 팝업내용 :: goal //-->
   </div>
@@ -299,6 +287,186 @@ $(document).ready(function () {
 	});
 	/* 센터그룹 추가 끝 */
 		
+
+	/* 센터변경 */
+	var centerChange = function(){
+
+		var loadType = "default";
+		var centerGroupCode;
+		var centerGroupName;
+
+
+		// 센터변경 팝업 호출-그룹미지정센터 체크상태 호출(default)
+		$(".centerChange").on("click", function(){
+			loadType = "default";
+			centerGroupCode = $(this).attr("data-centerGroupCode");
+			centerGroupName = $(this).attr("data-centerGroupName");
+			centerChangeListUpAjax();
+		});
+
+		var centerChangeListUpAjax = function(){
+			var u = "./examSetCenterGroupProc.php";				// 비동기 전송 파일 URL
+			var param = {	// 파라메터
+				"proc" : "getCenterLoadAjax",
+				"centerGroupCode" : centerGroupCode, 
+				"centerGroupName" : centerGroupName
+			};
+//			console.log(param);
+			/* 데이터 비동기 전송*/
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+				success: function(resJson) {
+					if(resJson.status == "success"){
+						centerControlLoad(resJson);
+						return false;
+					}
+				},
+				error: function(resJson) {
+					alert("현재 서버 통신이 원활하지 않습니다.");
+				}
+			});
+		}
+		// 센터변경 팝업 호출 끝
+
+		// 센터 목록 리스트업
+		var centerControlLoad = function(resJson){
+
+			console.log(resJson)
+			$("#thisCenterGroupName").html(resJson.centerGroupName);
+
+			// 좌측 센터 목록
+			if(loadType == "default"){		// default = 그룹 미지정 센터만 보기
+				var arr = resJson.notUseCenter;
+			}else{	// 전체 센터 보기
+				var arr = resJson.totalCenter;
+			}
+
+			var len = arr.length;
+			var addHTML = "";
+			for(var i=0; i<len; i++){
+				addClass = "class='centers'";
+				if(arr[i]["use_CHK"] == "X"){
+					addClass = "class='centers notUseCenter'";
+				}
+				addHTML += '<li><a href="#" '+addClass+' data-centerCode="'+arr[i]["center_code"]+'">'+arr[i]["center_name"]+'</a></li>';
+			}
+			$("#leftCenterList").html(addHTML);
+
+			// 우측 센터 목록
+			var arr = resJson.thisGroupCenter;
+			var len = arr.length;
+			var addHTML = "";
+			for(var i=0; i<len; i++){
+				addClass = "class='centers'";
+				if(arr[i]["use_CHK"] == "X"){
+					addClass = "class='centers notUseCenter'";
+				}
+				addHTML += '<li><a href="#" '+addClass+' data-centerCode="'+arr[i]["center_code"]+'">'+arr[i]["center_name"]+'</a></li>';
+			}
+			$("#rightCenterList").html(addHTML);
+			centersAddEvent();
+			$("#myModal").css("display", "block");
+		}
+		// 센터 목록 리스트업 끝
+
+		// 센터 목록 클릭 이벤트
+		var centersAddEvent = function(){
+			$(".centers").on("click", function(){
+				if($(this).hasClass("on")){
+					$(this).removeClass("on");
+				}else{
+					$(this).addClass("on");
+				}
+			});
+		}
+		// 센터 목록 클릭 이벤트 끝
+
+		// 그룹 미지정 센터보기 체크박스 이벤트
+		$("#agree").on("click", function(){
+			if($(this).is(":checked")){
+				loadType = "default";
+			}else{
+				loadType = "total";
+			}
+			centerChangeListUpAjax();
+		});
+		// 그룹 미지정 센터보기 체크박스 이벤트 끝
+
+		// ▶버튼으로 센터에 그룹 지정
+		$("#groupInCenter").on("click", function(){
+
+			var i=0;
+			var arrOnCenters = new Array();
+			var proc = "getGroupInCenterAjax";
+
+			// 좌측 센터 목록중 클릭한 메뉴를 배열로
+			$("#leftCenterList").find("a").each(function(){
+				if($(this).hasClass("on")){ arrOnCenters.push($(this).attr("data-centerCode"));}
+				i++;
+			});
+			centerGroupUpdate(arrOnCenters, proc);
+
+		});
+		// ▶버튼으로 센터에 그룹 지정 끝
+
+		
+		// ◀버튼으로 센터에 지정된 그룹 삭제
+		$("#groupOutCenter").on("click", function(){
+			var i=0;
+			var arrOnCenters = new Array();
+			var proc = "getGroupOutCenterAjax";
+
+			// 좌측 센터 목록중 클릭한 메뉴를 배열로
+			$("#rightCenterList").find("a").each(function(){
+				if($(this).hasClass("on")){ arrOnCenters.push($(this).attr("data-centerCode"));}
+				i++;
+			});
+			centerGroupUpdate(arrOnCenters, proc);
+		});
+		// ◀버튼으로 센터에 지정된 그룹 삭제 끝
+
+
+		var centerGroupUpdate = function(arrOnCenters, proc){
+			var u = "./examSetCenterGroupProc.php";				// 비동기 전송 파일 URL
+			var param = {	// 파라메터
+				"proc" : proc,
+				"centerGroupCode" : centerGroupCode, 
+				"centerGroupName" : centerGroupName,
+				"arrOnCenters" : arrOnCenters
+			};
+
+			/* 데이터 비동기 전송*/
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+				success: function(resJson) {
+					if(resJson.status == "success"){
+						if($("#agree").is(":checked")){
+							loadType = "default";
+						}
+						else{
+							loadType = "total";
+						}
+						console.log(resJson)
+						centerControlLoad(resJson);
+						return false;
+					}
+				},
+				error: function(resJson) {
+					console.log(resJson)
+					alert("현재 서버 통신이 원활하지 않습니다.");
+				}
+			});
+		}
+
+		// 닫기버튼 //
+		$(".close").on("click", function(){
+			$("#myModal").css("display", "none");
+			location.reload();
+		});
+	}
+
+	centerChange();
+	/* 센터변경 끝*/
+
+	
 
 });
 

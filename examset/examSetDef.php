@@ -9,6 +9,11 @@
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [];
 	$resultArray = fnGetRequestParam($valueValid);
+
+
+	/*
+	centerCate 로 CBT냐 PBT냐를 결정하게 하는거.
+	*/
 	$pCenterCate = "CBT";	// 고사장/센터 구분
 
 	
@@ -34,7 +39,7 @@
 
 	if($pCenterCate == "PBT"){
 		$sql = " SELECT ";
-		$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE 1=1 ". $where." ) AS totalRecords ";
+		$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE SB_center_cate='".$pCenterCate."' AND use_CHK='O'  ". $where." ) AS totalRecords ";
 		$sql .= " , [center_code] ,[SB_center_cate] ,[link_center_code] ,[center_group_code] ,[SB_area] ,[center_name] ,[zipcode] ,[address],[memo] ,[use_CHK] ,[update_day] ,[ok_id] ,[okType] ";
 		$sql .= " FROM [theExam].[dbo].[Def_exam_center]";
 		$sql .= " WHERE SB_center_cate='".$pCenterCate."' AND use_CHK='O' ". $where;
@@ -42,14 +47,14 @@
 		$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
 		$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
 	}else if($pCenterCate == "CBT"){
-
-		/*
-		@ 센터그룹관련 개발 완료 후 쿼리 수정 필요 합니다!!!!!!!!!
-		*/
+		
+		/*CBT는 zipcode와 address를 DEF_exam_center_group 코드에서 가져 온다.*/
 		$sql = " SELECT ";
-		$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE 1=1 ". $where." ) AS totalRecords ";
-		$sql .= " , [center_code] ,[SB_center_cate] ,[link_center_code] ,[center_group_code] ,[SB_area] ,[center_name] ,[zipcode] ,[address],[memo] ,[use_CHK] ,[update_day] ,[ok_id] ,[okType] ";
-		$sql .= " FROM [theExam].[dbo].[Def_exam_center]";
+		$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE SB_center_cate='".$pCenterCate."' AND use_CHK='O'  ". $where." ) AS totalRecords ";
+		$sql .= " , [center_code] ,[SB_center_cate] ,[link_center_code] ,[center_group_code] ,[SB_area] ,[center_name] ,[memo] ,[use_CHK] ,[update_day] ,[ok_id] ,[okType] ";
+		$sql .= " , (SELECT zipcode FROM [theExam].[dbo].[Def_exam_center_Group] where center_group_code = DEC.center_group_code) as [zipcode] ";
+		$sql .= ", (SELECT address FROM [theExam].[dbo].[Def_exam_center_Group] where center_group_code = DEC.center_group_code) as [address] ";
+		$sql .= " FROM [theExam].[dbo].[Def_exam_center] as DEC";
 		$sql .= " WHERE SB_center_cate='".$pCenterCate."' AND use_CHK='O' ". $where;
 		$sql .= " ORDER BY update_day DESC ";
 		$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
@@ -124,7 +129,6 @@
 	$no = $totalRecords - ( ( $currentPage - 1 ) * $recordsPerPage );
 	foreach($arrRows as $data) {
 ?>
-
 							<tr>
 								<td><?=$no--;?></td>
 								<td><?=$data['link_center_code']?></td>

@@ -12,7 +12,7 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);
 	if(empty($proc)) $proc = "write";
-	$pCenterCate = "PBT";	// 해당 페이지에서는 PBT만 입력한다.
+	$pCenterCate = "CBT";	// 해당 페이지에서는 PBT만 입력한다.
 
 	if($proc == "modify"){
 		

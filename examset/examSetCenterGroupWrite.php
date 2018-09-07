@@ -21,15 +21,11 @@
 		$sql .= " center_group_code = :centerGroupCode ";
 		$pArray[':centerGroupCode'] = $pCenterGroupCode;
 
-
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 	
 		if( count($arrRows) == 0 ){
 			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
 		}else{
-
-			print_r($arrRows[0]);
-
 			$centerGroupName = $arrRows[0]["center_group_name"];
 			$SBCenterGroup = $arrRows[0]["SB_center_group"];
 			$centerMap = $arrRows[0]["center_map"];
@@ -40,6 +36,7 @@
 			$memo = $arrRows[0]["memo"];
 		}
 	}
+
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
@@ -189,49 +186,67 @@ function getZipcodeSearch(){
 <script>
 $(document).ready(function () {
 
-	
+	/*입력/수정 유효성 체크*/
 	$('#frmWrite').validate({
-        onfocusout: false,
-        rules: {
-            areaLev1: {
-                required: true    //필수조건
-			}, areaLev2: {
-                required: true    //필수조건
-			}, centerName: {
-                required: true    //필수조건
-			}, roomCount: {
-                required: true    //필수조건
-			}, roomSeat: {
-                required: true    //필수조건
+		onfocusout: false,
+		rules: {
+			centerGroupName: {
+				required: true    //필수조건
+			}, SBCenterGroup: {
+				required: true    //필수조건
+			}, centerMap: {
+				required: true    //필수조건
+			}, zipcode: {
+				required: true    //필수조건
+			}, address1: {
+				required: true    //필수조건
+			} /*, 사용제한: {
+				required: true    //필수조건
+			}*/, useCHK: {
+				required: true    //필수조건
+			}, BEP: {
+				required: true    //필수조건
 			}
-        }, messages: {
-			areaLev1: {
-				required: "지역을 선택 해주세요."
-			}, areaLev2: {
-				required: "지역을 선택 해주세요."
-			}, centerName: {
-				required: "고사장명을 입력 해주세요."
-			}, roomCount: {
-				required: "고사실수를 입력 해주세요."
-			}, roomSeat: {
-				required: "좌석수를 선택 해주세요."
+		}, messages: {
+			centerGroupName: {
+				required: "그룹명을 입력 해주세요."
+			}, SBCenterGroup: {
+				required: "그룹종류를 선택 해주세요."
+			}, centerMap: {
+				required: "센터약도를 입력 해주세요."
+			}, zipcode: {
+				required: "우편번호 찾기를 통해 주소를 입력 해주세요."
+			}, address1: {
+				required: "우편번호 찾기를 통해 주소를 입력 해주세요."
+			} /*, 사용제한: {
+				required: "사용제한을 선택 해주세요."
+			}*/, useCHK: {
+				required: "사용여부를 선택 해주세요."
+			}, BEP: {
+				required: "BEP를 입력 해주세요."
 			}
-        }, errorPlacement: function (error, element) {
-            // $(element).removeClass('error');
-            // do nothing;
-        }, invalidHandler: function (form, validator) {
-            var errors = validator.numberOfInvalids();
-            if (errors) {
-                alert(validator.errorList[0].message);
-                validator.errorList[0].element.focus();
-            }
-        }
-    });
+		}, errorPlacement: function (error, element) {
+		}, invalidHandler: function (form, validator) {
+			var errors = validator.numberOfInvalids();
+			if (errors) {
+				alert(validator.errorList[0].message);
+				validator.errorList[0].element.focus();
+			}
+		}
+	});
+	/*입력/수정 유효성 체크 끝*/
 
+	/*입력/수정 전송*/
 	$("#btnWrite").on("click", function(){
 		$("#frmWrite").submit();
 	});
+	/*입력/수정 전송 끝*/
 
+	$("#btnCancel").on("click", function(){
+		history.back(-1);
+	});
+
+	/*삭제*/
 	$("#btnDelete").on("click", function(){
 		if(confirm("삭제하시겠습니까?")){
 			var centerGroupCode = $("input[name=centerGroupCode]").val();
@@ -239,11 +254,12 @@ $(document).ready(function () {
 		}else{
 			return false;
 		}
-
 	});
+	/*삭제 끝*/
 
 	/*숫자만 입력*/
 	common.string.onlyNumber($("input[name=BEP]"));
+	/*숫자만 입력 끝*/
 
 });
 </script>

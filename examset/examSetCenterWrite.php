@@ -23,7 +23,7 @@
 		
 		$sql = " SELECT ";
 		$sql .= " (SELECT left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) FROM [theExam].[dbo].[SB_Info] WHERE SB_kind='area' AND SB_value = DEC.SB_area) as areaLev1, ";
-		$sql .= " DEC.SB_area, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, ";
+		$sql .= " DEC.SB_area, DEC.center_group_code, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, ";
 		$sql .= " DCC.STN_CenterName, DCC.STN_CenterID,DCC.STN_username,DCC.STN_password,DCC.PC_count,DCC.certi_PC,DCC.use_PC,DCC.ETS_certi"; 
 		$sql .= " FROM ";
 		$sql .= " [theExam].[dbo].[Def_exam_center] AS [DEC] ";
@@ -41,6 +41,7 @@
 			$useChk	= $arrRows[0]["use_CHK"];
 			$areaLev1 = $arrRows[0]["areaLev1"];
 			$areaLev2 = $arrRows[0]["SB_area"];
+			$centerGroupCode = $arrRows[0]["center_group_code"];
 			$linkCenterCode = $arrRows[0]["link_center_code"];
 			$centerName = $arrRows[0]["center_name"];
 			$memo = $arrRows[0]["memo"];
@@ -56,6 +57,13 @@
 
 		}
 	}
+
+	$pArray = null;
+	$sql = " SELECT * FROM [theExam].[dbo].[Def_exam_center_Group] ";
+	$sql .= " WHERE use_CHK='O'";
+	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
@@ -130,7 +138,14 @@ function getZipcodeSearch(){
 								<th>센터 그룹</th>
 								<td colspan="5">
 									<div class="item"> 
-										<select style="width:400px;" name="centerGroupCode" id="centerGroupCode"></select>
+										<select style="width:400px;" name="centerGroupCode" id="centerGroupCode">
+										<?php
+										foreach($arrRows as $data){
+										?>
+											<option value="<?=$data["center_group_code"]?>" <?=($data["center_group_code"] == $centerGroupCode) ? "selected" : ""; ?>><?=$data["center_group_name"]?></option>
+										<?php
+										}?>
+										</select>
 									</div>
 								</td>
 							</tr>

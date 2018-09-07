@@ -4,6 +4,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
 	session_start();
+
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 
 	$proc = fnNoInjection($_REQUEST['proc']);	
@@ -79,6 +80,7 @@
 				$_SESSION["admType"]	= $arrRows[0]['AdmType'];
 				$_SESSION["admPwChk"]	= "Y";
 				$_SESSION["admPwFail"]	= "";
+				$_SESSION['LAST_ACTIVITY'] = time();
 
 				if( fnDateDiff( fnCalDate($data['Password_day'], 'day', 90), '') < 0 ){		//비밀번호 변경
 					$_SESSION["admPwChk"]	= "N";

@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
-	$cPageMenuIdx = "192";	//메뉴고유번호
+	$cPageMenuIdx = "204";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 
 	$proc = fnNoInjection($_REQUEST['proc']);	
@@ -54,6 +54,43 @@
 			echo json_encode($returnData);
 
 			break;
+
+		case 'userAdd':
+			$valueValid = [];
+			$resultArray = fnGetRequestParam($valueValid);
+
+			$sql = "EXEC p_Coup_Member_I 'I', :coupCode, :coupNo, :userId, :memo";	
+			$pArray[':coupCode']	= $pCoupCode;
+			$pArray[':coupNo']		= $pCoupNo;
+			$pArray[':userId']		= $pUserId;
+			$pArray[':memo']		= $pMemo;
+
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "result"=>$result[0][result]);
+
+			echo json_encode($returnData);
+
+			break;
+
+		case 'issuedCancel':
+			$valueValid = [];
+			$resultArray = fnGetRequestParam($valueValid);
+
+			$sql = "EXEC p_Coup_Member_I 'D', :coupCode, :coupNo, :userId, :memo";	
+			$pArray[':coupCode']	= $pCoupCode;
+			$pArray[':coupNo']		= $pCoupNo;
+			$pArray[':userId']		= $pUserId;
+			$pArray[':memo']		= "";
+
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "result"=>$result[0][result]);
+
+			echo json_encode($returnData);
+
+			break;
+
 
 		case 'getSampleListAjax':
 			// javascript 에서 url : /sample/proc.php?proc=getSmapleListAjax 와 같이 호출 및 return 받아 사용

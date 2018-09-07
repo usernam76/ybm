@@ -25,18 +25,17 @@
 		case 'write':
 
 			/* 입력 프로시저 */
-			$pCenterCode = "";			// center_code > null
+			$pCenterCode = $pCenterCate."_".$pLinkCenterCode;
 			$pZipcode = $pZipcode;	// zipcode
 			$pSBArea = $pAreaLev2;	
 			$pAddress = $pAddress1." ".$pAddress2;
-			$pMapUrl = $pMapUrl;	// 칼럼없음.
 			$pUseChk = "O";
 			$pOkId = "csw";	// 테스트 아이디
 			$pOkType = "T";	// 테스트의 T
 
 			$pIUD = "I";
 			$pArray = null;
-			$sql = 'EXEC p_Def_exam_center_IUD :IUD, :centerCode, :centerCate, :linkCenterCode, :centerGroupCode, :SBArea, :centerName, :zipCode, :address, :memo, :useChk, :okId, :okType, :roomCount, :roomSeat, :STNCenterName, :STNCenterId, :STNUserName, :STNPassword, :PCCount, :certiPC, :usePC, :ETSCerti';
+			$sql = 'EXEC p_Def_exam_center_IUD :IUD, :centerCode, :centerCate, :linkCenterCode, :centerGroupCode, :SBArea, :centerName, :zipCode, :address, :mapURL, :memo, :useChk, :okId, :okType, :roomCount, :roomSeat, :STNCenterName, :STNCenterId, :STNUserName, :STNPassword, :PCCount, :certiPC, :usePC, :ETSCerti';
 
 			$pArray[':IUD']							= $pIUD;
 			$pArray[':centerCode']				= $pCenterCode;
@@ -47,6 +46,7 @@
 			$pArray[':centerName']			= $pCenterName;
 			$pArray[':zipCode']					= $pZipcode;
 			$pArray[':address']					= $pAddress;
+			$pArray[':mapURL']					= $pMapURL;
 			$pArray[':memo']						= $pMemo;
 			$pArray[':useChk']						= $pUseChk;
 			$pArray[':okId']							= $pOkId;
@@ -62,10 +62,13 @@
 			$pArray[':usePC']						= $pUsePC;
 			$pArray[':ETSCerti']					= $pETSCerti;
 
+
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
-			if( $result[0][result] == 1 ){	//성공일때 메일 발송
+
+
+			if( $result[0][result] != '0' ){	//성공일때 메일 발송
 				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
@@ -86,7 +89,7 @@
 
 			$pIUD = "U";
 			$pArray = null;
-			$sql = 'EXEC p_Def_exam_center_IUD :IUD, :centerCode, :centerCate, :linkCenterCode, :centerGroupCode, :SBArea, :centerName, :zipCode, :address, :memo, :useChk, :okId, :okType, :roomCount, :roomSeat, :STNCenterName, :STNCenterId, :STNUserName, :STNPassword, :PCCount, :certPC, :usePC, :ETSCerti';
+			$sql = 'EXEC p_Def_exam_center_IUD :IUD, :centerCode, :centerCate, :linkCenterCode, :centerGroupCode, :SBArea, :centerName, :zipCode, :address, :mapURL, :memo, :useChk, :okId, :okType, :roomCount, :roomSeat, :STNCenterName, :STNCenterId, :STNUserName, :STNPassword, :PCCount, :certiPC, :usePC, :ETSCerti';
 
 			$pArray[':IUD']							= $pIUD;
 			$pArray[':centerCode']				= $pCenterCode;
@@ -97,6 +100,7 @@
 			$pArray[':centerName']			= $pCenterName;
 			$pArray[':zipCode']					= $pZipcode;
 			$pArray[':address']					= $pAddress;
+			$pArray[':mapURL']					= $pMapURL;
 			$pArray[':memo']						= $pMemo;
 			$pArray[':useChk']						= $pUseChk;
 			$pArray[':okId']							= $pOkId;
@@ -108,13 +112,13 @@
 			$pArray[':STNUserName']		= $pSTNUserName;
 			$pArray[':STNPassword']			= $pSTNPassword;
 			$pArray[':PCCount']					= $pPCCount;
-			$pArray[':certPC']						= $pCertPC;
+			$pArray[':certiPC']						= $pCertiPC;
 			$pArray[':usePC']						= $pUsePC;
 			$pArray[':ETSCerti']					= $pETSCerti;
 
+
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
-
 			if( $result[0][result] != '0' ){	//성공일때 메일 발송
 				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
 			}else{

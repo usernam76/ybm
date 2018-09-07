@@ -14,7 +14,7 @@
 	/*
 	centerCate 로 CBT냐 PBT냐를 결정하게 하는거.
 	*/
-	$pCenterCate = "CBT";	// 고사장/센터 구분
+	$pCenterCate = "PBT";	// 고사장/센터 구분
 
 	
 	$totalRecords	= 0;		// 총 레코드 수

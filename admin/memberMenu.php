@@ -13,10 +13,10 @@
 	$resultArray = fnGetRequestParam($valueValid);
 
 	//계정정보
-	$sql = " SELECT ";
+	$sql  = " SELECT ";
 	$sql .= "	AI.Adm_id, AI.AdmType, AI.Adm_name, AI.Adm_Email, ADI.Dept_Name";
-	$sql .= " FROM [theExam].[dbo].[Adm_info]  AS AI ";
-	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Dept_Info] AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
+	$sql .= " FROM Adm_info  AS AI ";
+	$sql .= " JOIN Adm_Dept_Info AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
 	$sql .= " WHERE Adm_id = :admId ";
 
 	$pArray[':admId'] = $pAdmId;
@@ -28,12 +28,12 @@
 	}
 
 	// 계정 메뉴권한 정보
-	$sql = " SELECT ";
+	$sql  = " SELECT ";
 	$sql .= "	Menu_Name1, Menu_idx1, Menu_Name2, Menu_idx2, Menu_Name3, Menu_idx3, Menu_Name4, Menu_idx4 ";
-	$sql .= "	, ( SELECT COUNT(*) FROM [theExam].[dbo].Menu_Info VMI2 WHERE Par_Menu_idx = VMI.Menu_idx2 AND ( SELECT COUNT(*) FROM [theExam].[dbo].Menu_Info WHERE Par_Menu_idx = VMI2.Menu_idx ) > 0 ) AS MenuCnt";
+	$sql .= "	, ( SELECT COUNT(*) FROM Menu_Info VMI2 WHERE Par_Menu_idx = VMI.Menu_idx2 AND ( SELECT COUNT(*) FROM Menu_Info WHERE Par_Menu_idx = VMI2.Menu_idx ) > 0 ) AS MenuCnt";
 	$sql .= "	, AM.Role_RW ";
-	$sql .= " FROM [theExam].[dbo].v_Menu_Info VMI ";
-	$sql .= " LEFT OUTER JOIN [theExam].[dbo].[Adm_Menu] AM ON AM.Menu_idx = VMI.Menu_idx4 AND Adm_id = :admId ";
+	$sql .= " FROM v_Menu_Info VMI ";
+	$sql .= " LEFT OUTER JOIN Adm_Menu AM ON AM.Menu_idx = VMI.Menu_idx4 AND Adm_id = :admId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' ";
 
 	$arrRowsMenu = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행

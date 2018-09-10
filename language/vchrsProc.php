@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 
-	$cPageMenuIdx = "204";	//메뉴고유번호
+	$cPageMenuIdx = "207";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 
 	$proc = fnNoInjection($_REQUEST['proc']);	
@@ -90,6 +90,7 @@
 			echo json_encode($returnData);
 
 			break;
+
 
 		default:
 

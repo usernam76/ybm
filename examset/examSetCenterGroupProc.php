@@ -75,7 +75,7 @@
 
 			$pIUD = "I";
 			$pArray = null;
-			$sql = 'EXEC p_Def_exam_center_Group_IUD :IUD, :centerGroupCode, :centerGroupName, :SBCenterGroup, :centerMap, :zipCode, :address, :useCHK, :BEP, :memo ';
+			$sql = 'EXEC p_Def_exam_center_Group_IUD :IUD, :centerGroupCode, :centerGroupName, :SBCenterGroup, :centerMap, :zipCode, :address, :useCHK, :BEP, :memo, :centerGroupType ';
 
 			$pArray[':IUD']								= $pIUD;
 			$pArray[':centerGroupCode']	= $pCenterGroupCode;
@@ -87,6 +87,7 @@
 			$pArray[':useCHK']						= $pUseCHK;
 			$pArray[':BEP']								= $pBEP;
 			$pArray[':memo']							= $pMemo;
+			$pArray[':centerGroupType']		= $pCenterGroupType;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
@@ -106,7 +107,7 @@
 
 			$pIUD = "U";
 			$pArray = null;
-			$sql = 'EXEC p_Def_exam_center_Group_IUD :IUD, :centerGroupCode, :centerGroupName, :SBCenterGroup, :centerMap, :zipCode, :address, :useCHK, :BEP, :memo ';
+			$sql = 'EXEC p_Def_exam_center_Group_IUD :IUD, :centerGroupCode, :centerGroupName, :SBCenterGroup, :centerMap, :zipCode, :address, :useCHK, :BEP, :memo, :centerGroupType ';
 
 			$pArray[':IUD']								= $pIUD;
 			$pArray[':centerGroupCode']	= $pCenterGroupCode;
@@ -118,6 +119,7 @@
 			$pArray[':useCHK']						= $pUseCHK;
 			$pArray[':BEP']								= $pBEP;
 			$pArray[':memo']							= $pMemo;
+			$pArray[':centerGroupType']		= $pCenterGroupType;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
@@ -138,7 +140,7 @@
 
 			$pIUD = "D";
 			$pArray = null;
-			$sql = 'EXEC p_Def_exam_center_Group_IUD :IUD, :centerGroupCode, :centerGroupName, :SBCenterGroup, :centerMap, :zipCode, :address, :useCHK, :BEP, :memo ';
+			$sql = 'EXEC p_Def_exam_center_Group_IUD :IUD, :centerGroupCode, :centerGroupName, :SBCenterGroup, :centerMap, :zipCode, :address, :useCHK, :BEP, :memo, :centerGroupType ';
 
 			$pArray[':IUD']								= $pIUD;
 			$pArray[':centerGroupCode']	= $pCenterGroupCode;
@@ -150,6 +152,7 @@
 			$pArray[':useCHK']						= $pUseCHK;
 			$pArray[':BEP']								= $pBEP;
 			$pArray[':memo']							= $pMemo;
+			$pArray[':centerGroupType']		= $pCenterGroupType;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
@@ -163,15 +166,12 @@
 
 		// 센터변경 메뉴 불러오기
 		case "getCenterLoadAjax" : 
-
 			getCenterList($pCenterGroupCode, $pCenterGroupName);
 			exit;
-
 		break;
 
 		// 센터에 그룹코드 지정
 		case "getGroupInCenterAjax" :
-
 			$successChk = "Y";
 			foreach($pArrOnCenters as $pCenterCode){
 				$pIUD = "U";
@@ -187,19 +187,16 @@
 					$successChk = "N";
 				}
 			}
-
 			if($successChk == "N"){
 				$returnData = array("status"=>"fail", "failcode"=>"81");
 				echo json_encode($returnData);
 				exit;
 			}
-			
 			getCenterList($pCenterGroupCode, $pCenterGroupName);
-
 		break;
 
+		// 센터에 그룹코드  제거
 		case "getGroupOutCenterAjax" :
-
 			$successChk = "Y";
 			foreach($pArrOnCenters as $pCenterCode){
 				$pIUD = "U";
@@ -210,20 +207,16 @@
 				$pArray[':centerGroupCode']				= null;
 				$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 				$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
-
 				if( $result[0][result] == '0' ){
 					$successChk = "N";
 				}
 			}
-
 			if($successChk == "N"){
 				$returnData = array("status"=>"fail", "failcode"=>"81");
 				echo json_encode($returnData);
 				exit;
 			}
-			
 			getCenterList($pCenterGroupCode, $pCenterGroupName);
-
 		break;
 
 		default:

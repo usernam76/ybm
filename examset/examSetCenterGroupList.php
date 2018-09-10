@@ -38,8 +38,14 @@
 	DEG.center_map, 
 	DEG.BEP, 
 	DEG.use_CHK,
+	DEG.center_group_type,
 	";
-	
+	$arrGroupType = array(
+		"N"=>"일반",
+		"G"=>"지정",
+		"A"=>"일반+지정"
+	);
+
 	$sql = " SELECT ";
 	$sql .=  $coulmn;
 	$sql .= " STUFF( ";
@@ -138,7 +144,7 @@
 								<td><?=$no++?></td>
 								<td><a href="./examSetCenterGroupWrite.php?proc=modify&centerGroupCode=<?=$data["center_group_code"]?>"><?=$data["center_group_name"]?></a></td>
 								<td><?=$data["center_map"]?></td>
-								<td><?=$data["일반"]?></td>
+								<td><?=$arrGroupType[$data["center_group_type"]]?></td>
 								<td><?=$data["BEP"]?></td>
 								<td><?=$groupCenter?></td>
 								<td><a href="#" data-centerGroupCode="<?=$data["center_group_code"]?>" data-centerGroupName="<?=$data["center_group_name"]?>" class="centerChange">센터변경</a></td>

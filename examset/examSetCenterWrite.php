@@ -319,6 +319,10 @@ $(document).ready(function () {
 		$("#frmWrite").submit();
 	});
 
+	$("#btnCancel").on("click", function(){
+		history.back(-1);
+	});
+
 
 	/*고사실 좌석수 계산*/
 	$("input[name=roomCount]").on("keyup", function(){

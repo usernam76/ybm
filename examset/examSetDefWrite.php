@@ -12,13 +12,13 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);
 	if(empty($proc)) $proc = "write";
-	$pCenterCate = "CBT";	// 해당 페이지에서는 PBT만 입력한다.
+	$pCenterCate = "PBT";	// 해당 페이지에서는 PBT만 입력한다.
 
 	if($proc == "modify"){
 		
 		$sql = " SELECT ";
 		$sql .= " (SELECT left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) FROM [theExam].[dbo].[SB_Info] WHERE SB_kind='area' AND SB_value = DEC.SB_area) as areaLev1, ";
-		$sql .= " DEC.SB_area, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, DCP.room_count, DCP.room_seat";
+		$sql .= " DEC.SB_area, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, DEC.map_URL, DCP.room_count, DCP.room_seat";
 		$sql .= " FROM ";
 		$sql .= " [theExam].[dbo].[Def_exam_center] as DEC ";
 		$sql .= " left outer join ";
@@ -39,7 +39,7 @@
 			$linkCenterCode = $arrRows[0]["link_center_code"];
 			$centerName = $arrRows[0]["center_name"];
 			$zipCode = $arrRows[0]["zipcode"];
-			$mapUrl = $arrRows[0]["mapUrl"];
+			$mapURL = $arrRows[0]["map_URL"];
 			$address = $arrRows[0]["address"];
 			$memo = $arrRows[0]["memo"];
 			$roomCount = $arrRows[0]["room_count"];
@@ -134,7 +134,7 @@ function getZipcodeSearch(){
 								<th>지도 URL</th>
 								<td>
 									<div class="item">
-										<input style="width: 80%;" type="text" name="mapUrl" value="<?=$mapUr?>">
+										<input style="width: 80%;" type="text" name="mapURL" value="<?=$mapURL?>">
 									</div>
 								</td>
 							</tr>
@@ -226,6 +226,9 @@ $(document).ready(function () {
 
 	$("#btnWrite").on("click", function(){
 		$("#frmWrite").submit();
+	});
+	$("#btnCancel").on("click", function(){
+		history.back(-1);
 	});
 
 

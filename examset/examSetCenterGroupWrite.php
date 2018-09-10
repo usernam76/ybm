@@ -29,6 +29,7 @@
 			$centerGroupName = $arrRows[0]["center_group_name"];
 			$SBCenterGroup = $arrRows[0]["SB_center_group"];
 			$centerMap = $arrRows[0]["center_map"];
+			$centerGroupType = $arrRows[0]["center_group_type"];
 			$BEP = $arrRows[0]["BEP"];
 			$useCHK	= $arrRows[0]["use_CHK"];
 			$zipCode = $arrRows[0]["zipcode"];
@@ -132,8 +133,8 @@ function getZipcodeSearch(){
 								<th>사용제한</th>
 								<td>
 									<div class="item">
-										<input class="i_unit" id="일반" type="radio" name="사용제한" value="일반" <?=( $사용제한 == "일반" )? "checked": "" ?>><label for="일반">일반</label>
-										<input class="i_unit" id="지정" type="radio" name="사용제한" value="지정" <?=( $사용제한 == "지정" )? "checked": "" ?>><label for="지정">지정고사장 (단체접수 등)</label>
+										<input class="i_unit" id="일반" type="radio" name="centerGroupType" value="N" <?=( $centerGroupType == "N" )? "checked": "" ?>><label for="일반">일반</label>
+										<input class="i_unit" id="지정" type="radio" name="centerGroupType" value="G" <?=( $centerGroupType == "G" )? "checked": "" ?>><label for="지정">지정고사장 (단체접수 등)</label>
 									</div>
 								</td>
 							</tr>

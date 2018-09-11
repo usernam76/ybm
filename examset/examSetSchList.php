@@ -16,38 +16,46 @@
 	if(empty($listYear)) $listYear = date("Y");
 
 	$coulmn = "
-		[Exam_code]
-		,[SB_Exam_cate]
-		,[Exam_num]
-		,[Exam_Name]
-		,convert(char(16),[Exam_day],120) as [Exam_day]
-		,convert(char(13),[Score_day],120) as [Score_day]
-		,[Exam_start_time]
-		,[check_in_time]
-		,convert(char(13),[gen_regi_Start],120) as [gen_regi_Start]
-		,convert(char(13),[gen_regi_End],120) as [gen_regi_End]
-		,convert(char(13),[spe_regi_Start],120) as [spe_regi_Start] 
-		,convert(char(13),[spe_regi_End],120) as [spe_regi_End] 
-		,convert(char(13),[ref_first_start],120) as [ref_first_start] 
-		,convert(char(13),[ref_first_end],120) as [ref_first_end] 
-		,convert(char(13),[ref_sec_start],120) as [ref_sec_start] 
-		,convert(char(13),[ref_sec_end],120) as [ref_sec_end] 
-		,convert(char(13),[regi_ext_end],120) as [regi_ext_end] 
-		,convert(char(13),[score_change_start],120) as [score_change_start] 
-		,convert(char(13),[score_change_end],120) as [score_change_end] 
-		,[conf_type]
-		,[update_day]
-		,[ok_id]
-		,[okType]
+		EI.[Exam_code]
+		,EI.[SB_Exam_cate]
+		,EI.[Exam_num]
+		,EI.[Exam_Name]
+		,convert(char(16),EI.[Exam_day],120) as Exam_day
+		,convert(char(13),EI.[Score_day],120) as Score_day
+		,EI.[Exam_start_time]
+		,EI.[check_in_time]
+		,convert(char(13),EI.[gen_regi_Start],120) as gen_regi_Start
+		,convert(char(13),EI.[gen_regi_End],120) as gen_regi_End
+		,convert(char(13),EI.[spe_regi_Start],120) as spe_regi_Start
+		,convert(char(13),EI.[spe_regi_End],120) as spe_regi_End
+		,convert(char(13),EI.[ref_first_start],120) as ref_first_start
+		,convert(char(13),EI.[ref_first_end],120) as ref_first_end
+		,convert(char(13),EI.[ref_sec_start],120) as ref_sec_start
+		,convert(char(13),EI.[ref_sec_end],120) as ref_sec_end
+		,convert(char(13),EI.[regi_ext_end],120) as regi_ext_end
+		,convert(char(13),EI.[score_change_start],120) as score_change_start
+		,convert(char(13),EI.[score_change_end],120) as score_change_end
+		,EI.[conf_type]
+		,EI.[update_day]
+		,EI.[ok_id]
+		,EI.[okType]
+		,GI.[sell_price]
+		,GI.[SB_goods_type]
 	";
 
 	$pArray = null;
 	$sql = " SELECT ".$coulmn. " FROM ";
-	$sql .= "  [theExam].[dbo].[Exam_Info] ";
-	$sql .= " WHERE SB_Exam_cate = :SBExamCate";
-	$sql .=  " AND convert(char(4),[gen_regi_start],120)=:listYear ";
+	$sql .= "  [theExam].[dbo].[Exam_Info] AS EI ";
+	$sql .= "  LEFT OUTER JOIN ";
+	$sql .= "  [theExam].[dbo].[Exam_Goods] AS EG ";
+	$sql .= "  on EI.Exam_code = EG.Exam_code ";
+	$sql .= "  INNER JOIN ";
+	$sql .= "  [theExam].[dbo].[Goods_info] as GI ";
+	$sql .= "  on GI.goods_code = EG.goods_code ";
+	$sql .= " WHERE ";
+	$sql .= "  convert(char(4),EI.[gen_regi_start],120)=:listYear";
 
-	$pArray[':SBExamCate']	= $SBExamCate;
+	//$pArray[':SBExamCate']	= $SBExamCate;
 	$pArray[':listYear']				= $listYear;
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -63,19 +71,27 @@
 	 > 칼럼숫자^테이블칼럼명^한글네임
 	*/
 	$listTableCoulmn = array(
-"oc^Exam_num^회차",
-"oc^Exam_day^시험일",
-"tc^gen_regi_Start^gen_regi_End^정기접수기간",
-"tc^spe_regi_Start^spe_regi_End^특별추가 접수기간",
-"oc^regi_ext_end^기간연장",
-"oc^^정기응시료",
-"oc^^특별응시료",
-"tc^score_change_start^score_change_end^성적표수령방법 변경기간",
-"oc^Score_day^성적발표일",
-"tc^ref_first_start^ref_first_end^환불1차",
-"tc^ref_sec_start^ref_sec_end^환불2차",
-"btn^수정"
+		"oc^Exam_num^회차",
+		"oc^Exam_day^시험일",
+		"tc^gen_regi_Start^gen_regi_End^정기접수기간",
+		"tc^spe_regi_Start^spe_regi_End^특별추가 접수기간",
+		"oc^regi_ext_end^기간연장",
+		"oc_num^sell_price^정기응시료",
+		"oc_num^sell_price^특별응시료",
+		"tc^score_change_start^score_change_end^성적표수령방법 변경기간",
+		"oc^Score_day^성적발표일",
+		"tc^ref_first_start^ref_first_end^환불1차",
+		"tc^ref_sec_start^ref_sec_end^환불2차",
+		"btn^수정"
 	);
+
+	switch($SBExamCate == "TOE"){
+		case "" :
+		break;
+
+		default :
+		break;
+	}
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
@@ -132,14 +148,19 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
 							<?php
 							foreach($arrRows as $data){
+								?>
+								<tr>
+								<?php
 								for($i=0; $i<count($listTableCoulmn); $i++){
 									$arrThisCoulmn = explode("^", $listTableCoulmn[$i]);
 									switch($arrThisCoulmn[0]){ 
 										case "oc" : 
 											$thisRows = $data[$arrThisCoulmn[1]];
+										break;
+										case "oc_num" : 
+											$thisRows = number_format($data[$arrThisCoulmn[1]])."원";
 										break;
 										case "tc" :
 											$thisRows = $data[$arrThisCoulmn[1]]."~".$data[$arrThisCoulmn[2]];
@@ -152,6 +173,9 @@
 								<td><?=$thisRows?></td>
 								<?php
 								}
+							?>
+							</tr>
+							<?php
 							}
 							?>
 							<!--
@@ -193,6 +217,12 @@ $(document).ready(function () {
 	$("#btnWrite").on("click", function(){
 		location.href = "./examSetSchWrite.php";
 	})
+
+	// 캘린더보기
+	$("#btnCalendar").on("click", function(){
+		location.href = "./examSetSchCal.php";
+	});
+
 });
 
 </script>

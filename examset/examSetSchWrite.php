@@ -30,46 +30,60 @@
 		}
 	}
 
+	/*단과시험 정보 출력*/
+	$pArray = null;
+	$coulmn = " [goods_code] ,[goods_name] ,[disp_goods_name] ,[SB_goods_type] ,[disp_price] ,[sell_price]";
+	$sql = "SELECT ".$coulmn;
+	$sql .= " FROM [theExam].[dbo].[Goods_info]";
+	$sql .="  WHERE use_CHK = 'O' AND pack_CHK='X'";
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+	$arrGenExam = array();		// 정기시험(시험구분)
+	$arrSpeExam = array();			// 특별시험(특별접수)
+
+	foreach($arrRows as $data){
+		//goods_code^goods_name^sell_price
+		$inArrayExamInfo = $data["goods_code"]."^".$data["goods_name"]."^".$data["sell_price"];
+	
+		switch($data['SB_goods_type']){
+			// 정기시험
+			case "EXR" :
+				array_push($arrGenExam, $inArrayExamInfo);
+			break;
+			// 특별시험
+			case "EXS":
+				array_push($arrSpeExam, $inArrayExamInfo);
+			break;
+		}
+	}
+	/*단과시험 정보 출력 끝*/
+
+
 
 /*
-@ 시험마다 표시하는 항목 다름.
-> 전체항목 순서 : 시험구분>특별접수>회차>시험일>시험시간>정기접수기간>특별접수기간>기간연장>성적표 수령방법 변경기간>성적발표일>환불1차>환불2차
->시험구분>특별접수>
-Exam_num>
-Exam_day>
-Exam_start_time/check_in_time>
-gen_regi_Start/gen_regi_End>
-spe_regi_Start/spe_regi_End>
-regi_ext_end>
-score_change_start/score_change_end>
-Score_day>
-ref_first_start/ref_first_end>
-ref_sec_start/ref_sec_end
-
-> 공통입력 항목 : 시험구분, 회차, 시험일, 정기접수기간, 성적표 수령방법 변경기간, 성적발표일, 환불1차
-> TOEIC, JPT : 특별접수, 특별접수기간, 환불 2차
-> 토익스피킹, KPE, JET-SW : 시험시간 삭제
-> 토익스피킹, 주니어테스트 : 기간연장 항목 추가
-
-examCode		시험구분
-examSpeCode	특별접수
-examNum			회차
-examDay			시험일
-examDate			시험시간
-genRegi				정기접수기간
-speRegi				특별접수기간
-regiExt				기간연장
-scoreChange	성적표 수령방법 변경기간
-scoreDay			성적 발표일
-refFirst				환불 1차
-refSecond			환불 2차
-
-*/
-	/*
 	@ 화면구성
 	@ 입력하는 필드 배열에 담는다.
-	*/
-	$SBExamCate = "TOE";	// TEST>전체필드오픈
+	@ 시험마다 화면 노출하는 항목 다름.
+		> 공통입력 항목 : 시험구분, 회차, 시험일, 정기접수기간, 성적표 수령방법 변경기간, 성적발표일, 환불1차
+		> TOEIC, JPT : 특별접수, 특별접수기간, 환불 2차
+		> 토익스피킹, KPE, JET-SW : 시험시간 삭제
+		> 토익스피킹, 주니어테스트 : 기간연장 항목 추가
+				examCode		시험구분
+				examSpeCode	특별접수
+				examNum			회차
+				examDay			시험일
+				examDate			시험시간
+				genRegi				정기접수기간
+				speRegi				특별접수기간
+				regiExt				기간연장
+				scoreChange	성적표 수령방법 변경기간
+				scoreDay			성적 발표일
+				refFirst				환불 1차
+				refSecond			환불 2차
+*/
+
+	$SBExamCate = "TOE";	// 토익>전체필드오픈
 	
 	// 공통 입력항목 세팅
 	$arrOpenField = array(
@@ -109,9 +123,39 @@ refSecond			환불 2차
 	if($proc == "modify"){
 
 		$pArray = null;
-		$sql = "SELECT * FROM";
-		$sql .= " [theExam].[dbo].[Exam_Info]";
-		$sql .= " where Exam_code = :examCode";
+		$coulmn = "
+			EI.[Exam_code] as Exam_code
+			,EI.[SB_Exam_cate] as SB_Exam_cate
+			,EI.[Exam_num] as Exam_num
+			,EI.[Exam_Name] as Exam_Name
+			,convert(char(16),EI.[Exam_day],120) as Exam_day
+			,convert(char(13),EI.[Score_day],120) as Score_day
+			,EI.[Exam_start_time] as Exam_start_time
+			,EI.[check_in_time] as check_in_time
+			,convert(char(13),EI.[gen_regi_Start],120) as gen_regi_Start
+			,convert(char(13),EI.[gen_regi_End],120) as gen_regi_End
+			,convert(char(13),EI.[spe_regi_Start],120) as spe_regi_Start
+			,convert(char(13),EI.[spe_regi_End],120) as spe_regi_End
+			,convert(char(13),EI.[ref_first_start],120) as ref_first_start
+			,convert(char(13),EI.[ref_first_end],120) as ref_first_end
+			,convert(char(13),EI.[ref_sec_start],120) as ref_sec_start
+			,convert(char(13),EI.[ref_sec_end],120) as ref_sec_end
+			,convert(char(13),EI.[regi_ext_end],120) as regi_ext_end
+			,convert(char(13),EI.[score_change_start],120) as score_change_start
+			,convert(char(13),EI.[score_change_end],120) as score_change_end
+			,EI.[conf_type] as conf_type
+			,EI.[update_day] as update_day
+			,EI.[ok_id] as ok_id
+			,EI.[okType] as okType
+			,EG.[goods_code] as goods_code
+		";
+		$sql = "SELECT ".$coulmn." FROM";
+		$sql .= "  [theExam].[dbo].[Exam_Info] AS EI ";
+		$sql .= "  LEFT OUTER JOIN ";
+		$sql .= "  [theExam].[dbo].[Exam_Goods] AS EG ";
+		$sql .= "  on EI.Exam_code = EG.Exam_code ";
+		$sql .= " WHERE ";
+		$sql .= " EI.Exam_code = :examCode";
 		$pArray[':examCode'] = $pExamCode;
 
 		$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -119,6 +163,9 @@ refSecond			환불 2차
 
 		$examNum = $arrRows[0]["Exam_num"];			// 회차
 		$examDay = $arrRows[0]["Exam_day"];				// 시험일
+		$SBExamCate =  $arrRows[0]["SB_Exam_cate"];
+		$goodsCode = $arrRows[0]["goods_code"];				// 단과시험정보
+
 		$examStartTime = explode(":",$arrRows[0]["Exam_start_time"]);		//시험기간
 			$examStartTimeHours = $examStartTime[0];	// 시험기간>시간
 			$examStartTimeMin = $examStartTime[1];		// 시험기간>분
@@ -194,9 +241,21 @@ refSecond			환불 2차
 							<tr  id="examCode" class="schField">
 								<th>시험구분</th>
 								<td>
-									<div name="examCode" class="item">
-										<select style="width: 200px;">  
-											<option value="">TOEIC (00,000원) </option> 
+									<div class="item">
+										<select name="goodsCode" >
+											<option value="">선택안함</option>
+<?php	
+	/*
+	[0] > goods_code
+	[1] > goods_name
+	[2] > sell_price
+	*/
+	foreach($arrGenExam as $data){
+		$arrData = explode("^",$data);
+		
+?>
+											<option value="<?=$arrData[0]?>" <?=($arrData[0] == $goodsCode) ? "selected" : ""; ?>><?=$arrData[1]?> (<?=number_format($arrData[2])?>원) </option> 
+<?php	}?>
 										</select>
 									</div>
 								</td>
@@ -205,8 +264,20 @@ refSecond			환불 2차
 								<th>특별접수</th>
 								<td>
 									<div class="item">
-										<select name="examSpeCode" style="width: 200px;">  
-											<option value="TOE">TOEIC (00,000원) </option> 
+										<select name="goodsCodeSpe">  
+											<option value="">선택안함</option>
+<?php	
+	/*
+	[0] > goods_code
+	[1] > goods_name
+	[2] > sell_price
+	*/
+	foreach($arrSpeExam as $data){
+		$arrData = explode("^",$data);
+
+?>
+											<option value="<?=$arrData[0]?>" <?=($arrData[0] == $goodsCode) ? "selected" : ""; ?>><?=$arrData[1]?> (<?=number_format($arrData[2])?>원) </option> 
+<?php	}?>
 										</select>
 									</div>
 								</td>
@@ -398,21 +469,19 @@ $(document).ready(function () {
 	var openField = function(idvle){
 		$("#"+idvle).css("display", "table-row");
 	}
-
+	
+	/* @ 회차 중복체크 */
 	$("#btnIdCheck").on("click", function(){
 		var examNum = $.trim($("input[name=examNum]").val());
-
 		if ( examNum == ""){
 			alert("회차를 입력해 주세요.");
 			return false;
 		}
-
 		var u = "./examSetSchProc.php";
 		var param = {
 			"proc"	: "examCheck",
 			"examNum"	: examNum
 		};
-
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
 			success: function(resJson) {
 				console.log(resJson);
@@ -429,13 +498,22 @@ $(document).ready(function () {
 			}
 		});
 	});
+	/* @ 회차 중복체크 끝*/
 
 
 	
 	$("#btnWrite").on("click", function () {
+	/*
+	@ 유효성체크 필요
+	*/
+
 
 		$('#frmWrite').submit();
     });
+
+	$("#btnCancel").on("click", function(){
+		location.href = "./examSetSchList.php";
+	});
 
 
 <?php

@@ -17,14 +17,8 @@
 	switch($proc){
 		case 'write':
 
-			/*
-			@ 현재 프로시저 입력해도 리턴값 0 뱉음
-			@ 최상운
-			*/
-
-			$pExamCode = $SB_Exam_cate."_".$pExamNum;
-			$pExamName = "테스트 시험";
-			$pExamDay = $pExamDay." 14:20";
+			$pExamCode = $pSBExamCate."_".$pExamNum;
+			$pExamDay = $pExamDay;
 			$pScoreDay = $pScoreDayDay." ".$pScoreDayHours.":00";
 
 			$pExamStartTime = $pExamStartTimeHours.":".$pExamStartTimeMin;		// 시험시간
@@ -44,17 +38,19 @@
 			$pScoreChangeStart = $pScoreChangeDay;
 			$pScoreChangeEnd = $pScoreChangeDay;
 
+			// 정기접수가 없으면 특별접수를 goods에 넣는다.
+			if(empty($pGoodsCode)){
+				$pGoodsCode = $pGoodsCodeSpe;
+			}
+
+
 			/*
 			임시입력
 			*/
+			$pExamName = null;
 			$pConfType = "없음";
-			$pExamGoodsCode = "111";
-			$pGoodsCodes = "222";
-			$pGroupCode = "333";
-			$pSellStart =$pScoreChangeDay;
-			$pSellEnd = $pScoreChangeDay;
-
-
+			$pSellStart =null;
+			$pSellEnd = null;
 			$pOkId = "csw";
 			$pOkType = "T";
 
@@ -87,16 +83,18 @@
 			$pArray[':ok_id']								= $pOkId;
 			$pArray[':okType']								= $pOkType;
 			$pArray[':Exam_Goods_Code']		= $pExamGoodsCode;
-			$pArray[':goods_codes']					= $pGoodsCodes;
+			$pArray[':goods_codes']					= $pGoodsCode;
 			$pArray[':Group_code']					= $pGroupCode;
 			$pArray[':sell_start']							= $pSellStart;
 			$pArray[':sell_end']							= $pSellEnd;
 
+
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
+
 			if( $result[0][result] != '0' ){	//성공일때 메일 발송
-				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
+				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetSchList.php';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
 			}
@@ -104,15 +102,8 @@
 		break;
 		case 'modify':
 
-
-			/*
-			@ 현재 프로시저 입력해도 리턴값 0 뱉음
-			@ 최상운
-			*/
-
-			$pExamCode = $SB_Exam_cate."_".$pExamNum;
-			$pExamName = "테스트 시험";
-			$pExamDay = $pExamDay." 14:20";
+			$pExamCode = $pSBExamCate."_".$pExamNum;
+			$pExamDay = $pExamDay;
 			$pScoreDay = $pScoreDayDay." ".$pScoreDayHours.":00";
 
 			$pExamStartTime = $pExamStartTimeHours.":".$pExamStartTimeMin;		// 시험시간
@@ -132,17 +123,19 @@
 			$pScoreChangeStart = $pScoreChangeDay;
 			$pScoreChangeEnd = $pScoreChangeDay;
 
+			// 정기접수가 없으면 특별접수를 goods에 넣는다.
+			if(empty($pGoodsCode)){
+				$pGoodsCode = $pGoodsCodeSpe;
+			}
+
+
 			/*
 			임시입력
 			*/
+			$pExamName = null;
 			$pConfType = "없음";
-			$pExamGoodsCode = "111";
-			$pGoodsCodes = "222";
-			$pGroupCode = "333";
-			$pSellStart =$pScoreChangeDay;
-			$pSellEnd = $pScoreChangeDay;
-
-
+			$pSellStart =null;
+			$pSellEnd = null;
 			$pOkId = "csw";
 			$pOkType = "T";
 
@@ -175,16 +168,17 @@
 			$pArray[':ok_id']								= $pOkId;
 			$pArray[':okType']								= $pOkType;
 			$pArray[':Exam_Goods_Code']		= $pExamGoodsCode;
-			$pArray[':goods_codes']					= $pGoodsCodes;
+			$pArray[':goods_codes']					= $pGoodsCode;
 			$pArray[':Group_code']					= $pGroupCode;
 			$pArray[':sell_start']							= $pSellStart;
 			$pArray[':sell_end']							= $pSellEnd;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+			
 
 			if( $result[0][result] != '0' ){	//성공일때 메일 발송
-				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
+				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/examSetSchWrite.php?proc=modify&examCode=".$pExamCode."';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
 			}

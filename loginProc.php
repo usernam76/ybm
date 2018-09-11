@@ -16,8 +16,9 @@
 			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = " SELECT ";
-			$sql .= "	Adm_name, CONVERT(NVARCHAR, Password) AS admPw, AdmType, Login_day, Password_day, pass_CHK_count, use_CHK ";
-			$sql .= " FROM Adm_info ";
+			$sql .= "	Adm_name, CONVERT(NVARCHAR, Password) AS admPw, AdmType, Login_day, Password_day, pass_CHK_count, AI.use_CHK, ADI.Dept_Name ";
+			$sql .= " FROM Adm_info AI ";
+			$sql .= " JOIN Adm_Dept_Info AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
 			$sql .= " WHERE Adm_id = :admId ";
 
 			$pArray[':admId'] = $pAdmId;
@@ -78,6 +79,7 @@
 				$_SESSION["admId"]		= $pAdmId;
 				$_SESSION["admNm"]		= $arrRows[0]['Adm_name'];
 				$_SESSION["admType"]	= $arrRows[0]['AdmType'];
+				$_SESSION["deptName"]	= $arrRows[0]['Dept_Name'];
 				$_SESSION["admPwChk"]	= "Y";
 				$_SESSION["admPwFail"]	= "";
 				$_SESSION['LAST_ACTIVITY'] = time();

@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "204";	//메뉴고유번호
+	$cPageMenuIdx = "207";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -34,7 +34,7 @@
 	$sql .= " JOIN Coup_List as B (nolock) on A.Coup_code = B.Coup_code	";
 	$sql .= " LEFT OUTER JOIN Coup_List_User as C (nolock) on B.Coup_code = C.Coup_code AND B.Coup_no = C.Coup_no	";
 	$sql .= " LEFT OUTER JOIN Member_certi as D (nolock) on C.Member_id = D.Member_id	";
-	$sql .= " WHERE SB_coup_cate = '일반쿠폰' AND A.Coup_code = :coupCode ". $where."	";
+	$sql .= " WHERE SB_coup_cate = '응시권' AND A.Coup_code = :coupCode ". $where."	";
 
 	$pArray[':coupCode']	= $pCoupCode;
 	$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -45,7 +45,7 @@
 	$sql .= " JOIN Coup_List as B (nolock) on A.Coup_code = B.Coup_code	";
 	$sql .= " LEFT OUTER JOIN Coup_List_User as C (nolock) on B.Coup_code = C.Coup_code AND B.Coup_no = C.Coup_no	";
 	$sql .= " LEFT OUTER JOIN Member_certi as D (nolock) on C.Member_id = D.Member_id	";
-	$sql .= " WHERE SB_coup_cate = '일반쿠폰' AND A.Coup_code = :coupCode ". $where;
+	$sql .= " WHERE SB_coup_cate = '응시권' AND A.Coup_code = :coupCode ". $where;
 	$sql .= " ORDER BY B.Coup_no ASC ";
 	$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
 	$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
@@ -68,7 +68,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">쿠폰 발급 리스트</h3>
+			<h3 class="title">응시권 발급 리스트</h3>
 
 			<!-- sorting area -->
 <form name="frmSearch" id="frmSearch" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
@@ -123,10 +123,10 @@
 							<tr>
 								<th><input class="i_unit" id="allCheck" type="checkbox"></th>
 								<th>번호</th>
-								<th>쿠폰명</th>
-								<th>쿠폰번호</th>
+								<th>응시권명</th>
+								<th>응시권번호</th>
 								<th>사용자ID</th>
-								<th>쿠폰등록일</th>
+								<th>응시권등록일</th>
 								<th>상태</th>
 								<th>사용일</th>
 								<th>관리</th>
@@ -206,11 +206,11 @@
 			</colgroup>
 			<tbody>
 				<tr>
-					<th>쿠폰명</th>
+					<th>응시권명</th>
 					<td><span id="coupName"><span></td>
 				</tr>
 				<tr>
-					<th>쿠폰번호</th>
+					<th>응시권번호</th>
 					<td><span id="coupNo"><span></td>
 				</tr>
 				<tr>
@@ -302,7 +302,7 @@ $(document).ready(function () {
 	});
 
 	$("#btnUserAdd").on("click", function () {
-		var u = "/language/couponProc.php";
+		var u = "/language/vchrsProc.php";
 		var param = {
 			"proc"		: "userAdd",
 			"coupCode"	: "<?=$pCoupCode?>",
@@ -328,7 +328,7 @@ $(document).ready(function () {
 	});
 
 	$(".btnIssuedCancel").on("click", function () {
-		var u = "/language/couponProc.php";
+		var u = "/language/vchrsProc.php";
 		var param = {
 			"proc"		: "issuedCancel",
 			"coupCode"	: "<?=$pCoupCode?>",

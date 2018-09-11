@@ -409,6 +409,51 @@
 			return html;
 		},
 
+		/** SbInfo 정보 세팅
+		 * obj     		: 파라미터 객체
+		 * var param = {
+		 *		"sbInfo" 			: "sbInfo"		// SbInfo 정보
+		 *		, "sbKind" 			: "sbKind"		// sbKind 정보
+		 *		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		 *		, "firstOptVal"		: ""			// 상단 옵션  value
+		 *		, "firstOptLable"	: "전체"			// 상단 옵션  text
+		 * }
+		 * common.sys.setSbInfoCreate(param);
+		 * **/
+		setSbInfoCreate : function(obj) {
+			$('#'+obj.sbInfo).html( common.sys.setComboOptHtml(
+												common.sys.getSbInfoList( obj.sbKind )
+												, obj.optYn
+												, obj.firstOptVal
+												, obj.firstOptLable));
+
+		},
+
+		// SbInfo data 가져오기
+		getSbInfoList : function( sbKind ) {
+			var returnVal = "";
+			var u = "/common/commonAjaxProc.php";
+			var param = {				
+				"proc"		: "sbInfoList",
+				"sbKind"	: sbKind
+			};	
+
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+				success: function(resJson) {
+					returnVal = resJson.data;
+					console.log(returnVal);
+				},
+				error: function(e) {
+					alert("현재 서버 통신이 원할하지 않습니다.");
+//					console.log("[Error]");
+//					console.log(e);
+					returnVal = "";
+				}
+			});
+
+			return returnVal;
+		},
+
 		/** 부서 정보 세팅
 		 * obj     		: 파라미터 객체
 		 * var param = {

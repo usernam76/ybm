@@ -3,8 +3,8 @@
 
 	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
 		// last request was more than 30 minutes ago
-		session_unset();     // unset $_SESSION variable for the run-time
-		session_destroy();   // destroy session data in storage
+//		session_unset();     // unset $_SESSION variable for the run-time
+//		session_destroy();   // destroy session data in storage
 	}
 	$_SESSION['LAST_ACTIVITY'] = time(); // update last activity time stamp
 
@@ -25,7 +25,6 @@
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND Menu_idx4 = :menuIdx4 ";
 
 	$cArrayPageMenu[':loginId'] = $_SESSION["admId"];
-//	$cArrayPageMenu[':loginId'] = "test";
 	$cArrayPageMenu[':menuIdx4'] = $cPageMenuIdx;
 
 	$cArrRowsPageMenu = $dbConn->fnSQLPrepare($sql, $cArrayPageMenu, ''); // 쿼리 실행

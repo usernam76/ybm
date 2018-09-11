@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "204";	//메뉴고유번호
+	$cPageMenuIdx = "207";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -16,34 +16,36 @@
 
 	$proc = "write";
 
-	$admNm		= $_SESSION["admNm"];
-	$deptName	= $_SESSION["deptName"];
+	$admEmail1	= "";
+	$admEmail2	= "";
+	$useChk		= "O";
 
-	if ( $pCoupCode != "" ){
+	if ( $pAdmId != "" ){
 		$sql  = " SELECT ";
-		$sql .= "	B.Adm_name, C.Dept_Name, A.regi_day, A.doc_num, A.coup_name, A.SB_coup_type, [dbo].f_Coup_scv_type_name(svc_type) AS svcNm, svc, A.usable_Startday, A.usable_endday ";
-		$sql .= "	, coup_count, ok_CHK, comp_name, comp_mng, A.ok_id, A.ok_day, E.Adm_name AS okNm	";
-		$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'usr' ) AS areaDataUsr	";
-		$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'usa' ) AS areaDataUsa	";
-		$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'pro' ) AS areaDataPro	";
-		$sql .= " FROM Coup_Info as A (nolock) 	";
-		$sql .= " JOIN Adm_info as B (nolock) on A.apply_id = B.Adm_id and A.applyType = B.AdmType 	";
-		$sql .= " JOIN Adm_Dept_Info as C (nolock) on B.Dept_Code = C.Dept_Code 	";
-		$sql .= " JOIN Coup_Service as D (nolock) on A.Coup_code = D.Coup_code	";
-		$sql .= " LEFT OUTER JOIN Adm_info as E (nolock) on A.ok_id = E.Adm_id and A.okType = E.AdmType 	";
-		$sql .= " WHERE SB_coup_cate = '일반쿠폰' AND A.Coup_code = :coupCode ";
+		$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Dept_Code, AI.Token_code, AI.Reg_day, AI.Login_day, AI.Password_day, AI.Adm_IP, AI.use_CHK, AI.Update_day ";
+		$sql .= "	, ISNULL( ADI4.Dept_Code, ADI3.Dept_Code ) AS detpLev1 ";
+		$sql .= "	, CASE WHEN ISNULL( ADI4.Dept_Code, '' ) = '' THEN ADI2.Dept_Code ELSE ADI3.Dept_Code END AS detpLev2 ";
+		$sql .= " FROM Adm_info AS AI ";
+		$sql .= " JOIN Adm_Dept_Info AS ADI1 (nolock) ON AI.Dept_Code = ADI1.Dept_Code ";
+		$sql .= " JOIN Adm_Dept_Info AS ADI2 (nolock) ON ADI1.PDept_Code = ADI2.Dept_Code ";
+		$sql .= " JOIN Adm_Dept_Info AS ADI3 (nolock) ON ADI2.PDept_Code = ADI3.Dept_Code ";
+		$sql .= " LEFT OUTER JOIN Adm_Dept_Info AS ADI4 (nolock) ON ADI3.PDept_Code = ADI4.Dept_Code ";
+		$sql .= " WHERE Adm_id = :admId ";
 
-		$pArray[':coupCode'] = $pCoupCode;
+		$pArray[':admId'] = $pAdmId;
 
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 		if( count($arrRows) == 0 ){
 			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
 		}else{
-			$proc		= "modify";
-			$admNm		= $arrRows[0]['Adm_name'];
-			$deptName	= $arrRows[0]['Dept_Name'];
+			$proc = "modify";
 
+			$useChk	= $arrRows[0]['use_CHK'];
+
+			$admEmail = explode("@",$arrRows[0]['Adm_Email']);
+			$admEmail1 = $admEmail[0];
+			$admEmail2 = $admEmail[1];
 		}
 	}	
 ?>
@@ -58,9 +60,9 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">쿠폰<?=( $proc == "write" )? "발급": "수정" ?></h3>
+			<h3 class="title">응시권<?=( $proc == "write" )? "발급": "수정" ?></h3>
 
-<form name="frmWrite" id="frmWrite" action="/language/couponProc.php" method="post"> 
+<form name="frmWrite" id="frmWrite" action="/admin/memberProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">
 
 			<!-- 세로형 테이블 -->
@@ -77,15 +79,15 @@
 						<tbody>
 							<tr>
 								<th>신청자</th>
-								<td><?=$admNm?></td>
+								<td>홍길동</td>
 								<th>부서</th>
-								<td><?=$deptName?></td>
+								<td>홍보팀</td>
 							</tr>
 							<tr>
 								<th>기안문서번호</th>
 								<td colspan="3">
 									<div class="item">
-										<input style="width: 300px;" type="text" name="docNum" value="<?=$arrRows[0]['doc_num']?>">
+										<input style="width: 300px;" type="text">
 									</div>
 								</td>
 							</tr>
@@ -93,7 +95,7 @@
 								<th>쿠폰명</th>
 								<td colspan="3">
 									<div class="item">
-										<input style="width: 300px;" type="text" name="coupName" value="<?=$arrRows[0]['coup_name']?>">
+										<input style="width: 300px;" type="text">
 									</div>
 								</td>
 							</tr>
@@ -101,7 +103,11 @@
 								<th>종류</th>
 								<td colspan="3">
 									<div class="item">
-										<select id="sbCoupCate" name="sbCoupCate"></select>
+										<select style="width: 300px;">  
+											<option>일반쿠폰</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select>
 									</div>
 								</td>
 							</tr>
@@ -109,7 +115,11 @@
 								<th>발급대상</th>
 								<td colspan="3">
 									<div class="item">
-										<select id="sbUseAreas" name="sbUseAreas"></select>
+										<select style="width: 300px;">  
+											<option>일반쿠폰</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select>
 									</div>
 								</td>
 							</tr>
@@ -117,7 +127,11 @@
 								<th>발급구분</th>
 								<td colspan="3">
 									<div class="item">
-										<select id="sbCoupType" name="sbCoupType"></select>
+										<select style="width: 300px;">  
+											<option>일반쿠폰</option> 
+											<option>선택 둘</option> 
+											<option>선택 셋</option> 
+										</select>
 									</div>
 								</td>
 							</tr>
@@ -228,13 +242,13 @@
 							<tr>
 								<th>업체</th>
 								<td colspan="3">
-									<input style="width:300px;" type="text" name="compName" value="<?=$arrRows[0]['comp_name']?>">
+									<input style="width:300px;" type="text">
 								</td>
 							</tr>
 							<tr>
 								<th>업체담당자</th>
 								<td colspan="3">
-									<input style="width:300px;" type="text" name="compMng" value="<?=$arrRows[0]['comp_mng']?>">
+									<input style="width:300px;" type="text">
 								</td>
 							</tr>
 						</tbody>
@@ -303,46 +317,19 @@ $(document).ready(function () {
 //		$('#frmWrite').submit();
     });
 
-	$("#btnCancel").on("click", function () {
-		location.href = "/language/couponList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
+	$("#admId").keyup(function(event){		// 영문 숫자만 입력
+		if (!(event.keyCode >=37 && event.keyCode<=40)) {
+			var inputVal = $(this).val();
+			$(this).val(inputVal.replace(/[^a-z0-9]/gi,''));
+		}
+		$("#idCheck").val("");
 	});
 
-	var param = {
-		"sbInfo" 			: "sbCoupCate"	// SbInfo 정보
-		, "sbKind" 			: "coup_cate"	// sbKind 정보
-		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
-		, "firstOptVal"		: ""			// 상단 옵션  value
-		, "firstOptLable"	: "선택"			// 상단 옵션  text
-	}
-	common.sys.setSbInfoCreate(param);
-
-	$("#sbCoupCate").val("<?=$arrRows[0]['SB_coup_cate']?>").change();
-
-	var param = {
-		"sbInfo" 			: "sbUseAreas"	// SbInfo 정보
-		, "sbKind" 			: "coup_cate"	// sbKind 정보
-		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
-		, "firstOptVal"		: ""			// 상단 옵션  value
-		, "firstOptLable"	: "선택"			// 상단 옵션  text
-	}
-	common.sys.setSbInfoCreate(param);
-
-	$("#sbUseAreas").val("<?=$arrRows[0]['SB_coup_cate']?>").change();
-
-	
-	var param = {
-		"sbInfo" 			: "sbCoupType"	// SbInfo 정보
-		, "sbKind" 			: "coup_type"	// sbKind 정보
-		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
-		, "firstOptVal"		: ""			// 상단 옵션  value
-		, "firstOptLable"	: "선택"			// 상단 옵션  text
-	}
-	common.sys.setSbInfoCreate(param);
-
-	$("#sbCoupType").val("<?=$arrRows[0]['SB_coup_type']?>").change();
+	$("#btnCancel").on("click", function () {
+		location.href = "/language/vchrsList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
+	});
 
 
-sbCoupCate
 
 });
 </script>

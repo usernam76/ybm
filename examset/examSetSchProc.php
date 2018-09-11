@@ -17,48 +17,43 @@
 	switch($proc){
 		case 'write':
 
-/*
-examStartTimeHours--->03
-examStartTimeMin--->30
-checkInTimeHours--->06
-checkInTimeMin--->40
-genRegiStartDay--->2018-09-13
-genRegiStartHours--->03
-genRegiEndDay--->2018-09-12
-genRegiEndHours--->10
-speRegiStartDay--->2018-09-11
-speRegiStartHours--->06
-speRegiEndDay--->2018-09-27
-speRegiEndHours--->14
-regiExtEndDay--->2018-09-20
-regiExtEndHours--->04
-scoreDayDay--->2018-09-20
-scoreDayHours--->15
-refFirstStartDay--->2018-09-26
-refFirstStartHours--->15
-refFirstEndDay--->2018-09-27
-refFirstEndHours--->18
-refSecondStartDay--->2018-09-12
-refSecondStartHours--->17
-refSecondEndDay--->2018-09-28
-refSecondEndHours--->14
-*/
-			$pExamName = "테스트 시험";
-			$pExamDay = $pExamDay;
-			$pScoreDay = $pScoreDay;
+			/*
+			@ 현재 프로시저 입력해도 리턴값 0 뱉음
+			@ 최상운
+			*/
 
-			$pExamStartTime = $pEamStartTimeHours.":".$pEamStartTimeMin;		// 시험시간
+			$pExamCode = $SB_Exam_cate."_".$pExamNum;
+			$pExamName = "테스트 시험";
+			$pExamDay = $pExamDay." 14:20";
+			$pScoreDay = $pScoreDayDay." ".$pScoreDayHours.":00";
+
+			$pExamStartTime = $pExamStartTimeHours.":".$pExamStartTimeMin;		// 시험시간
 			$pCheckInTime = $pCheckInTimeHours.":".$pCheckInTimeMin;					// 입실시간
 
-			$pGenRegiStart = $pGenRegiStartDay." ".$pGenRegiStartHours.":00:00";
-			$pGenRegiEnd = $pGenEndStartDay." ".$pGenRegiEndHours.":00:00";
-			$pSpeRegiStart =  $pSpeRegiStartDay." ".$pSpeRegiStartHours.":00:00";
-			$pSpeRegiEnd =  $pSpeRegiEndDay." ".$pSpeRegiEndHours.":00:00";
-			$pRefFirstStart =  $pRefFirstStartDay." ".$pRefFirstStartHours.":00:00";
-			$pRefFirstEnd =  $pRefFirstEndDay." ".$pRefFirstEndHours.":00:00";
+			$pGenRegiStart = $pGenRegiStartDay." ".$pGenRegiStartHours.":00";
+			$pGenRegiEnd = $pGenRegiEndDay." ".$pGenRegiEndHours.":00";
+			$pSpeRegiStart =  $pSpeRegiStartDay." ".$pSpeRegiStartHours.":00";
+			$pSpeRegiEnd =  $pSpeRegiEndDay." ".$pSpeRegiEndHours.":00";
+			$pRefFirstStart =  $pRefFirstStartDay." ".$pRefFirstStartHours.":00";
+			$pRefFirstEnd =  $pRefFirstEndDay." ".$pRefFirstEndHours.":00";
 
-			$pRefSecStart =  $pRefSecondStartDay." ".$pRefSecondStartHours.":00:00";
-			$pRefSecEnd =  $pRefSecondEndDay." ".$pRefSecondEndHours.":00:00";
+			$pRefSecStart =  $pRefSecondStartDay." ".$pRefSecondStartHours.":00";
+			$pRefSecEnd =  $pRefSecondEndDay." ".$pRefSecondEndHours.":00";
+
+			$pRegiExtEnd = $pRegiExtEndDay." ".$regiExtEndHours;
+			$pScoreChangeStart = $pScoreChangeDay;
+			$pScoreChangeEnd = $pScoreChangeDay;
+
+			/*
+			임시입력
+			*/
+			$pConfType = "없음";
+			$pExamGoodsCode = "111";
+			$pGoodsCodes = "222";
+			$pGroupCode = "333";
+			$pSellStart =$pScoreChangeDay;
+			$pSellEnd = $pScoreChangeDay;
+
 
 			$pOkId = "csw";
 			$pOkType = "T";
@@ -66,45 +61,136 @@ refSecondEndHours--->14
 			/* 입력 프로시저 실행*/
 			$pIUD = "I";
 			$pArray = null;
-			$sql = "EXEC [theExam].[dbo].[p_Exam_info_IUD] :IUD,:ExamCode,:SBExamCate,:ExamNumint,:ExamName,:ExamDay,:ScoreDay,:ExamStartTime,:checkInTime,:genRegiStart,:genRegiEnd,:speRegiStart,:speRegiEnd,:refFirstStart,:refFirstEnd,:refSecStart,:refSecEnd,:regiExtEnd,:scoreChangeStart,:scoreChangeEnd,:confType,:okId,:okType,:ExamGoodsCode,:goodsCodes,:GroupCode,:sellStart,:sellEnd";
+			$sql = "EXEC p_Exam_info_IUD
+:IUD,:Exam_code,:SB_Exam_cate,:Exam_num,:Exam_Name,:Exam_day,:Score_day,:Exam_start_time,:check_in_time,:gen_regi_Start,:gen_regi_End,:spe_regi_Start,:spe_regi_End,:ref_first_start,:ref_first_end,:ref_sec_start,:ref_sec_end,:regi_ext_end,:score_change_start,:score_change_end,:conf_type,:ok_id,:okType,:Exam_Goods_Code,:goods_codes,:Group_code,:sell_start,:sell_end";
+			$pArray[':IUD']									= $pIUD;
+			$pArray[':Exam_code']						= $pExamCode;
+			$pArray[':SB_Exam_cate']				= $pSBExamCate;
+			$pArray[':Exam_num']						= $pExamNum;
+			$pArray[':Exam_Name']					= $pExamName;
+			$pArray[':Exam_day']						= $pExamDay;
+			$pArray[':Score_day']						= $pScoreDay;
+			$pArray[':Exam_start_time']			= $pExamStartTime;
+			$pArray[':check_in_time']				= $pCheckInTime;
+			$pArray[':gen_regi_Start']				= $pGenRegiStart;
+			$pArray[':gen_regi_End']				= $pGenRegiEnd;
+			$pArray[':spe_regi_Start']				= $pSpeRegiStart;
+			$pArray[':spe_regi_End']					= $pSpeRegiEnd;
+			$pArray[':ref_first_start']					= $pRefFirstStart;
+			$pArray[':ref_first_end']					= $pRefFirstEnd;
+			$pArray[':ref_sec_start']					= $pRefSecStart;
+			$pArray[':ref_sec_end']					= $pRefSecEnd;
+			$pArray[':regi_ext_end']					= $pRegiExtEnd;
+			$pArray[':score_change_start']		= $pScoreChangeStart;
+			$pArray[':score_change_end']		= $pScoreChangeEnd;
+			$pArray[':conf_type']						= $pConfType;
+			$pArray[':ok_id']								= $pOkId;
+			$pArray[':okType']								= $pOkType;
+			$pArray[':Exam_Goods_Code']		= $pExamGoodsCode;
+			$pArray[':goods_codes']					= $pGoodsCodes;
+			$pArray[':Group_code']					= $pGroupCode;
+			$pArray[':sell_start']							= $pSellStart;
+			$pArray[':sell_end']							= $pSellEnd;
 
-			$pArray[':IUD']								= $pIUD;
-			$pArray[':ExamCode']					= $pExamCode;
-			$pArray[':SBExamCate']				= $pSBExamCate;
-			$pArray[':ExamNum']					= $pExamNum;
-			$pArray[':ExamName']					= $pExamName;
-			$pArray[':ExamDay']						= $pExamDay;
-			$pArray[':ScoreDay']						= $pScoreDay;
-			$pArray[':ExamStartTime']			= $pExamStartTime;
-			$pArray[':checkInTime']				= $pCheckInTime;
-			$pArray[':genRegiStart']				= $pGenRegiStart;
-			$pArray[':genRegiEnd']				= $pGenRegiEnd;
-			$pArray[':speRegiStart']				= $pSpeRegiStart;
-			$pArray[':speRegiEnd']					= $pSpeRegiEnd;
-			$pArray[':refFirstStart']					= $pRefFirstStart;
-			$pArray[':refFirstEnd']					= $pRefFirstEnd;
-			$pArray[':refSecStart']					= $pRefSecStart;
-			$pArray[':refSecEnd']					= $pRefSecEnd;
-			$pArray[':regiExtEnd']					= $pRegiExtEnd;
-			$pArray[':scoreChangeStart']		= $pScoreChangeStart;
-			$pArray[':scoreChangeEnd']		= $pScoreChangeEnd;
-			$pArray[':confType']						= $pConfType;
-			$pArray[':okId']								= $pOkId;
-			$pArray[':okType']							= $pOkType;
-			$pArray[':ExamGoodsCode']		= $pExamGoodsCode;
-			$pArray[':goodsCodes']				= $pGoodsCodes;
-			$pArray[':GroupCode']				= $pGroupCode;
-			$pArray[':sellStart']						= $pSellStart;
-			$pArray[':sellEnd']							= $pSellEnd;
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
-
-			foreach($pArray as $k=>$v){
-				echo $k."--->".$v."<br />";
+			if( $result[0][result] != '0' ){	//성공일때 메일 발송
+				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
+			}else{
+				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
 			}
-
 			exit;
 		break;
 		case 'modify':
+
+
+			/*
+			@ 현재 프로시저 입력해도 리턴값 0 뱉음
+			@ 최상운
+			*/
+
+			$pExamCode = $SB_Exam_cate."_".$pExamNum;
+			$pExamName = "테스트 시험";
+			$pExamDay = $pExamDay." 14:20";
+			$pScoreDay = $pScoreDayDay." ".$pScoreDayHours.":00";
+
+			$pExamStartTime = $pExamStartTimeHours.":".$pExamStartTimeMin;		// 시험시간
+			$pCheckInTime = $pCheckInTimeHours.":".$pCheckInTimeMin;					// 입실시간
+
+			$pGenRegiStart = $pGenRegiStartDay." ".$pGenRegiStartHours.":00";
+			$pGenRegiEnd = $pGenRegiEndDay." ".$pGenRegiEndHours.":00";
+			$pSpeRegiStart =  $pSpeRegiStartDay." ".$pSpeRegiStartHours.":00";
+			$pSpeRegiEnd =  $pSpeRegiEndDay." ".$pSpeRegiEndHours.":00";
+			$pRefFirstStart =  $pRefFirstStartDay." ".$pRefFirstStartHours.":00";
+			$pRefFirstEnd =  $pRefFirstEndDay." ".$pRefFirstEndHours.":00";
+
+			$pRefSecStart =  $pRefSecondStartDay." ".$pRefSecondStartHours.":00";
+			$pRefSecEnd =  $pRefSecondEndDay." ".$pRefSecondEndHours.":00";
+
+			$pRegiExtEnd = $pRegiExtEndDay." ".$regiExtEndHours;
+			$pScoreChangeStart = $pScoreChangeDay;
+			$pScoreChangeEnd = $pScoreChangeDay;
+
+			/*
+			임시입력
+			*/
+			$pConfType = "없음";
+			$pExamGoodsCode = "111";
+			$pGoodsCodes = "222";
+			$pGroupCode = "333";
+			$pSellStart =$pScoreChangeDay;
+			$pSellEnd = $pScoreChangeDay;
+
+
+			$pOkId = "csw";
+			$pOkType = "T";
+
+			/* 수정 프로시저 실행*/
+			$pIUD = "U";
+			$pArray = null;
+			$sql = "EXEC p_Exam_info_IUD
+:IUD,:Exam_code,:SB_Exam_cate,:Exam_num,:Exam_Name,:Exam_day,:Score_day,:Exam_start_time,:check_in_time,:gen_regi_Start,:gen_regi_End,:spe_regi_Start,:spe_regi_End,:ref_first_start,:ref_first_end,:ref_sec_start,:ref_sec_end,:regi_ext_end,:score_change_start,:score_change_end,:conf_type,:ok_id,:okType,:Exam_Goods_Code,:goods_codes,:Group_code,:sell_start,:sell_end";
+			$pArray[':IUD']									= $pIUD;
+			$pArray[':Exam_code']						= $pExamCode;
+			$pArray[':SB_Exam_cate']				= $pSBExamCate;
+			$pArray[':Exam_num']						= $pExamNum;
+			$pArray[':Exam_Name']					= $pExamName;
+			$pArray[':Exam_day']						= $pExamDay;
+			$pArray[':Score_day']						= $pScoreDay;
+			$pArray[':Exam_start_time']			= $pExamStartTime;
+			$pArray[':check_in_time']				= $pCheckInTime;
+			$pArray[':gen_regi_Start']				= $pGenRegiStart;
+			$pArray[':gen_regi_End']				= $pGenRegiEnd;
+			$pArray[':spe_regi_Start']				= $pSpeRegiStart;
+			$pArray[':spe_regi_End']					= $pSpeRegiEnd;
+			$pArray[':ref_first_start']					= $pRefFirstStart;
+			$pArray[':ref_first_end']					= $pRefFirstEnd;
+			$pArray[':ref_sec_start']					= $pRefSecStart;
+			$pArray[':ref_sec_end']					= $pRefSecEnd;
+			$pArray[':regi_ext_end']					= $pRegiExtEnd;
+			$pArray[':score_change_start']		= $pScoreChangeStart;
+			$pArray[':score_change_end']		= $pScoreChangeEnd;
+			$pArray[':conf_type']						= $pConfType;
+			$pArray[':ok_id']								= $pOkId;
+			$pArray[':okType']								= $pOkType;
+			$pArray[':Exam_Goods_Code']		= $pExamGoodsCode;
+			$pArray[':goods_codes']					= $pGoodsCodes;
+			$pArray[':Group_code']					= $pGroupCode;
+			$pArray[':sell_start']							= $pSellStart;
+			$pArray[':sell_end']							= $pSellEnd;
+
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+
+			if( $result[0][result] != '0' ){	//성공일때 메일 발송
+				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
+			}else{
+				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
+			}
+			exit;
+
+
 		break;
 		case "delete" :
 		break;

@@ -11,9 +11,13 @@
 	$resultArray = fnGetRequestParam($valueValid);
 
 	$SBExamCate = "TOE";	// 토익시험을 기준으로 개발.
-	
+
+	$listYear = fnNoInjection($_REQUEST['listYear']);
+	if(empty($listYear)) $listYear = date("Y");
+
 	$coulmn = "
-		[SB_Exam_cate]
+		[Exam_code]
+		,[SB_Exam_cate]
 		,[Exam_num]
 		,[Exam_Name]
 		,convert(char(16),[Exam_day],120) as [Exam_day]
@@ -41,8 +45,10 @@
 	$sql = " SELECT ".$coulmn. " FROM ";
 	$sql .= "  [theExam].[dbo].[Exam_Info] ";
 	$sql .= " WHERE SB_Exam_cate = :SBExamCate";
-	$sql .=  "";
-	$pArray[':SBExamCate']							= $SBExamCate;
+	$sql .=  " AND convert(char(4),[gen_regi_start],120)=:listYear ";
+
+	$pArray[':SBExamCate']	= $SBExamCate;
+	$pArray[':listYear']				= $listYear;
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -83,12 +89,14 @@
 			<h3 class="title">시험일정관리</h3>
 			<div class="box_sort c_txt">
 				<div class="item"> 
-					<select style="width: 300px;">  
-						<option>2016년</option>
-						<option>2017년</option>
-						<option>2018년</option>
-						<option>2019년</option>
-						<option>2020년</option>
+					<select style="width: 300px;" name="listYear" id="listYear">  
+					<?php	
+						for($i=date("Y")-4; $i<=date("Y")+1; $i++){
+							if($listYear == $i){ $onSelected = "selected"; }
+							else{$onSelected = "";}
+					?>
+						<option value="<?=$i?>" <?=$onSelected?>><?=$i?>년</option>
+					<?php	}?>
 					</select>
 				</div>
 				<span class="fx_r">
@@ -137,11 +145,11 @@
 											$thisRows = $data[$arrThisCoulmn[1]]."~".$data[$arrThisCoulmn[2]];
 										break;
 										case "btn" : 
-											$thisRows = "<a href='#'>".$arrThisCoulmn[count($arrThisCoulmn)-1]."</a>";
+											$thisRows = "<a href='./examSetSchWrite.php?proc=modify&examCode=".$data["Exam_code"]."'>".$arrThisCoulmn[count($arrThisCoulmn)-1]."</a>";
 										break;
 									}
 							?>
-								<th><?=$thisRows?></th>
+								<td><?=$thisRows?></td>
 								<?php
 								}
 							}
@@ -175,6 +183,11 @@
 <script>
 
 $(document).ready(function () {
+
+	// 리스트 년도변경
+	$("#listYear").on("change",function(){
+		location.href = "?listYear="+$(this).val();
+	});
 
 	// 일정 추가
 	$("#btnWrite").on("click", function(){

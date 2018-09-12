@@ -209,9 +209,9 @@
 										</p>
 									</div>
 									<div class="item pad_t10">
-										<input style="width: 160px;" type="text"><button class="btn_sm_calendar" type="button"></button>
+										<input style="width: 160px;" type="text" class="datepicker">
 										&nbsp;&nbsp; ~ &nbsp;&nbsp;
-										<input style="width: 160px;" type="text"><button class="btn_sm_calendar" type="button"></button>
+										<input style="width: 160px;" type="text" class="datepicker">
 									</div>
 									<div class="item pad_t10">
 										<p><input class="i_unit" id="" type="radio"><label for="">발급일부터 사용</label></p>
@@ -341,8 +341,6 @@ $(document).ready(function () {
 
 	$("#sbCoupType").val("<?=$arrRows[0]['SB_coup_type']?>").change();
 
-
-sbCoupCate
 
 });
 </script>

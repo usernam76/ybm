@@ -19,7 +19,7 @@
 	if ( $pGoodsCode != "" ){
 		$sql  = " SELECT ";
 		$sql .= "	goods_code, SB_goods_type, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
-		$sql .= " FROM Goods_info	";
+		$sql .= " FROM Goods_info (nolock)	";
 		$sql .= " WHERE goods_code = :goodsCode ";
 
 		$pArray[':goodsCode'] = $pGoodsCode;
@@ -28,9 +28,9 @@
 
 		$sql  = " SELECT ";
 		$sql .= "	GP.goods_price, GI.goods_code, GI.SB_goods_type, GI.goods_name, GI.disp_goods_name, GI.disp_price, SI.SB_name AS sbGoodsType	";
-		$sql .= " FROM Goods_Pack AS GP	";
-		$sql .= " JOIN Goods_info AS GI ON GP.goods_code = GI.goods_code	";
-		$sql .= " JOIN SB_Info AS SI ON SI.SB_kind = 'goods_type' AND SI.SB_value = GI.SB_goods_type	";
+		$sql .= " FROM Goods_Pack AS GP (nolock)	";
+		$sql .= " JOIN Goods_info AS GI (nolock) ON GP.goods_code = GI.goods_code	";
+		$sql .= " JOIN SB_Info AS SI (nolock) ON SI.SB_kind = 'goods_type' AND SI.SB_value = GI.SB_goods_type	";
 		$sql .= " WHERE pack_goods_code = :goodsCode ";
 
 		$arrRows2 = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -55,9 +55,11 @@
 		<div class="wid_fix"> 
 			<h3 class="title">패키지시험<?=( $proc == "write" )? "입력": "수정" ?></h3>
 
-<form name="frmWrite" id="frmWrite" action="/language/danProc.php" method="post"> 
+<form name="frmWrite" id="frmWrite" action="/language/packageProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">
 <input type="hidden" name="goodsCode" value="<?=$pGoodsCode?>">
+<input type="hidden" id="dispPrice" name="dispPrice" value="">
+<input type="hidden" id="sellPrice" name="sellPrice" value="">
 
 			<!-- 세로형 테이블 -->
 			<div class="box_bs">
@@ -90,22 +92,6 @@
 								<td colspan="3">
 									<div class="item">
 										<input style="width: 300px;" type="text" name="dispGoodsName" value="<?=$arrRows[0]['disp_goods_name']?>">
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>정가</th>
-								<td colspan="3">
-									<div class="item">
-										<input style="width: 300px;" type="text" class="onlyNumber" readonly id="dispPrice" name="dispPrice" value="<?=$arrRows[0]['disp_price']?>">
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>판매가</th>
-								<td colspan="3">
-									<div class="item">
-										<input style="width: 300px;" type="text" class="onlyNumber" readonly id="sellPrice" name="sellPrice" value="<?=$arrRows[0]['sell_price']?>">
 									</div>
 								</td>
 							</tr>
@@ -293,7 +279,7 @@ $(document).ready(function () {
     });
 
 	$("#btnCancel").on("click", function () {
-		location.href = "/language/danList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
+		location.href = "/language/packageList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
 	});
 
 	var param = {

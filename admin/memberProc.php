@@ -8,11 +8,11 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);	
 
+	$valueValid = [];
+	$resultArray = fnGetRequestParam($valueValid);
+
 	switch($proc){
 		case 'write':
-
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$pwdStr  = '!@#$%*&abcdefghijklmnpqrstuwxyzABCDEFGHJKLMNPQRSTUWXYZ23456789';
 			$pwd = substr(str_shuffle($pwdStr), 0, 12);
@@ -52,9 +52,6 @@
 			break;
 		case 'modify':
 
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
-
 			$sql = "EXEC p_Adm_info_IU 'U', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
 			$pArray[':admId']		= $pAdmId;
 			$pArray[':pwd']			= "";
@@ -80,12 +77,10 @@
 
 			break;
 		case 'idCheck':
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql  = " SELECT ";
 			$sql .= "	COUNT(*) AS cnt ";
-			$sql .= " FROM Adm_info ";
+			$sql .= " FROM Adm_info (nolock) ";
 			$sql .= " WHERE Adm_id = :admId ";
 
 			$pArray[':admId'] = $pAdmId;
@@ -97,8 +92,6 @@
 
 			break;
 		case 'passClear':
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$pwdStr  = '!@#$%*&abcdefghijklmnpqrstuwxyzABCDEFGHJKLMNPQRSTUWXYZ23456789';
 			$pwd = substr(str_shuffle($pwdStr), 0, 12);
@@ -137,8 +130,6 @@
 
 			break;
 		case 'dsbl':
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Adm_info_IU 'L', :admId, :pwd, :deptCode, :admName, :admEmail, :etc, :tokenCode, :admIp, :useChk";	
 			$pArray[':admId']		= $pAdmId;
@@ -160,9 +151,6 @@
 			break;
 		case 'menuCopy':
 
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
-
 			$sql = "EXEC p_Adm_Menu_ID 'C', :admId, :admType, :menuIdx, :roleRw, :copyId";	
 			$pArray[':admId']		= $pAdmId;
 			$pArray[':admType']		= $pAdmType;
@@ -181,9 +169,6 @@
 			break;
 
 		case 'menuSave':
-
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Adm_Menu_ID 'I', :admId, :admType, :menuIdx, :roleRw, :copyId";	
 			$pArray[':admId']		= $pAdmId;

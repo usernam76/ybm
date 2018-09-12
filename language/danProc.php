@@ -8,11 +8,11 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);	
 
+	$valueValid = [];
+	$resultArray = fnGetRequestParam($valueValid);
+
 	switch($proc){
 		case 'write':
-
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
 			$pArray[':goodsCode']		= "";
@@ -37,9 +37,6 @@
 
 			break;
 		case 'modify':
-
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
 			$pArray[':goodsCode']		= $pGoodsCode;

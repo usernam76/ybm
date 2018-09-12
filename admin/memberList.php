@@ -26,7 +26,7 @@
 	}
 
 	$sql  = " SELECT COUNT(*) AS totalRecords ";
-	$sql .= " FROM Adm_info AS AI	";
+	$sql .= " FROM Adm_info AS AI (nolock)	";
 	$sql .= " JOIN Adm_Dept_Info AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code	";
 	$sql .= " WHERE 1=1 ". $where."	";
 	$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -34,7 +34,7 @@
 	$sql  = " SELECT ";
 	$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Reg_day, AI.Login_day, AI.Password_day, AI.use_CHK ";
 	$sql .= "	, ADI.Dept_Name";
-	$sql .= " FROM Adm_info AS AI ";
+	$sql .= " FROM Adm_info AS AI (nolock) ";
 	$sql .= " JOIN Adm_Dept_Info AS ADI (nolock) ON AI.Dept_Code = ADI.Dept_Code ";
 	$sql .= " WHERE 1=1 ". $where;
 	$sql .= " ORDER BY Reg_day DESC ";
@@ -47,8 +47,6 @@
 		$totalRecords	= $arrRowsTotal[0]['totalRecords'];
 		$totalPage		= ceil($totalRecords / $recordsPerPage);
 	}
-
-	
 ?>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';

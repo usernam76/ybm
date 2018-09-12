@@ -352,6 +352,10 @@
 			obj.keyup(function(){event = event || window.event;var keyID = (event.which) ? event.which : event.keyCode;if ( keyID == 8 || keyID == 46 || keyID == 37 || keyID == 39 ){return;}else{event.target.value = event.target.value.replace(/[^0-9]/g, "");}});
 		},
 
+		onlyNumber2 : function(obj){
+			obj.on("keypress keyup", function (){ $(this).val( $(this).val().replace(/[^0-9]/g,"") );} );
+		},
+
 		/** 공백제거 **/
 		nvl:function(val,defVal){
 				if(val!=undefined && val!=null && val.length>0){
@@ -441,7 +445,6 @@
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
 				success: function(resJson) {
 					returnVal = resJson.data;
-					console.log(returnVal);
 				},
 				error: function(e) {
 					alert("현재 서버 통신이 원할하지 않습니다.");

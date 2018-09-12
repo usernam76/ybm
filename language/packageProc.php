@@ -67,6 +67,33 @@
 
 			break;		
 
+		case 'danSearch':
+			$valueValid = [];
+			$resultArray = fnGetRequestParam($valueValid);
+
+			$where = "";
+			if( $pSearchKey != "" ){
+				if ( $pSearchType == "" ){
+					$where = " AND ( goods_name LIKE '%". $pSearchKey ."%' OR disp_goods_name LIKE '%". $pSearchKey ."%' OR goods_code LIKE '%". $pSearchKey ."%' ) ";
+				}else{
+					$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
+				}
+			}
+
+			$sql  = " SELECT ";
+			$sql .= "	GI.goods_code, GI.goods_name, GI.disp_goods_name, GI.disp_price, GI.sell_price, GI.use_CHK, SI.SB_name AS sbGoodsType ";
+			$sql .= " FROM Goods_info AS GI (nolock) 	";
+			$sql .= " JOIN SB_Info AS SI ON SI.SB_kind = 'goods_type' AND SI.SB_value = GI.SB_goods_type	";
+			$sql .= " WHERE pack_CHK = 'X' ". $where;
+			$sql .= " ORDER BY update_day DESC ";
+
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "result"=>$result);
+
+			echo json_encode($returnData);
+
+			break;
 
 		default:
 

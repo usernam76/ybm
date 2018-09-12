@@ -4,7 +4,7 @@
 	if( count($cArrRowsMenu2) > 0 ){
 
 		echo "<div class='item'>";
-		echo "<select style='width:100%'>";
+		echo "<select style='width:100%' id='menuIdx2' name='menuIdx2'>";
 
 		foreach($cArrRowsMenu2 as $data) {
 			if( $cPageMenuIdx2 == $data['Menu_idx2'] ){
@@ -40,3 +40,14 @@
 ?>
 </div>
 <!--left //-->
+
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+	$("#menuIdx2").on("change", function () {
+		location.href = $(this).val();
+	});
+});
+
+</script>

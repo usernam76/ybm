@@ -18,13 +18,22 @@
 
 	if ( $pGoodsCode != "" ){
 		$sql  = " SELECT ";
-		$sql .= "	Goods_code, SB_goods_type, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
+		$sql .= "	goods_code, SB_goods_type, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
 		$sql .= " FROM Goods_info	";
-		$sql .= " WHERE Goods_code = :goodsCode ";
+		$sql .= " WHERE goods_code = :goodsCode ";
 
 		$pArray[':goodsCode'] = $pGoodsCode;
 
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+		$sql  = " SELECT ";
+		$sql .= "	GP.goods_price, GI.goods_code, GI.SB_goods_type, GI.goods_name, GI.disp_goods_name, GI.disp_price, SI.SB_name AS sbGoodsType	";
+		$sql .= " FROM Goods_Pack AS GP	";
+		$sql .= " JOIN Goods_info AS GI ON GP.goods_code = GI.goods_code	";
+		$sql .= " JOIN SB_Info AS SI ON SI.SB_kind = 'goods_type' AND SI.SB_value = GI.SB_goods_type	";
+		$sql .= " WHERE pack_goods_code = :goodsCode ";
+
+		$arrRows2 = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 		if( count($arrRows) == 0 ){
 			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
@@ -44,7 +53,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">단과시험<?=( $proc == "write" )? "입력": "수정" ?></h3>
+			<h3 class="title">패키지시험<?=( $proc == "write" )? "입력": "수정" ?></h3>
 
 <form name="frmWrite" id="frmWrite" action="/language/danProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">
@@ -88,7 +97,7 @@
 								<th>정가</th>
 								<td colspan="3">
 									<div class="item">
-										<input style="width: 300px;" type="text" name="dispPrice" value="<?=$arrRows[0]['disp_price']?>">
+										<input style="width: 300px;" type="text" class="onlyNumber" readonly id="dispPrice" name="dispPrice" value="<?=$arrRows[0]['disp_price']?>">
 									</div>
 								</td>
 							</tr>
@@ -96,7 +105,7 @@
 								<th>판매가</th>
 								<td colspan="3">
 									<div class="item">
-										<input style="width: 300px;" type="text" name="sellPrice" value="<?=$arrRows[0]['sell_price']?>">
+										<input style="width: 300px;" type="text" class="onlyNumber" readonly id="sellPrice" name="sellPrice" value="<?=$arrRows[0]['sell_price']?>">
 									</div>
 								</td>
 							</tr>
@@ -108,6 +117,72 @@
 										<input class="i_unit" type="radio" name="useChk" value="X" <?=( $arrRows[0]['use_CHK'] == 'X' )? "CHECKED": "" ?> ><label for="">노출 안 함</label>
 									</div>
 								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="wrap_tbl pad_t10">
+					<table class="type01">
+						<caption></caption>
+						<colgroup>
+							<col style="width: auto;">
+							<col style="width: 220px;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>구분</th>
+								<th>코드</th>
+								<th>시험명</th>
+								<th>정가</th>
+								<th>할인가</th>
+								<th>패키지금액</th>
+							</tr>
+						</thead>
+						<tbody>
+<?php
+	if( $proc == "modify" ){
+		foreach($arrRows2 as $data) {
+?>
+							<tr class="trDanList">
+								<td><?=$data['sbGoodsType']?></td>
+								<td><input style="width: 100px;" type="text" name="goodsCodes[]" value="<?=$data['goods_code']?>" readonly><button class="btn_sm_bg_grey btnSearchPop" type="button">검색</button></td>
+								<td><?=$data['disp_goods_name']?></td>
+								<td><?=number_format($data['disp_price'])?>원</td>
+								<td><?=number_format($data['disp_price']-$data['goods_price'])?>원</td>
+								<td><input style="width: 100px;" type="text" class="onlyNumber" name="goodsPrices[]" value="<?=$data['goods_price']?>">원</td>
+							</tr>
+<?php
+		}
+	}else{
+?>
+							<tr class="trDanList">
+								<td></td>
+								<td><input style="width: 100px;" type="text" name="goodsCodes[]" value="" readonly><button class="btn_sm_bg_grey btnSearchPop" type="button">검색</button></td>
+								<td></td>
+								<td>0원</td>
+								<td>0원</td>
+								<td><input style="width: 100px;" type="text" class="onlyNumber" name="goodsPrices[]" value="0">원</td>
+							</tr>
+							<tr class="trDanList">
+								<td></td>
+								<td><input style="width: 100px;" type="text" name="goodsCodes[]" value="" readonly><button class="btn_sm_bg_grey btnSearchPop" type="button">검색</button></td>
+								<td></td>
+								<td>0원</td>
+								<td>0원</td>
+								<td><input style="width: 100px;" type="text" class="onlyNumber" name="goodsPrices[]" value="0">원</td>
+							</tr>
+<?php	
+	}
+?>
+							<tr>
+								<td colspan="3" class="total">합계</td>
+								<td class="total" id="danTotalDis">0원</td>
+								<td class="total" id="danTotalHal">0원</td>
+								<td class="total point" id="danTotalPack">0원</td>
 							</tr>
 						</tbody>
 					</table>
@@ -125,6 +200,52 @@
 	</div>
 </div>
 <!--right //-->
+<!-- modal 팝업 :: statis_hour-->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content" style="width: 600px; height: 500px;">
+	<span class="close"><img class="sml" src="/_resources/images/btn_x.png"></span>
+	<div class="wrap_tbl">
+		<div class="box_inform">
+			<p class="txt_l">
+				<span class="stit">단과시험 코드</span>
+			</p>
+		</div>
+		<!-- sorting area -->
+		<div class="item line">
+			<select id="searchType" name="searchType"> 
+				<option value="">전체</option>
+				<option value="goods_name"		>상품명</option> 
+				<option value="disp_goods_name" >노출명</option> 
+				<option value="goods_code"		>단가시험코드</option> 
+			</select>
+			<input style="width:200px;" type="text" id="searchKey" name="searchKey" value="">
+			<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>	
+		</div>
+		<!-- sorting area -->
+
+		<table class="type01">
+			<caption></caption>
+			<colgroup>
+				<col style="width: auto;">
+				<col style="width: auto;">
+				<col style="width: auto;">
+				<col style="width: auto;">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>단가시험코드</th>
+					<th>상품명</th>
+					<th>노출명</th>
+					<th>정가</th>
+				</tr>
+			</thead>
+			<tbody id="mdDanList">
+			</tbody>
+		</table>
+	</div>	
+  </div>
+</div>
 
 <script type="text/javascript">
 $(document).ready(function () {
@@ -183,10 +304,128 @@ $(document).ready(function () {
 		, "firstOptLable"	: "선택"			// 상단 옵션  text
 	}
 	common.sys.setSbInfoCreate(param);
-
 	$("#sbGoodsType").val("<?=$arrRows[0]['SB_goods_type']?>").change();
+	
+	common.string.onlyNumber2( $(".onlyNumber") );
+
+	$(".onlyNumber").on("keypress keyup", function (){ 
+		danTotal();
+	});
+
+	var danTotal = function(){
+		var tmpDanDis = 0;
+		var tmpDanHal = 0;
+		var tmpDanPack = 0;
+
+		var tmpDanTotalDis = 0;
+		var tmpDanTotalHal = 0;
+		var tmpDanTotalPack = 0;
+		$(".trDanList").each( function() {
+			tmpDanDis = parseInt( common.string.replace( $(this).children().eq(3).text(), ',', '') );
+			tmpDanPack =  parseInt( $(this).children().eq(5).find("input").val() );
+			tmpDanHal = tmpDanDis - tmpDanPack;
+
+			$(this).children().eq(4).text( $.number(tmpDanHal)+"원" );
+
+			tmpDanTotalDis = tmpDanTotalDis + tmpDanDis;
+			tmpDanTotalPack = tmpDanTotalPack + tmpDanPack;
+			tmpDanTotalHal = tmpDanTotalHal + tmpDanHal;
+		});
+
+		$("#danTotalDis").text( $.number(tmpDanTotalDis)+"원" );
+		$("#danTotalPack").text( $.number(tmpDanTotalPack)+"원" );
+		$("#danTotalHal").text( $.number(tmpDanTotalHal)+"원" );
+
+		$("#dispPrice").val( tmpDanTotalDis );
+		$("#sellPrice").val( tmpDanTotalPack );
+	}
+
+	danTotal();	
+
+	$(".close").on("click", function () {
+		$("#myModal").hide();
+	});
+	$("#btnUserCancel").on("click", function () {
+		$("#myModal").hide();
+	});
+
+	var danList;
+	$(".btnSearchPop").on("click", function () {
+		danList = $(this);
+
+		$("#searchType").val('');
+		$("#searchKey").val('');
+
+		$("#myModal").show();
+		danSearch();
+	});
+
+	$("#btnSearch").on("click", function () {
+		danSearch();
+	});
+
+	var danSearch = function(){
+
+		var u = "/language/packageProc.php";
+		var param = {
+			"proc"			: "danSearch",
+			"searchType"	: $("#searchType").val(),
+			"searchKey"		: $("#searchKey").val()
+		};
+		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+			success: function(resJson) {
+				var list = resJson.result;
+				var html = "";
+				for(var i=0 ; i<list.length; i++){
+					html = html + "<tr>";
+					html = html + "<td><a class='mdGoodsCode' data-sbGoodsType='"+list[i].sbGoodsType+"'>"+list[i].goods_code+"</a></td>";
+					html = html + "<td>"+list[i].goods_name+"</td>";
+					html = html + "<td>"+list[i].disp_goods_name+"</td>";
+					html = html + "<td>"+$.number(list[i].disp_price)+"원</td>";
+					html = html + "</tr>";
+				}
+				$("#mdDanList").html( html );
+			},
+			error: function(e) {
+				alert("현재 서버 통신이 원할하지 않습니다.");
+			}
+		});
+    };
+
+	$(document).on("click",".mdGoodsCode",function(){
+		var returnNow = false;
+
+		var tmpCode = $(this).text();
+
+		$(".trDanList").each( function() {
+			if ( $(this).children().eq(1).find("input").val() == tmpCode ){
+				alert("동일한 품목이 등록 되어 있습니다.");
+
+				returnNow = true;
+				return false;
+			}
+		});
+		if( returnNow ){
+			return;
+		}
+
+		var tmpPrice = $(this).parents("tr").children().eq(3).text();
+		tmpPrice = common.string.replace( tmpPrice, ',', '');
+		tmpPrice = common.string.replace( tmpPrice, '원', '');
+
+		danList.parents("tr").children().eq(0).text( $(this).attr("data-sbGoodsType") );
+		danList.parents("tr").children().eq(1).find("input").val( $(this).text() );
+		danList.parents("tr").children().eq(2).text( $(this).parents("tr").children().eq(2).text() );
+		danList.parents("tr").children().eq(3).text( $(this).parents("tr").children().eq(3).text() );
+		danList.parents("tr").children().eq(4).text( '0원' );
+		danList.parents("tr").children().eq(5).find("input").val( tmpPrice );
+
+		danTotal();
+		$("#myModal").hide();
+	});
 
 });
+
 </script>
 
 <?php

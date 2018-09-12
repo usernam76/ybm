@@ -220,7 +220,7 @@
 		if( $data['Role_RW'] == 'W'){ $sRoleRwW	= "SELECTED"; }
 
 		$htmlStr .= "			<tr>";
-		$htmlStr .= "				<th>".$data['Menu_Name4']."</th>";
+		$htmlStr .= "				<th>".$data['Menu_Name4']."(".$data['Menu_idx4'].")</th>";
 		$htmlStr .= "				<td>";
 		$htmlStr .= "					<div class='item'>";
 		$htmlStr .= "						<select style='width: 200px;' class='menuIdx".$data['Menu_idx1']." menuIdx".$data['Menu_idx2']." menuIdx".$data['Menu_idx3']."' name='roleRw[]'>";

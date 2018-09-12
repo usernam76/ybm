@@ -8,6 +8,9 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);	
 
+	$valueValid = [];
+	$resultArray = fnGetRequestParam($valueValid);
+
 	switch($proc){
 		case 'write':
 
@@ -20,8 +23,6 @@
 			break;
 
 		case 'app':
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Coup_Apply :coupCode, :okId, :okType, :okChk";	
 			$pArray[':coupCode']	= $pCoupCode;
@@ -38,8 +39,6 @@
 			break;
 
 		case 'unApp':
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Coup_Apply :coupCode, :okId, :okType, :okChk";	
 			$pArray[':coupCode']	= $pCoupCode;
@@ -56,8 +55,6 @@
 			break;
 
 		case 'userAdd':
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Coup_Member_I 'I', :coupCode, :coupNo, :userId, :memo";	
 			$pArray[':coupCode']	= $pCoupCode;
@@ -74,8 +71,6 @@
 			break;
 
 		case 'issuedCancel':
-			$valueValid = [];
-			$resultArray = fnGetRequestParam($valueValid);
 
 			$sql = "EXEC p_Coup_Member_I 'D', :coupCode, :coupNo, :userId, :memo";	
 			$pArray[':coupCode']	= $pCoupCode;

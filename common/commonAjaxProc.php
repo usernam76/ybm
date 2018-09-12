@@ -22,7 +22,7 @@
 */
 			$sql = " SELECT ";
 			$sql .= "	Dept_Code1 AS cd, Dept_Name1 AS cdNm ";
-			$sql .= " FROM v_Dept_Tree ";
+			$sql .= " FROM v_Dept_Tree (nolock) ";
 			$sql .= " GROUP BY Dept_Name1, Dept_Code1 ";
 
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -41,7 +41,7 @@
 */
 			$sql = " SELECT ";
 			$sql .= "	Dept_Code2 AS cd, Dept_Name2 AS cdNm ";
-			$sql .= " FROM v_Dept_Tree ";
+			$sql .= " FROM v_Dept_Tree (nolock) ";
 			$sql .= " WHERE Dept_Code1 = :detpLev1 ";
 			$sql .= " GROUP BY Dept_Name2, Dept_Code2 ";
 
@@ -64,7 +64,7 @@
 */
 			$sql = " SELECT ";
 			$sql .= "	ISNULL( Dept_Code4, Dept_Code3 ) AS cd, ISNULL( Dept_Name4, Dept_Name3 ) AS cdNm ";
-			$sql .= " FROM v_Dept_Tree ";
+			$sql .= " FROM v_Dept_Tree (nolock) ";
 			$sql .= " WHERE Dept_Code2 = :detpLev2 ";
 			$sql .= " GROUP BY Dept_Name3, Dept_Code3, Dept_Name4, Dept_Code4 ";
 
@@ -114,7 +114,7 @@
 		case 'sbInfoList':
 
 			$sql  = " SELECT SB_value as cd, SB_name as cdNm ";
-			$sql .= " FROM SB_Info ";
+			$sql .= " FROM SB_Info (nolock) ";
 			$sql .= " WHERE SB_kind = :sbKind ";
 			$sql .= " ORDER BY SB_order ASC ";
 

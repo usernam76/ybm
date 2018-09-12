@@ -41,13 +41,3 @@
 </div>
 <!--left //-->
 
-
-<script type="text/javascript">
-$(document).ready(function () {
-
-	$("#menuIdx2").on("change", function () {
-		location.href = $(this).val();
-	});
-});
-
-</script>

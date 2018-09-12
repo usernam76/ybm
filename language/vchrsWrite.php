@@ -25,7 +25,7 @@
 		$sql .= "	AI.Adm_id, AI.Adm_name, AI.Adm_Email, AI.Dept_Code, AI.Token_code, AI.Reg_day, AI.Login_day, AI.Password_day, AI.Adm_IP, AI.use_CHK, AI.Update_day ";
 		$sql .= "	, ISNULL( ADI4.Dept_Code, ADI3.Dept_Code ) AS detpLev1 ";
 		$sql .= "	, CASE WHEN ISNULL( ADI4.Dept_Code, '' ) = '' THEN ADI2.Dept_Code ELSE ADI3.Dept_Code END AS detpLev2 ";
-		$sql .= " FROM Adm_info AS AI ";
+		$sql .= " FROM Adm_info AS AI (nolock) ";
 		$sql .= " JOIN Adm_Dept_Info AS ADI1 (nolock) ON AI.Dept_Code = ADI1.Dept_Code ";
 		$sql .= " JOIN Adm_Dept_Info AS ADI2 (nolock) ON ADI1.PDept_Code = ADI2.Dept_Code ";
 		$sql .= " JOIN Adm_Dept_Info AS ADI3 (nolock) ON ADI2.PDept_Code = ADI3.Dept_Code ";

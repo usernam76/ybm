@@ -20,8 +20,8 @@
 	//현재 페이지 및 상위 메뉴 정보
 	$sql = " SELECT ";
 	$sql .= "	Menu_idx1, Menu_idx2, Menu_idx3, Menu_idx4, Menu_Name4, AM.Role_RW ";
-	$sql .= " FROM v_Menu_Page VMP ";
-	$sql .= " LEFT OUTER JOIN Adm_Menu AM ON AM.Menu_idx = VMP.Menu_idx4 AND Adm_id = :loginId ";
+	$sql .= " FROM v_Menu_Page VMP (nolock) ";
+	$sql .= " LEFT OUTER JOIN Adm_Menu AM (nolock) ON AM.Menu_idx = VMP.Menu_idx4 AND Adm_id = :loginId ";
 	$sql .= " WHERE ISNULL(Menu_idx4, '') != '' AND Menu_idx4 = :menuIdx4 ";
 
 	$cArrayPageMenu[':loginId'] = $_SESSION["admId"];

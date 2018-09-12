@@ -39,18 +39,21 @@
 			$pScoreChangeEnd = $pScoreChangeDay;
 
 			// 정기접수가 없으면 특별접수를 goods에 넣는다.
+
 			if(empty($pGoodsCode)){
 				$pGoodsCode = $pGoodsCodeSpe;
+				$pSellStart =$pSpeRegiStart;
+				$pSellEnd = $pSpeRegiEnd;
+			}else{
+				$pSellStart =$pGenRegiStart;
+				$pSellEnd = $pGenRegiEnd;
 			}
-
 
 			/*
 			임시입력
 			*/
 			$pExamName = null;
 			$pConfType = "없음";
-			$pSellStart =null;
-			$pSellEnd = null;
 			$pOkId = "csw";
 			$pOkType = "T";
 
@@ -88,12 +91,10 @@
 			$pArray[':sell_start']							= $pSellStart;
 			$pArray[':sell_end']							= $pSellEnd;
 
-
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
-
-			if( $result[0][result] != '0' ){	//성공일때 메일 발송
+			if(in_array($pExamCode, $result[0])) {
 				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetSchList.php';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
@@ -126,20 +127,22 @@
 			// 정기접수가 없으면 특별접수를 goods에 넣는다.
 			if(empty($pGoodsCode)){
 				$pGoodsCode = $pGoodsCodeSpe;
+				$pSellStart =$pSpeRegiStart;
+				$pSellEnd = $pSpeRegiEnd;
+			}else{
+				$pSellStart =$pGenRegiStart;
+				$pSellEnd = $pGenRegiEnd;
 			}
-
 
 			/*
 			임시입력
 			*/
 			$pExamName = null;
 			$pConfType = "없음";
-			$pSellStart =null;
-			$pSellEnd = null;
 			$pOkId = "csw";
 			$pOkType = "T";
 
-			/* 수정 프로시저 실행*/
+			/* 입력 프로시저 실행*/
 			$pIUD = "U";
 			$pArray = null;
 			$sql = "EXEC p_Exam_info_IUD
@@ -175,12 +178,12 @@
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
-			
 
-			if( $result[0][result] != '0' ){	//성공일때 메일 발송
+
+			if(in_array($pExamCode, $result[0])) {
 				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/examSetSchWrite.php?proc=modify&examCode=".$pExamCode."';", true);
 			}else{
-				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
+				fnShowAlertMsg("수정 실패 되었습니다.", "history.back();", true);
 			}
 			exit;
 

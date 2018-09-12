@@ -8,11 +8,62 @@
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [];
-
 	$resultArray = fnGetRequestParam($valueValid);
 
-?>
-<?php
+	$SBExamCate = "TOE";	// 토익시험을 기준으로 개발.
+
+	$listYear = fnNoInjection($_REQUEST['listYear']);
+	$listMonth = fnNoInjection($_REQUEST['listMonth']);
+	if(empty($listYear)) $listYear = date("Y");
+	if(empty($listMonth)) $listMonth = date("m");
+
+
+	$coulmn = "
+		EI.[Exam_code]
+		,EI.[SB_Exam_cate]
+		,EI.[Exam_num]
+		,EI.[Exam_Name]
+		,convert(char(16),EI.[Exam_day],120) as Exam_day
+		,convert(char(13),EI.[Score_day],120) as Score_day
+		,EI.[Exam_start_time]
+		,EI.[check_in_time]
+		,convert(char(13),EI.[gen_regi_Start],120) as gen_regi_Start
+		,convert(char(13),EI.[gen_regi_End],120) as gen_regi_End
+		,convert(char(13),EI.[spe_regi_Start],120) as spe_regi_Start
+		,convert(char(13),EI.[spe_regi_End],120) as spe_regi_End
+		,convert(char(13),EI.[ref_first_start],120) as ref_first_start
+		,convert(char(13),EI.[ref_first_end],120) as ref_first_end
+		,convert(char(13),EI.[ref_sec_start],120) as ref_sec_start
+		,convert(char(13),EI.[ref_sec_end],120) as ref_sec_end
+		,convert(char(13),EI.[regi_ext_end],120) as regi_ext_end
+		,convert(char(13),EI.[score_change_start],120) as score_change_start
+		,convert(char(13),EI.[score_change_end],120) as score_change_end
+		,EI.[conf_type]
+		,EI.[update_day]
+		,EI.[ok_id]
+		,EI.[okType]
+		,GI.[sell_price]
+		,GI.[SB_goods_type]
+	";
+
+	$pArray = null;
+	$sql = " SELECT ".$coulmn. " FROM ";
+	$sql .= "  [theExam].[dbo].[Exam_Info] AS EI ";
+	$sql .= "  LEFT OUTER JOIN ";
+	$sql .= "  [theExam].[dbo].[Exam_Goods] AS EG ";
+	$sql .= "  on EI.Exam_code = EG.Exam_code ";
+	$sql .= "  INNER JOIN ";
+	$sql .= "  [theExam].[dbo].[Goods_info] as GI ";
+	$sql .= "  on GI.goods_code = EG.goods_code ";
+	$sql .= " WHERE ";
+	$sql .= "  convert(char(4),EI.[gen_regi_start],120)=:listYear";
+
+	//$pArray[':SBExamCate']	= $SBExamCate;
+	$pArray[':listYear']				= $listYear;
+
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/left.php';
@@ -26,25 +77,21 @@
 <script type="text/javascript" src='/_resources/components/fullcalendar/fullcalendar.min.js'></script>
 <script type="text/javascript" src='/_resources/components/fullcalendar/locale/ko.js'></script>
 <script type="text/javascript" src="/_resources/components/fullcalendar/gcal.js"></script>
-<script type="text/javascript" src='/_resources/components/bootstrap-datepicker/bootstrap-datepicker.min.js'></script>
 
-<style type="text/css">
-
-/*	.fc-sat { background-color:#0000FF; }	/* 토요일 */
-/*	.fc-sun { background-color:#FF0000; }	/* 일요일 */
-
-	.fc-sat .fc-day-number { color:#0000FF; }	/* 토요일 */
-	.fc-sun .fc-day-number { color:#FF0000; }	/* 일요일 */
-</style>
-
+<!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">달력설정</h3>
-			<!-- 테이블 1-->
+			<h3 class="title">시험일정관리</h3>
+			<div class="box_sort c_txt">
+				<span class="fx_r">
+					<button class="btn_fill btn_md" id="btnList" type="button">리스트 보기</button>
+					<button class="btn_line btn_md" id="btnPrint" type="button">인쇄</button>
+				</span>
+			</div>
+			<!-- 테이블1 -->
 			<div class="box_bs">
 				<div id='calendar'></div>
-
 			</div>
 			<!-- //테이블1-->
 		</div>
@@ -52,8 +99,35 @@
 </div>
 <!--right //-->
 
-<script type="text/javascript">
+<script>
+
 $(document).ready(function () {
+
+	// 리스트 년도변경
+	$("#listYear").on("change",function(){
+		location.href = "?listYear="+$(this).val();
+	});
+
+	// 인쇄
+	$("#btnPrint").on("click", function(){
+		/*
+		@ PDF 출력이 들어갑니다.
+		@ 97 슬라이드
+		*/
+		alert('PDF 출력이 들어갑니다.');
+	})
+
+	// 리스트보기
+	$("#btnList").on("click", function(){
+		location.href = "./examSetSchList.php";
+	});
+
+
+	onSetCalendar();
+
+});
+
+function onSetCalendar(){
 
 	var date = new Date();
 	var d = date.getDate();
@@ -64,7 +138,6 @@ $(document).ready(function () {
 		locale: 'ko',
 		header: {left: 'prev,next today', center: 'title', right: 'month,basicWeek,basicDay' },
 		defaultView: "month",
-
 		selectable: true,
 		navLinks: true, // can click day/week names to navigate views
 		editable: true,
@@ -77,63 +150,8 @@ $(document).ready(function () {
 				, className : "koHolidays"
 				, color : "#FF0000"
 				, textColor : "#FFFFFF"
-			} 
-		],
-		events: [
-			{
-				title: 'All Day Event',
-				start: '2018-09-01'
 			},
-			{
-				title: 'Long Event',
-				start: '2018-09-07',
-				end: '2018-09-10'
-			},
-			{
-				id: 999,
-				title: 'Repeating Event',
-				start: '2018-09-09T16:00:00'
-			},
-			{
-				id: 999,
-				title: 'Repeating Event',
-				start: '2018-09-16T16:00:00'
-			},
-			{
-				title: 'Conference',
-				start: '2018-09-11',
-				end: '2018-09-13'
-			},
-			{
-				title: 'Meeting',
-				start: '2018-09-12T10:30:00',
-				end: '2018-09-12T12:30:00'
-			},
-			{
-				title: 'Lunch',
-				start: '2018-09-12T12:00:00'
-			},
-			{
-				title: 'Meeting',
-				start: '2018-09-12T14:30:00'
-			},
-			{
-				title: 'Happy Hour',
-				start: '2018-09-12T17:30:00'
-			},
-			{
-				title: 'Dinner',
-				start: '2018-09-12T20:00:00'
-			},
-			{
-				title: 'Birthday Party',
-				start: '2018-09-13T07:00:00'
-			},
-			{
-				title: 'Click for Google',
-				url: 'http://google.com/',
-				start: '2018-09-28'
-			}
+			'./examSetSchCalData.php'
 		],
 		dayClick: function(dateTime, jsEvent, view){
 			var dateTime = $.fullCalendar.moment(dateTime).format();
@@ -158,9 +176,9 @@ $(document).ready(function () {
 			/***************************************************************************************************************/
 		}
 	});
-});
-</script>
+}
 
+</script>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/footer.php';
 ?>

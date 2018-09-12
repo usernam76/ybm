@@ -23,20 +23,20 @@
 	$where		= "";
 	if( $pSearchKey != "" ){
 		if ( $pSearchType == "" ){
-			$where = " AND ( goods_name LIKE '%". $pSearchKey ."%' OR disp_goods_name LIKE '%". $pSearchKey ."%' OR Goods_code LIKE '%". $pSearchKey ."%' ) ";
+			$where = " AND ( goods_name LIKE '%". $pSearchKey ."%' OR disp_goods_name LIKE '%". $pSearchKey ."%' OR goods_code LIKE '%". $pSearchKey ."%' ) ";
 		}else{
 			$where = " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
 		}
 	}
 
 	$sql  = " SELECT COUNT(*) AS totalRecords ";
-	$sql .= " FROM Goods_info as A (nolock) 	";
+	$sql .= " FROM Goods_info (nolock) 	";
 	$sql .= " WHERE pack_CHK = 'X' ". $where;
 	$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 	$sql  = " SELECT ";
-	$sql .= "	Goods_code, goods_name, disp_goods_name, sell_price, use_CHK ";
-	$sql .= " FROM Goods_info as A (nolock) 	";
+	$sql .= "	goods_code, goods_name, disp_goods_name, sell_price, use_CHK ";
+	$sql .= " FROM Goods_info (nolock) 	";
 	$sql .= " WHERE pack_CHK = 'X' ". $where;
 	$sql .= " ORDER BY update_day DESC ";
 	$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
@@ -74,7 +74,7 @@
 						<option value="">전체</option>
 						<option value="goods_name"		<?=( $pSearchType == 'goods_name'		)? "SELECTED": "" ?> >상품명</option> 
 						<option value="disp_goods_name"	<?=( $pSearchType == 'disp_goods_name'	)? "SELECTED": "" ?> >노출명</option> 
-						<option value="Goods_code"		<?=( $pSearchType == 'Goods_code'		)? "SELECTED": "" ?> >단가시험코드</option> 
+						<option value="goods_code"		<?=( $pSearchType == 'goods_code'		)? "SELECTED": "" ?> >단가시험코드</option> 
 					</select>
 					<input style="width:300px;" type="text" id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>	
@@ -128,7 +128,7 @@
 ?>
 							<tr>
 								<td><?=$no--?></td>
-								<td><?=$data['Goods_code']?></td>
+								<td><?=$data['goods_code']?></td>
 								<td><?=$data['goods_name']?></td>
 								<td><?=$data['disp_goods_name']?></td>
 								<td><?=number_format($data['sell_price'])?>원</td>

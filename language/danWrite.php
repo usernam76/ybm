@@ -18,9 +18,9 @@
 
 	if ( $pGoodsCode != "" ){
 		$sql  = " SELECT ";
-		$sql .= "	Goods_code, SB_goods_type, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
+		$sql .= "	goods_code, SB_goods_type, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
 		$sql .= " FROM Goods_info	";
-		$sql .= " WHERE Goods_code = :goodsCode ";
+		$sql .= " WHERE goods_code = :goodsCode ";
 
 		$pArray[':goodsCode'] = $pGoodsCode;
 

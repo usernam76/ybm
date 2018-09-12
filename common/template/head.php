@@ -16,6 +16,7 @@
 	<script type="text/javascript" src="/_resources/js/common.js"></script>
 	<script type="text/javascript" src="/_resources/components/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="/_resources/components/jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/_resources/components/jquery/jquery.number.min.js"></script>
 	<script type="text/javascript" src="/_resources/components/jquery/jquery.json-2.4.js"></script>
 	<script type="text/javascript" src="/_resources/components/jquery-validation/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="/_resources/js/devCommon.js"></script>

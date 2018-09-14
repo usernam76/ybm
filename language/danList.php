@@ -60,7 +60,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">상품 관리</h3>
+			<h3 class="title">상품 관리(단과시험)</h3>
 
 			<!-- sorting area -->
 <form name="frmSearch" id="frmSearch" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 

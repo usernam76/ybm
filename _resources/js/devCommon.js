@@ -665,6 +665,51 @@
 
 			return returnVal;
 		},
+
+		/** 시험 회차 정보 세팅
+		 * obj     		: 파라미터 객체
+		 * var param = {
+		 *		"examInfo" 			: "examInfo"	// examInfo id 정보
+		 *		, "sbExamCate" 		: "TOE"			// sbExamCate 시험코드 정보
+		 *		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		 *		, "firstOptVal"		: ""			// 상단 옵션  value
+		 *		, "firstOptLable"	: "전체"			// 상단 옵션  text
+		 * }
+		 * common.sys.setSbInfoCreate(param);
+		 * **/
+		setExamInfoCreate : function(obj) {
+			$('#'+obj.sbInfo).html( common.sys.setComboOptHtml(
+												common.sys.getExamInfoList( obj.sbExamCate )
+												, obj.optYn
+												, obj.firstOptVal
+												, obj.firstOptLable));
+
+		},
+
+		// SbInfo data 가져오기
+		getExamInfoList : function( sbExamCate ) {
+			var returnVal = "";
+			var u = "/common/commonAjaxProc.php";
+			var param = {				
+				"proc"			: "examInfoList",
+				"sbExamCate"	: sbExamCate
+			};	
+
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+				success: function(resJson) {
+					returnVal = resJson.data;
+				},
+				error: function(e) {
+					alert("현재 서버 통신이 원할하지 않습니다.");
+//					console.log("[Error]");
+//					console.log(e);
+					returnVal = "";
+				}
+			});
+
+			return returnVal;
+		},
+
 	
 	};
 

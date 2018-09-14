@@ -31,7 +31,7 @@ $(document).ready(function () {
 	});
 
 	//숫자만 입력
-	common.string.onlyNumber2( $(".onlyNumber") );
+	common.string.onlyNumber2( $(".onlyNumber2") );
 
 	//달력
 	$( ".datepicker" ).datepicker({
@@ -51,6 +51,30 @@ $(document).ready(function () {
 	});
 	$(".ui-datepicker-trigger").css({'font-size':'0px', 'line-height':'0px', 'margin-top':'-2px', 'margin-left':'3px'});
 	$(".ui-datepicker-trigger").addClass('btn_sm_calendar');
+
+	//기간설정
+	$(".btnDaySet").on("click", function () {
+
+		var date = new Date();
+		var edate = new Date();
+
+		if( $(this).attr("data-dayType") == "day" ){
+			edate.setDate( parseInt(edate.getDate())+parseInt($(this).attr("data-day")) );
+		}else if( $(this).attr("data-dayType") == "month" ){
+			edate.setMonth( parseInt(edate.getMonth())+parseInt($(this).attr("data-day")) );
+		}else if( $(this).attr("data-dayType") == "year" ){
+			edate.setFullYear( parseInt(edate.getFullYear())+parseInt($(this).attr("data-day")) );
+		}
+
+		if( $(this).attr("data-dayKind") == "0" ){
+			$('#'+$(this).attr("data-sDay")).val( date.toISOString().slice(0,10) );
+			$('#'+$(this).attr("data-eDay")).val( edate.toISOString().slice(0,10) );
+		}else{
+			$('#'+$(this).attr("data-sDay")).val( edate.toISOString().slice(0,10) );
+			$('#'+$(this).attr("data-eDay")).val( date.toISOString().slice(0,10) );
+		}
+
+	});
 
 });
 

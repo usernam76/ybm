@@ -34,7 +34,7 @@
 	$pArray = null;
 	$coulmn = " [goods_code] ,[goods_name] ,[disp_goods_name] ,[SB_goods_type] ,[disp_price] ,[sell_price]";
 	$sql = "SELECT ".$coulmn;
-	$sql .= " FROM [theExam].[dbo].[Goods_info]";
+	$sql .= " FROM [Goods_info]";
 	$sql .="  WHERE use_CHK = 'O' AND pack_CHK='X'";
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -124,38 +124,39 @@
 
 		$pArray = null;
 		$coulmn = "
-			EI.[Exam_code] as Exam_code
-			,EI.[SB_Exam_cate] as SB_Exam_cate
-			,EI.[Exam_num] as Exam_num
-			,EI.[Exam_Name] as Exam_Name
-			,convert(char(16),EI.[Exam_day],120) as Exam_day
-			,convert(char(13),EI.[Score_day],120) as Score_day
-			,EI.[Exam_start_time] as Exam_start_time
-			,EI.[check_in_time] as check_in_time
-			,convert(char(13),EI.[gen_regi_Start],120) as gen_regi_Start
-			,convert(char(13),EI.[gen_regi_End],120) as gen_regi_End
-			,convert(char(13),EI.[spe_regi_Start],120) as spe_regi_Start
-			,convert(char(13),EI.[spe_regi_End],120) as spe_regi_End
-			,convert(char(13),EI.[ref_first_start],120) as ref_first_start
-			,convert(char(13),EI.[ref_first_end],120) as ref_first_end
-			,convert(char(13),EI.[ref_sec_start],120) as ref_sec_start
-			,convert(char(13),EI.[ref_sec_end],120) as ref_sec_end
-			,convert(char(13),EI.[regi_ext_end],120) as regi_ext_end
-			,convert(char(13),EI.[score_change_start],120) as score_change_start
-			,convert(char(13),EI.[score_change_end],120) as score_change_end
-			,EI.[conf_type] as conf_type
-			,EI.[update_day] as update_day
-			,EI.[ok_id] as ok_id
-			,EI.[okType] as okType
-			,EG.[goods_code] as goods_code
+			[Exam_code] as Exam_code
+			,[SB_Exam_cate] as SB_Exam_cate
+			,[Exam_num] as Exam_num
+			,[Exam_Name] as Exam_Name
+			,convert(char(16),[Exam_day],120) as Exam_day
+			,convert(char(13),[Score_day],120) as Score_day
+			,[Exam_start_time] as Exam_start_time
+			,[check_in_time] as check_in_time
+			,convert(char(13),[gen_regi_Start],120) as gen_regi_Start
+			,convert(char(13),[gen_regi_End],120) as gen_regi_End
+			,convert(char(13),[spe_regi_Start],120) as spe_regi_Start
+			,convert(char(13),[spe_regi_End],120) as spe_regi_End
+			,convert(char(13),[ref_first_start],120) as ref_first_start
+			,convert(char(13),[ref_first_end],120) as ref_first_end
+			,convert(char(13),[ref_sec_start],120) as ref_sec_start
+			,convert(char(13),[ref_sec_end],120) as ref_sec_end
+			,convert(char(13),[regi_ext_end],120) as regi_ext_end
+			,convert(char(13),[score_change_start],120) as score_change_start
+			,convert(char(13),[score_change_end],120) as score_change_end
+			,[conf_type] as conf_type
+			,[update_day] as update_day
+			,[ok_id] as ok_id
+			,[okType] as okType
+			,(select goods_code from Exam_Info as EI LEFT OUTER JOIN Exam_Goods as EG  on EI.Exam_code=EG.Exam_code WHERE EG.Exam_code = oEI.Exam_code AND LEFT(EG.goods_code,3) = 'EXR') as goods_code
+			,(select goods_code from Exam_Info as EI LEFT OUTER JOIN Exam_Goods as EG  on EI.Exam_code=EG.Exam_code WHERE EG.Exam_code = oEI.Exam_code AND LEFT(EG.goods_code,3) = 'EXS') as goods_code_spe
 		";
+
+
+
 		$sql = "SELECT ".$coulmn." FROM";
-		$sql .= "  [theExam].[dbo].[Exam_Info] AS EI ";
-		$sql .= "  LEFT OUTER JOIN ";
-		$sql .= "  [theExam].[dbo].[Exam_Goods] AS EG ";
-		$sql .= "  on EI.Exam_code = EG.Exam_code ";
+		$sql .= "  [Exam_Info] AS oEI ";
 		$sql .= " WHERE ";
-		$sql .= " EI.Exam_code = :examCode";
+		$sql .= " Exam_code = :examCode";
 		$pArray[':examCode'] = $pExamCode;
 
 		$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -164,7 +165,10 @@
 		$examNum = $arrRows[0]["Exam_num"];			// 회차
 		$examDay = $arrRows[0]["Exam_day"];				// 시험일
 		$SBExamCate =  $arrRows[0]["SB_Exam_cate"];
+
 		$goodsCode = $arrRows[0]["goods_code"];				// 단과시험정보
+		$goodsCodeSpe = $arrRows[0]["goods_code_spe"];				// 단과시험정보
+
 
 		$examStartTime = explode(":",$arrRows[0]["Exam_start_time"]);		//시험기간
 			$examStartTimeHours = $examStartTime[0];	// 시험기간>시간
@@ -243,7 +247,6 @@
 								<td>
 									<div class="item">
 										<select name="goodsCode" >
-											<option value="">선택안함</option>
 <?php	
 	/*
 	[0] > goods_code
@@ -265,7 +268,6 @@
 								<td>
 									<div class="item">
 										<select name="goodsCodeSpe">  
-											<option value="">선택안함</option>
 <?php	
 	/*
 	[0] > goods_code

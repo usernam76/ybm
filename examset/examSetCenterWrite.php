@@ -12,11 +12,11 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);
 	if(empty($proc)) $proc = "write";
-	$pCenterCate = "CBT";	// 해당 페이지에서는 CBT만 입력한다.
 
 	/*
 	@ ETSCerti 어떻게 하지?
-
+	@ 이 페이지에서는 CBT만 입력하나, 리스트에서 파라메터 넘어온다
+	@ pCenterCate = CBT
 	*/
 
 	if($proc == "modify"){

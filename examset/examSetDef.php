@@ -10,13 +10,9 @@
 	$valueValid = [];
 	$resultArray = fnGetRequestParam($valueValid);
 
+	if($pCenterCate == "") $pCenterCate = "PBT";		// 기본은 PBT, 상황에 따라 변수 변경
 
-	/*
-	centerCate 로 CBT냐 PBT냐를 결정하게 하는거.
-	*/
-	$pCenterCate = "PBT";	// 고사장/센터 구분
 
-	
 	$totalRecords	= 0;		// 총 레코드 수
 	$recordsPerPage	= 10;		// 한 페이지에 보일 레코드 수
 	$pagePerBlock	= 10;		// 한번에 보일 페이지 블럭 수
@@ -25,7 +21,6 @@
 	if( $pCurrentPage > 0 ){
 		$currentPage = $pCurrentPage;
 	}
-
 
 	$where		= "";
 	if( $pSearchKey != "" ){
@@ -36,7 +31,7 @@
 		$where .= "AND SB_area = '".$pAreaLev2."'";
 	}
 
-
+	/* @ PBT 고사장 정보 불러오기 */
 	if($pCenterCate == "PBT"){
 		$sql = " SELECT ";
 		$sql .= " (SELECT COUNT(*) FROM [theExam].[dbo].[Def_exam_center] WHERE SB_center_cate='".$pCenterCate."' AND use_CHK='O'  ". $where." ) AS totalRecords ";
@@ -46,6 +41,8 @@
 		$sql .= " ORDER BY update_day DESC ";
 		$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
 		$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
+
+	/* @ CBT 고사장 정보 불러오기 */
 	}else if($pCenterCate == "CBT"){
 		
 		/*CBT는 zipcode와 address를 DEF_exam_center_group 코드에서 가져 온다.*/
@@ -213,20 +210,24 @@ $(document).ready(function () {
 
 	/* 고사장 추가 PBT*/
 	$("#btnWritePBT").on("click", function(){
-		location.href = "./examSetDefWrite.php";
-	})
+		location.href = "./examSetDefWrite.php?centerCate=PBT";
+	});
+
 	/* 고사장 추가 CBT*/
 	$("#btnWriteCBT").on("click", function(){
-		location.href = "./examSetCenterWrite.php";
-	})
+		location.href = "./examSetCenterWrite.php?centerCate=CBT";
+	});
+
 	/* 고사장 수정 PBT*/
 	$(".btnModifyPBT").on("click", function(){
-		location.href = "./examSetDefWrite.php?proc=modify&centerCode="+$(this).attr("data-centerCode");
-	})
+		location.href = "./examSetDefWrite.php?proc=modify&centerCate=PBT&centerCode="+$(this).attr("data-centerCode");
+	});
+
 	/* 고사장 수정 CBT*/
 	$(".btnModifyCBT").on("click", function(){
-		location.href = "./examSetCenterWrite.php?proc=modify&centerCode="+$(this).attr("data-centerCode");
-	})
+		location.href = "./examSetCenterWrite.php?proc=modify&centerCate=CBT&centerCode="+$(this).attr("data-centerCode");
+	});
+
 });
 
 </script>

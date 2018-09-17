@@ -40,15 +40,12 @@
 
 			if($pGoodsCodeSpe != ""){
 				$pGoodsCode = $pGoodsCode."#".$pGoodsCodeSpe;
-				$pSellStart = null;
-				$pSellEnd = null;
-				/*
-				@ sellStart의 경우 에도 아래와 같이 #으로 구분하여 insert 되야 함
-				@ 프로시저 수정 필요하나, SB에 없으므로 생략
-				@ 2018-09-12 최상운
 				$pSellStart =$pGenRegiStart."#".$pSpeRegiStart;
 				$pSellEnd = $pGenRegiEnd."#".$pSpeRegiEnd;
-				*/
+			}
+			else{
+				$pSellStart =$pGenRegiStart;
+				$pSellEnd = $pGenRegiEnd;
 			}
 
 			/*
@@ -128,15 +125,12 @@
 
 			if($pGoodsCodeSpe != ""){
 				$pGoodsCode = $pGoodsCode."#".$pGoodsCodeSpe;
-				$pSellStart = null;
-				$pSellEnd = null;
-				/*
-				@ sellStart의 경우 에도 아래와 같이 #으로 구분하여 insert 되야 함
-				@ 프로시저 수정 필요하나, SB에 없으므로 생략
-				@ 2018-09-12 최상운
 				$pSellStart =$pGenRegiStart."#".$pSpeRegiStart;
 				$pSellEnd = $pGenRegiEnd."#".$pSpeRegiEnd;
-				*/
+			}
+			else{
+				$pSellStart =$pGenRegiStart;
+				$pSellEnd = $pGenRegiEnd;
 			}
 
 			/*

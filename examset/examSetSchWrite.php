@@ -442,30 +442,6 @@
 
 $(document).ready(function () {
 
-	$.datepicker.regional['ko'] = {         
-		closeText : '닫기',         
-		prevText : '이전달',         
-		nextText : '다음달',         
-		currentText : '오늘',         
-		monthNames : ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],         
-		monthNamesShort : ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],         
-		dayNames : ['일', '월', '화', '수', '목', '금', '토'],         
-		dayNamesShort : ['일', '월', '화', '수', '목', '금', '토'],         
-		dayNamesMin : ['일', '월', '화', '수', '목', '금', '토'],         
-		weekHeader : 'Wk',         
-		dateFormat : 'yy-mm-dd',         
-		firstDay : 0,         
-		isRTL : false,         
-		showMonthAfterYear : false,         
-		yearSuffix : '년',
-		showOn: 'both',
-		buttonImageOnly: false
-	}; 
-
-	$.datepicker.setDefaults($.datepicker.regional['ko']);         //default셋팅
-	$(".datepicker" ).datepicker();  
-	$(".ui-datepicker-trigger").css({'font-size':'0px', 'line-height':'0px', 'margin-top':'-2px', 'margin-left':'3px'});
-	$(".ui-datepicker-trigger").addClass('btn_sm_calendar');
 
 	/*시험에 따라 보여줄 항목*/
 	var openField = function(idvle){
@@ -508,8 +484,6 @@ $(document).ready(function () {
 	/*
 	@ 유효성체크 필요
 	*/
-
-
 		$('#frmWrite').submit();
     });
 

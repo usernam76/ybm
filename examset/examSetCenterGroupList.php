@@ -40,6 +40,7 @@
 	DEG.use_CHK,
 	DEG.center_group_type,
 	";
+
 	$arrGroupType = array(
 		"N"=>"일반",
 		"G"=>"지정",

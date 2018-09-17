@@ -38,8 +38,8 @@
 	$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 	$sql  = " SELECT ";
-	$sql .= "	A.Coup_code, Dept_Name, '', coup_name, [dbo].f_Coup_scv_type_name(svc_type) AS svcNm, svc, A.usable_Startday, A.usable_endday ";
-	$sql .= "	, coup_count, ok_CHK	";
+	$sql .= "	A.Coup_code, Dept_Name, '', coup_name, [dbo].f_Coup_scv_type_name(svc_type) AS svcNm, svc ";
+	$sql .= "	, CONVERT(CHAR(10), A.usable_Startday, 23) AS usable_Startday, CONVERT(CHAR(10), A.usable_endday, 23) AS usable_endday, coup_count, ok_CHK	";
 	$sql .= "	, ( SELECT COUNT(*) FROM Coup_List_User (nolock) WHERE A.Coup_code = Coup_code AND use_day IS NOT NULL ) AS use_count	";
 	$sql .= " FROM Coup_Info as A (nolock) 	";
 	$sql .= " JOIN Adm_info as B (nolock) on A.apply_id = B.Adm_id and A.applyType = B.AdmType 	";
@@ -86,13 +86,7 @@
 					</select>
 					<input style="width:300px;" type="text" id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>	
-				</div>
-				<strong class="part_tit">필터</strong>
-				<div class="item pad_t5">
-					<input class="i_unit" id="all" type="radio" name="" value=""><label for="all">전체 (000)</label>
-					<input class="i_unit" id="use" type="radio" name="" value=""><label for="use">사용가능 (00)</label>
-					<input class="i_unit" id="end" type="radio" name="" value=""><label for="end">사용완료 (00)</label>
-				</div>
+				</div>				
 			</div>
 </form> 
 			<!-- sorting area -->
@@ -100,11 +94,7 @@
 			<!-- 테이블1 -->
 			<div class="box_bs">
 				<p class="fl_l pad_b10">총 <strong><?=$totalRecords?></strong> 건</p>
-				<p class="item fl_r pad_b10">
-					<select style="width: 200px;">  
-						<option>정렬</option> 
-					</select>
-				</p>
+				
 				<div class="wrap_tbl">
 					<table class="type01">
 						<caption></caption>
@@ -154,7 +144,7 @@
 								<td></td>
 								<td><a href="/language/couponView.php<?=fnGetParams().'currentPage='.$pCurrentPage?>&coupCode=<?=$data['Coup_code']?>"><?=$data['coup_name']?></td>
 								<td><?=$data['svc'].$data['svcNm']?></td>
-								<td><?=substr($data['usable_Startday'], 0, 10)?> ~ <?=substr($data['usable_endday'], 0, 10)?></td>
+								<td><?=$data['usable_Startday']?> ~ <?=$data['usable_endday']?></td>
 								<td><?=$data['coup_count']?></td>
 								<td><?=$data['use_count']?></td>
 								<td><?=$data['coup_count']-$data['use_count']?></td>

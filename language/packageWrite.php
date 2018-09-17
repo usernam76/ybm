@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "209";	//메뉴고유번호
+	$cPageMenuIdx = "210";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -53,7 +53,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">패키지시험<?=( $proc == "write" )? "입력": "수정" ?></h3>
+			<h3 class="title">패키지시험 <?=( $proc == "write" )? "입력": "수정" ?></h3>
 
 <form name="frmWrite" id="frmWrite" action="/language/packageProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">
@@ -139,7 +139,7 @@
 								<td><?=$data['disp_goods_name']?></td>
 								<td><?=number_format($data['disp_price'])?>원</td>
 								<td><?=number_format($data['disp_price']-$data['goods_price'])?>원</td>
-								<td><input style="width: 100px;" type="text" class="onlyNumber" name="goodsPrices[]" value="<?=$data['goods_price']?>">원</td>
+								<td><input style="width: 100px;" type="text" class="onlyNumber2" name="goodsPrices[]" value="<?=$data['goods_price']?>">원</td>
 							</tr>
 <?php
 		}
@@ -151,7 +151,7 @@
 								<td></td>
 								<td>0원</td>
 								<td>0원</td>
-								<td><input style="width: 100px;" type="text" class="onlyNumber" name="goodsPrices[]" value="0">원</td>
+								<td><input style="width: 100px;" type="text" class="onlyNumber2" name="goodsPrices[]" value="0">원</td>
 							</tr>
 							<tr class="trDanList">
 								<td></td>
@@ -159,7 +159,7 @@
 								<td></td>
 								<td>0원</td>
 								<td>0원</td>
-								<td><input style="width: 100px;" type="text" class="onlyNumber" name="goodsPrices[]" value="0">원</td>
+								<td><input style="width: 100px;" type="text" class="onlyNumber2" name="goodsPrices[]" value="0">원</td>
 							</tr>
 <?php	
 	}
@@ -292,9 +292,7 @@ $(document).ready(function () {
 	common.sys.setSbInfoCreate(param);
 	$("#sbGoodsType").val("<?=$arrRows[0]['SB_goods_type']?>").change();
 	
-	common.string.onlyNumber2( $(".onlyNumber") );
-
-	$(".onlyNumber").on("keypress keyup", function (){ 
+	$(".onlyNumber2").on("keypress keyup", function (){ 
 		danTotal();
 	});
 
@@ -325,7 +323,6 @@ $(document).ready(function () {
 		$("#dispPrice").val( tmpDanTotalDis );
 		$("#sellPrice").val( tmpDanTotalPack );
 	}
-
 	danTotal();	
 
 	$(".close").on("click", function () {

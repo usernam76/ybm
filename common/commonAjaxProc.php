@@ -127,6 +127,24 @@
 
 			break;
 
+		case 'examInfoList':
+
+			$sql  = " SELECT Exam_code as cd, CAST(Exam_num AS varchar(10))+'회 '+CONVERT(CHAR(8), Exam_day, 2)+'('+LEFT(DATENAME(DW, Exam_day),1)+')' as cdNm ";
+			$sql .= " FROM Exam_Info (nolock) ";
+			$sql .= " WHERE SB_Exam_cate = :sbExamCate ";
+			$sql .= " ORDER BY Exam_num ASC ";
+
+			$pArray[':sbExamCate'] = $pSbExamCate;
+
+			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "data"=>$arrRows);
+			echo json_encode($returnData);
+
+			break;
+
+
+
 		default:
 
 

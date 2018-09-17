@@ -44,7 +44,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">단과시험<?=( $proc == "write" )? "입력": "수정" ?></h3>
+			<h3 class="title">단과시험 <?=( $proc == "write" )? "입력": "수정" ?></h3>
 
 <form name="frmWrite" id="frmWrite" action="/language/danProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">

@@ -26,13 +26,12 @@
 		$sql .= "	, coup_count, ok_CHK, comp_name, comp_mng, A.ok_id, A.ok_day, E.Adm_name AS okNm	";
 		$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'usr' ) AS areaDataUsr	";
 		$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'usa' ) AS areaDataUsa	";
-		$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'pro' ) AS areaDataPro	";
 		$sql .= " FROM Coup_Info as A (nolock) 	";
 		$sql .= " JOIN Adm_info as B (nolock) on A.apply_id = B.Adm_id and A.applyType = B.AdmType 	";
 		$sql .= " JOIN Adm_Dept_Info as C (nolock) on B.Dept_Code = C.Dept_Code 	";
 		$sql .= " JOIN Coup_Service as D (nolock) on A.Coup_code = D.Coup_code	";
 		$sql .= " LEFT OUTER JOIN Adm_info as E (nolock) on A.ok_id = E.Adm_id and A.okType = E.AdmType 	";
-		$sql .= " WHERE SB_coup_cate = '일반쿠폰' AND A.Coup_code = :coupCode ";
+		$sql .= " WHERE SB_coup_cate != '응시권' AND A.Coup_code = :coupCode ";
 
 		$pArray[':coupCode'] = $pCoupCode;
 
@@ -45,7 +44,29 @@
 			$admNm		= $arrRows[0]['Adm_name'];
 			$deptName	= $arrRows[0]['Dept_Name'];
 
+			$coupCount	= $arrRows[0]['coup_count'];
+			if( $coupCount == -1 ){
+				$coupCount = "";
+			}
+
+			if( $arrRows[0]['SB_coup_cate'] == "일반쿠폰" ){
+				$pSbCoupCateType = "normal";
+			}else{
+				$pSbCoupCateType = "special";
+			}
 		}
+
+		$sql  = " SELECT ";
+		$sql .= "	A.goods_code, Exam_code ";
+		$sql .= " FROM Goods_info as A (nolock) 	";
+		$sql .= " LEFT OUTER JOIN Exam_Goods B (nolock) ON A.goods_code = B.goods_code	";
+		$sql .= "	AND Exam_code IN ( SELECT area_data FROM Coup_Area_Data WHERE Coup_code = :coupCode AND SB_use_area = 'enm' )		";
+		$sql .= " WHERE A.goods_code IN ( SELECT area_data FROM Coup_Area_Data WHERE Coup_code = :coupCode2 AND SB_use_area = 'pro' )	";
+		$sql .= " ORDER BY A.goods_code, B.Exam_code 	";
+
+		$pArray[':coupCode2'] = $pCoupCode;
+
+		$arrRowsGoods = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 	}	
 ?>
 <?php
@@ -59,10 +80,11 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">쿠폰<?=( $proc == "write" )? "발급": "수정" ?></h3>
+			<h3 class="title"><?=( $pSbCoupCateType == "special" )? "우대": "일반" ?> 쿠폰<?=( $proc == "write" )? "발급": "수정" ?></h3>
 
 <form name="frmWrite" id="frmWrite" action="/language/couponProc.php" method="post"> 
 <input type="hidden" name="proc" value="<?=$proc?>">
+<input type="hidden" name="coupCode" value="<?=$pCoupCode?>">
 
 			<!-- 세로형 테이블 -->
 			<div class="box_bs">
@@ -98,14 +120,8 @@
 									</div>
 								</td>
 							</tr>
-							<tr>
-								<th>종류</th>
-								<td colspan="3">
-									<div class="item">
-										<select id="sbCoupCate" name="sbCoupCate"></select>
-									</div>
-								</td>
-							</tr>
+<?php	if( $pSbCoupCateType == "normal" ){	?>
+<input type="hidden" name="sbCoupCate" value="일반쿠폰">
 							<tr>
 								<th>발급대상</th>
 								<td colspan="3">
@@ -130,14 +146,30 @@
 									</div>
 								</td>
 							</tr>
+<?php	}else{	?>
+<input type="hidden" id="sbAreaDataUsr" name="sbAreaDataUsr" value="">
+<input type="hidden" id="sbCoupType" name="sbCoupType" value="">
+<input type="hidden" id="sbAreaDataUsa" name="sbAreaDataUsa" value="">
+							<tr>
+								<th>종류</th>
+								<td colspan="3">
+									<div class="item">
+										<select id="sbCoupCate" name="sbCoupCate">
+											<option value="우대_군인"		<?=( $arrRows[0]['SB_coup_cate'] == '우대_군인'		)? "SELECTED": "" ?> >우대_군인</option>
+											<option value="우대_기초생활"	<?=( $arrRows[0]['SB_coup_cate'] == '우대_기초생활'	)? "SELECTED": "" ?> >우대_기초생활</option>
+										</select>
+									</div>
+								</td>
+							</tr>
+<?php	}	?>
 							<tr>
 								<th>시험</th>
-								<td colspan="3" id="examCateList">
-									<div class="item divExamCate">
-										<select class="examCate" name="examCate[]"></select>
-										<select name="sExamNumList[]"><option value="">전체</option></select> ~
-										<select name="eExamNumList[]"><option value="">전체</option></select>
-										<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnExamAdd'", "추가")?>
+								<td colspan="3" id="goodsInfoList">
+									<div class="item divGoodsInfo">
+										<select class="goodsInfo" name="goodsInfo[]"></select>&nbsp;
+										<label for="">회차설정</label>
+										<select name="examNums[]"><option value="">전체</option></select>
+										<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnGoodsAdd'", "추가")?>
 									</div>
 								</td>
 							</tr>
@@ -145,7 +177,7 @@
 								<th>금액</th>
 								<td colspan="3">
 									<div class="item">
-										<input style="width: 200px;" type="text" name="svc" value="<?=$arrRows[0]['svc']?>">
+										<input style="width: 100px;" type="text" class="onlyNumber2" name="svc" value="<?=$arrRows[0]['svc']?>">
 										<select style="width: 100px;" name="svcType">
 											<option value="P-" <?=( $arrRows[0]['svc_type'] == 'P-'	)? "SELECTED": "" ?>>%</option>
 											<option value="S-" <?=( $arrRows[0]['svc_type'] == 'S-'	)? "SELECTED": "" ?>>원</option>
@@ -157,10 +189,10 @@
 								<th>수량</th>
 								<td colspan="3">
 									<div class="item">
-										<input class="i_unit" name="rCoupCount" type="radio"><label for=""><input style="width: 100px;" type="text" name="coupCount" value="<?=$arrRows[0]['coup_count']?>" > 매</label>
+										<input class="i_unit" type="radio" id="rCoupCount1" name="rCoupCount" value="1" <?=( $arrRows[0]['coup_count'] >= 0	)? "CHECKED": "" ?>><label for=""><input style="width: 100px;" type="text" class="onlyNumber2" id="coupCount" name="coupCount" value="<?=$coupCount?>" > 매</label>
 									</div>
 									<div class="item pad_t10">
-										<input class="i_unit" name="rCoupCount" type="radio"><label for="">제한없음</label>
+										<input class="i_unit" type="radio" id="rCoupCount0" name="rCoupCount" value="0" <?=( $arrRows[0]['coup_count'] == -1	)? "CHECKED": "" ?>><label for="">제한없음</label>
 									</div>
 								</td>
 							</tr>
@@ -175,14 +207,14 @@
 										<button class="btn_sm_bg_grey btnDaySet" type="button" data-sDay="usableStartday" data-eDay="usableEndday" data-dayKind="0" data-dayType="year" data-day="1">1년</button>
 									</div>
 									<div class="item pad_t10">
-										<input style="width: 160px;" type="text" class="datepicker" id="usableStartday" name="usableStartday" value="<?=$arrRows[0]['usable_Startday']?>" >
+										<input style="width: 160px;" type="text" class="datepicker" readonly id="usableStartday" name="usableStartday" value="<?=$arrRows[0]['usable_Startday']?>" >
 										&nbsp;&nbsp; ~ &nbsp;&nbsp;
-										<input style="width: 160px;" type="text" class="datepicker" id="usableEndday" name="usableEndday" value="<?=$arrRows[0]['usable_endday']?>" >
+										<input style="width: 160px;" type="text" class="datepicker" readonly id="usableEndday" name="usableEndday" value="<?=$arrRows[0]['usable_endday']?>" >
 									</div>
 									<div class="item pad_t10">
 										<p><label for="">발급일부터 사용</label></p>
 										<p class="pad_t10">
-										<select style="width:200px;" name="coup_insert_day">  
+										<select style="width:200px;" name="coupInsertDay">
 											<option value="0"  <?=( $arrRows[0]['coup_insert_day'] == '0'	)? "SELECTED": "" ?>>사용안함</option> 
 											<option value="1"  <?=( $arrRows[0]['coup_insert_day'] == '1'	)? "SELECTED": "" ?>>1일</option>
 											<option value="2"  <?=( $arrRows[0]['coup_insert_day'] == '2'	)? "SELECTED": "" ?>>2일</option>
@@ -234,32 +266,47 @@ $(document).ready(function () {
 	$('#frmWrite').validate({
         onfocusout: false,
         rules: {
-            admId: {
+            docNum: {
                 required: true    //필수조건
-			}, idCheck: {
+			}, coupName: {
                 required: true    //필수조건
-			}, admName: {
+			}, sbCoupCate: {
                 required: true    //필수조건
-			}, tokenCode: {
+			}, sbAreaDataUsr: {
                 required: true    //필수조건
-			}, admEmail1: {
+			}, sbCoupType: {
                 required: true    //필수조건
-			}, detpLev3: {
+			}, sbAreaDataUsa: {
+                required: true    //필수조건
+			}, sbAreaDataUsa: {
+                required: true    //필수조건
+			}, svc: {
+                required: true    //필수조건
+			}, compName: {
+                required: true    //필수조건
+			}, compMng: {
                 required: true    //필수조건
 			}
+
         }, messages: {
-			admId: {
-				required: "아이디를 입력해주세요."
-			}, idCheck: {
-				required: "아이디 중복체크를 해주세요."
-			}, admName: {
-				required: "이름을 입력해주세요."
-			}, tokenCode: {
-				required: "eToken을 입력해주세요."
-			}, admEmail1: {
-				required: "이메일을 입력해주세요."
-			}, detpLev3: {
-				required: "부서를 선택해주세요."
+			docNum: {
+				required: "기안문서번호를 입력해주세요."
+			}, coupName: {
+				required: "쿠폰명을 입력해주세요."
+			}, sbCoupCate: {
+				required: "쿠폰종류를 입력해주세요."
+			}, sbAreaDataUsr: {
+				required: "발급대상을 선택해주세요."
+			}, sbCoupType: {
+				required: "발급구분을 선택해주세요."
+			}, sbAreaDataUsa: {
+				required: "사용조건을 선택해주세요."
+			}, svc: {
+				required: "금액을 입력해주세요."
+			}, compName: {
+				required: "업체를 입력해주세요."
+			}, compMng: {
+				required: "업체담당자를 입력해주세요."
 			}
         }, errorPlacement: function (error, element) {
             // $(element).removeClass('error');
@@ -270,51 +317,93 @@ $(document).ready(function () {
                 alert(validator.errorList[0].message);
                 validator.errorList[0].element.focus();
             }
+        }, submitHandler: function (form) {
+			if ( $('input[name=rCoupCount]:checked').val() == "1" && $("#coupCount").val() == "" ){
+				alert("수량을 입력해주세요.");
+				return false;
+			}
+
+			var returnNow = false;
+
+			$(".divGoodsInfo").each( function() {
+				var jGoodsInfo	= $(this).find("select").eq(0).val();
+
+				if( jGoodsInfo == ""  ){
+					alert("시험을 선택해주세요.");
+
+					returnNow = true;
+					return false;
+				}
+			});
+			if( returnNow ){
+				return false;
+			}
+
+			form.submit();
         }
     });
 
+
 	$("#btnWrite").on("click", function () {
-//		$('#frmWrite').submit();
+		if( $("#sbCoupCate").val() == "우대_군인" ){
+			$("#sbAreaDataUsr").val("군인");
+			$("#sbCoupType").val("OG");
+		}else if( $("#sbCoupCate").val() == "우대_기초생활" ){
+			$("#sbAreaDataUsr").val("기초생활");
+			$("#sbCoupType").val("OG");
+		}
+
+		$('#frmWrite').submit();
     });
 
 	$("#btnCancel").on("click", function () {
 		location.href = "/language/couponList.php<?=fnGetParams().'currentPage='.$pCurrentPage?>";
 	});
 
-	$(".btnExamAdd").on("click", function () {
+	$(".btnGoodsAdd").on("click", function () {
 		var html = "";
-		html += "<div class='item pad_t10 divExamCate'>";
-		html += "<select class='examCate' name='examCate[]'></select>&nbsp;";
-		html += "<select name='sExamNumList[]'><option value=''>전체</option></select>&nbsp;~&nbsp;";
-		html += "<select name='eExamNumList[]'><option value=''>전체</option></select>&nbsp;";
-		html += "<button type='button' class='btn_line btn_sm btnExamDel'>삭제</button>";
+		html += "<div class='item pad_t10 divGoodsInfo'>";
+		html += "<select class='goodsInfo' name='goodsInfo[]'></select>&nbsp;&nbsp;<label for=''>회차설정</label>";
+		html += "<select class='examNums' name='examNums[]'><option value=''>전체</option></select>&nbsp;";
+		html += "<button type='button' class='btn_fill btn_sm btnExamDel'>삭제</button>";
 		html += "</div>";
 
-		$("#examCateList").append( html );
+		$("#goodsInfoList").append( html );
 
-		$('#examCateList div.divExamCate').last().children('select').eq(0).html( common.sys.setComboOptHtml(examCateList, "Y", "", "선택") );
+		$('#goodsInfoList div.divGoodsInfo').last().children('select').eq(0).html( common.sys.setComboOptHtml(goodsInfoList, "Y", "", "선택") );
 	});
 
 	$(document).on("click", ".btnExamDel", function () {
-		$(this).parent('div.divExamCate').remove();
+		$(this).parent('div.divGoodsInfo').remove();
 	});
 
-	$(document).on("change", ".examCate", function () {
-		$(this).parent('div.item').children('select').eq(1).html( common.sys.setComboOptHtml( common.sys.getExamInfoList( $(this).val() ), "Y", "", "전체") );
-		$(this).parent('div.item').children('select').eq(2).html( common.sys.setComboOptHtml( common.sys.getExamInfoList( $(this).val() ), "Y", "", "전체") );
+	$(document).on("change", ".goodsInfo", function () { 
+		$(this).parent().children('select').eq(1).html( common.sys.setComboOptHtml( common.sys.getExamInfoList( $(this).val() ), "Y", "", "전체") );
 	});
 
-	//쿠폰종류
-	var param = {
-		"sbInfo" 			: "sbCoupCate"	// SbInfo 정보
-		, "sbKind" 			: "coup_cate"	// sbKind 정보
-		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
-		, "firstOptVal"		: ""			// 상단 옵션  value
-		, "firstOptLable"	: "선택"			// 상단 옵션  text
-	}
-	common.sys.setSbInfoCreate(param);
+	$(document).on("change", ".examNums", function () { 
 
-	$("#sbCoupCate").val("<?=$arrRows[0]['SB_coup_cate']?>").change();
+		var returnNow		= false;
+		var jExamNums		= $(this).val();
+
+		if ( jExamNums != "" ){			
+			$(this).val("");
+
+			$(".divGoodsInfo").each( function() {
+				if( jExamNums == $(this).find("select").eq(1).val()  ){
+					alert("동일한 시험 회차가 존재합니다." );
+
+					returnNow = true;
+					return false;
+				}
+			});
+			if( returnNow ){
+				jExamNums = "";
+			}
+		}
+
+		$(this).val( jExamNums );
+	});
 
 	//발급대상
 	var param = {
@@ -326,8 +415,6 @@ $(document).ready(function () {
 	}
 	common.sys.setSbInfoCreate(param);
 
-	$("#sbAreaDataUsr").val("<?=$arrRows[0]['areaDataUsr']?>").change();
-
 	//발급구분
 	var param = {
 		"sbInfo" 			: "sbCoupType"	// SbInfo 정보
@@ -337,8 +424,6 @@ $(document).ready(function () {
 		, "firstOptLable"	: "선택"			// 상단 옵션  text
 	}
 	common.sys.setSbInfoCreate(param);
-
-	$("#sbCoupType").val("<?=$arrRows[0]['SB_coup_type']?>").change();
 
 	//사용조건
 	var param = {
@@ -350,13 +435,45 @@ $(document).ready(function () {
 	}
 	common.sys.setSbInfoCreate(param);
 
+	//발급대상 세팅
+	$("#sbAreaDataUsr").val("<?=$arrRows[0]['areaDataUsr']?>").change();
+	//발급구분 세팅
+	$("#sbCoupType").val("<?=$arrRows[0]['SB_coup_type']?>").change();
+	//사용조건 세팅
 	$("#sbAreaDataUsa").val("<?=$arrRows[0]['areaDataUsa']?>").change();
 
+	//사용기간 디폴트 세팅
+	if( $("#usableStartday").val() == "" ){
+		$(".btnDaySet").eq(1).trigger("click"); 
+	}
 
-	var examCateList = common.sys.getSbInfoList( "exam_cate" );
+	//시험정보 세팅
+	var goodsInfoList	= common.sys.getGoodsInfoList();
+	$('.goodsInfo').html( common.sys.setComboOptHtml(goodsInfoList, "Y", "", "선택") );
+<?php
+	$i = 0;
+	if( count($arrRowsGoods) > 0 ){
+		foreach($arrRowsGoods as $data) {
+			if( $i > 0 ){
+				echo "$('.btnGoodsAdd').trigger('click'); ";
+				echo "$('#goodsInfoList div.divGoodsInfo').last().children('select').eq(0).html( common.sys.setComboOptHtml(goodsInfoList, 'Y', '', '선택') ); ";
+			}
 
-	$('.examCate').html( common.sys.setComboOptHtml(examCateList, "Y", "", "선택") );
+			echo "$('#goodsInfoList div.divGoodsInfo').last().children('select').eq(0).val('".$data['goods_code']."'); ";
 
+			echo "$('#goodsInfoList div.divGoodsInfo').last().children('select').eq(0).trigger('change'); ";
+
+			echo "$('#goodsInfoList div.divGoodsInfo').last().children('select').eq(1).val('".$data['Exam_code']."'); ";
+			$i++;
+		}
+	}
+
+	if( $pSbCoupCateType == "special" ){
+		echo "$('#rCoupCount1').prop('disabled', true);";
+		echo "$('#rCoupCount0').prop('checked', true);";
+	}
+
+?>
 
 
 

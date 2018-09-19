@@ -34,18 +34,18 @@
 	$sql .= " JOIN Adm_info as B (nolock) on A.apply_id = B.Adm_id and A.applyType = B.AdmType 	";
 	$sql .= " JOIN Adm_Dept_Info as C (nolock) on B.Dept_Code = C.Dept_Code 	";
 	$sql .= " JOIN Coup_Service as D (nolock) on A.Coup_code = D.Coup_code	";
-	$sql .= " WHERE SB_coup_cate = '일반쿠폰' ". $where."	";
+	$sql .= " WHERE SB_coup_cate != '응시권' ". $where."	";
 	$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 	$sql  = " SELECT ";
-	$sql .= "	A.Coup_code, Dept_Name, '', coup_name, [dbo].f_Coup_scv_type_name(svc_type) AS svcNm, svc ";
+	$sql .= "	A.Coup_code, Dept_Name, comp_name, coup_name, [dbo].f_Coup_scv_type_name(svc_type) AS svcNm, svc ";
 	$sql .= "	, CONVERT(CHAR(10), A.usable_Startday, 23) AS usable_Startday, CONVERT(CHAR(10), A.usable_endday, 23) AS usable_endday, coup_count, ok_CHK	";
 	$sql .= "	, ( SELECT COUNT(*) FROM Coup_List_User (nolock) WHERE A.Coup_code = Coup_code AND use_day IS NOT NULL ) AS use_count	";
 	$sql .= " FROM Coup_Info as A (nolock) 	";
 	$sql .= " JOIN Adm_info as B (nolock) on A.apply_id = B.Adm_id and A.applyType = B.AdmType 	";
 	$sql .= " JOIN Adm_Dept_Info as C (nolock) on B.Dept_Code = C.Dept_Code 	";
 	$sql .= " JOIN Coup_Service as D (nolock) on A.Coup_code = D.Coup_code	";
-	$sql .= " WHERE SB_coup_cate = '일반쿠폰' ". $where;
+	$sql .= " WHERE SB_coup_cate != '응시권' ". $where;
 	$sql .= " ORDER BY A.Coup_code DESC ";
 	$sql .= " OFFSET ( ".$currentPage." - 1 ) * ".$recordsPerPage." ROWS ";
 	$sql .= " FETCH NEXT ".$recordsPerPage." ROWS ONLY ";
@@ -76,7 +76,8 @@
 				<strong class="part_tit">검색</strong>
 				<div class="item line">
 					<span class="fl_r">
-						<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md' id='btnWrite'", "쿠폰 발급")?>
+						<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md' id='btnWrite'", "일발쿠폰 발급")?>
+						<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md' id='btnWrite2'", "우대쿠폰 발급")?>
 					</span>
 					<select style="width: 200px;" name="searchType"> 
 						<option value="">전체</option>
@@ -115,7 +116,7 @@
 							<tr>
 								<th>번호</th>
 								<th>부서</th>
-								<th>사용처</th>
+								<th>업체</th>
 								<th>쿠폰명</th>
 								<th>할인</th>
 								<th>유효기간</th>
@@ -141,7 +142,7 @@
 							<tr>
 								<td><?=$no--?></td>
 								<td><?=$data['Dept_Name']?></td>
-								<td></td>
+								<td><?=$data['comp_name']?></td>
 								<td><a href="/language/couponView.php<?=fnGetParams().'currentPage='.$pCurrentPage?>&coupCode=<?=$data['Coup_code']?>"><?=$data['coup_name']?></td>
 								<td><?=$data['svc'].$data['svcNm']?></td>
 								<td><?=$data['usable_Startday']?> ~ <?=$data['usable_endday']?></td>
@@ -214,7 +215,11 @@ $(document).ready(function () {
     });
 
 	$("#btnWrite").on("click", function () {
-		location.href = "/language/couponWrite.php";
+		location.href = "/language/couponWrite.php?sbCoupCateType=normal";
+	});
+
+	$("#btnWrite2").on("click", function () {
+		location.href = "/language/couponWrite.php?sbCoupCateType=special";
 	});
 
 	$(".btnIssuedList").on("click", function () {

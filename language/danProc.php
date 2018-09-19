@@ -14,11 +14,12 @@
 	switch($proc){
 		case 'write':
 
-			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
+			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
 			$pArray[':goodsCode']		= "";
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;
-			$pArray[':sbGoodsType']		= $pSbGoodsType;
+			$pArray[':sbGoodsType1']	= $pSbGoodsType1;
+			$pArray[':sbGoodsType2']	= $pSbGoodsType2;
 			$pArray[':dispPrice']		= $pDispPrice;
 			$pArray[':sellPrice']		= $pSellPrice;
 			$pArray[':useChk']			= $pUseChk;
@@ -38,11 +39,12 @@
 			break;
 		case 'modify':
 
-			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
+			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
 			$pArray[':goodsCode']		= $pGoodsCode;
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;
-			$pArray[':sbGoodsType']		= $pSbGoodsType;
+			$pArray[':sbGoodsType1']	= $pSbGoodsType1;
+			$pArray[':sbGoodsType2']	= $pSbGoodsType2;
 			$pArray[':dispPrice']		= $pDispPrice;
 			$pArray[':sellPrice']		= $pSellPrice;
 			$pArray[':useChk']			= $pUseChk;

@@ -18,7 +18,7 @@
 
 	if ( $pGoodsCode != "" ){
 		$sql  = " SELECT ";
-		$sql .= "	goods_code, SB_goods_type, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
+		$sql .= "	goods_code, SB_goods_type1, SB_goods_type2, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
 		$sql .= " FROM Goods_info (nolock)	";
 		$sql .= " WHERE goods_code = :goodsCode ";
 
@@ -64,7 +64,8 @@
 								<th>분류</th>
 								<td colspan="3">
 									<div class="item">
-										<select id="sbGoodsType" name="sbGoodsType"></select>
+										<select id="sbGoodsType1" name="sbGoodsType1"></select>
+										<select id="sbGoodsType2" name="sbGoodsType2"></select>
 									</div>
 								</td>
 							</tr>
@@ -132,7 +133,9 @@ $(document).ready(function () {
 	$('#frmWrite').validate({
         onfocusout: false,
         rules: {
-            sbGoodsType: {
+            sbGoodsType1: {
+                required: true    //필수조건
+			}, sbGoodsType2: {
                 required: true    //필수조건
 			}, goodsName: {
                 required: true    //필수조건
@@ -144,7 +147,9 @@ $(document).ready(function () {
                 required: true    //필수조건
 			}
         }, messages: {
-			sbGoodsType: {
+			sbGoodsType1: {
+				required: "분류를 선택해주세요."
+			},sbGoodsType2: {
 				required: "분류를 선택해주세요."
 			}, goodsName: {
 				required: "상품명을 입력해주세요."
@@ -176,15 +181,25 @@ $(document).ready(function () {
 	});
 
 	var param = {
-		"sbInfo" 			: "sbGoodsType"	// SbInfo 정보
-		, "sbKind" 			: "goods_type"	// sbKind 정보
+		"sbInfo" 			: "sbGoodsType1"	// SbInfo 정보
+		, "sbKind" 			: "goods_type1"	// sbKind 정보
 		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
 		, "firstOptVal"		: ""			// 상단 옵션  value
 		, "firstOptLable"	: "선택"			// 상단 옵션  text
 	}
 	common.sys.setSbInfoCreate(param);
 
-	$("#sbGoodsType").val("<?=$arrRows[0]['SB_goods_type']?>").change();
+	var param = {
+		"sbInfo" 			: "sbGoodsType2"	// SbInfo 정보
+		, "sbKind" 			: "goods_type2"	// sbKind 정보
+		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		, "firstOptVal"		: ""			// 상단 옵션  value
+		, "firstOptLable"	: "선택"			// 상단 옵션  text
+	}
+	common.sys.setSbInfoCreate(param);
+
+	$("#sbGoodsType1").val("<?=$arrRows[0]['SB_goods_type1']?>").change();
+	$("#sbGoodsType2").val("<?=$arrRows[0]['SB_goods_type2']?>").change();
 
 });
 </script>

@@ -17,10 +17,9 @@
 	$sql  = " SELECT ";
 	$sql .= "	B.Adm_name, C.Dept_Name, A.regi_day, A.doc_num, A.coup_name, A.SB_coup_type, [dbo].f_Coup_scv_type_name(svc_type) AS svcNm, svc ";
 	$sql .= "	, CONVERT(CHAR(10), A.usable_Startday, 23) AS usable_Startday, CONVERT(CHAR(10), A.usable_endday, 23) AS usable_endday ";
-	$sql .= "	, coup_count, ok_CHK, comp_name, comp_mng, A.ok_id, A.ok_day, E.Adm_name AS okNm, fees	";
+	$sql .= "	, coup_count, ok_CHK, comp_name, comp_mng, A.ok_id, A.ok_day, E.Adm_name AS okNm, free_CHK	";
 	$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'usr' ) AS areaDataUsr	";
 	$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'usa' ) AS areaDataUsa	";
-	$sql .= "	, ( SELECT area_data FROM Coup_Area_Data (nolock) WHERE A.Coup_code = Coup_code AND SB_use_area = 'pro' ) AS areaDataPro	";
 	$sql .= " FROM Coup_Info as A (nolock) 	";
 	$sql .= " JOIN Adm_info as B (nolock) on A.apply_id = B.Adm_id and A.applyType = B.AdmType 	";
 	$sql .= " JOIN Adm_Dept_Info as C (nolock) on B.Dept_Code = C.Dept_Code 	";
@@ -35,6 +34,33 @@
 	if( count($arrRows) == 0 ){
 		fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
 	}
+
+	$sql  = " SELECT ";
+	$sql .= "	A.goods_code, B.Exam_code ";
+	$sql .= "	,goods_name, CAST(Exam_num AS varchar(10))+'회 '+CONVERT(CHAR(8), Exam_day, 2)+'('+LEFT(DATENAME(DW, Exam_day),1)+')' AS examNumNm ";
+	$sql .= " FROM Goods_info as A (nolock) 	";
+	$sql .= " LEFT OUTER JOIN Exam_Goods B (nolock) ON A.goods_code = B.goods_code	";
+	$sql .= "	AND B.Exam_code IN ( SELECT area_data FROM Coup_Area_Data WHERE Coup_code = :coupCode AND SB_use_area = 'enm' )		";
+	$sql .= " LEFT OUTER JOIN Exam_Info C (nolock) ON B.Exam_code = C.Exam_code		";
+	$sql .= " WHERE A.goods_code IN ( SELECT area_data FROM Coup_Area_Data WHERE Coup_code = :coupCode2 AND SB_use_area = 'pro' )	";
+	$sql .= " ORDER BY A.goods_code, B.Exam_code 	";
+
+	$pArray[':coupCode2'] = $pCoupCode;
+
+	$arrRowsGoods = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+	$goodsInfoList = "";
+
+	foreach($arrRowsGoods as $data) {
+
+		$goodsInfoList .= $data['goods_name'];
+
+		if( $data['examNumNm'] == "" ){
+			$goodsInfoList .= "&nbsp;&nbsp;회차&nbsp;:&nbsp;전체</br>";
+		}else{
+			$goodsInfoList .= "&nbsp;&nbsp;회차&nbsp;:&nbsp;".$data['examNumNm']."</br>";
+		}
+	}
 ?>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
@@ -47,7 +73,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">쿠폰 발급</h3>
+			<h3 class="title">응시권 상세</h3>
 			<!-- 테이블1 -->
 			<div class="box_bs">
 				<div class="wrap_tbl">
@@ -78,7 +104,7 @@
 							</tr>
 							<tr>
 								<th>시험</th>
-								<td colspan="3"><?=$arrRows[0]['areaDataPro']?></td>
+								<td colspan="3"><?=$goodsInfoList?></td>
 							</tr>
 							<tr>
 								<th>금액</th>
@@ -94,7 +120,7 @@
 							</tr>
 							<tr>
 								<th>정산구분</th>
-								<td colspan="3"><?=( $arrRows[0]['fees'] == '0' )? "무료발급": "유료결제" ?></td>
+								<td colspan="3"><?=( $arrRows[0]['free_CHK '] == '0' )? "무료발급": "유료결제" ?></td>
 							</tr>
 							<tr>
 								<th>업체</th>
@@ -160,7 +186,7 @@
 			<!-- 세로형 테이블 //-->
 
 			<div class="wrap_btn">
-				<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_lg' id='btnModify'", "수정")?>
+				<?=( $arrRows[0]['ok_CHK'] == "-" )? fnButtonCreate($cPageRoleRw, "class='btn_fill btn_lg' id='btnModify'", "수정"): "" ?>
 				<button type="button" class="btn_line btn_lg" id="btnCancel">목록으로</button>
 			</div>
 

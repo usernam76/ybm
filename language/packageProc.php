@@ -14,11 +14,12 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0 ";	
+			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0 ";	
 			$pArray[':goodsCode']		= "";
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;
-			$pArray[':sbGoodsType']		= $pSbGoodsType;
+			$pArray[':sbGoodsType1']	= $pSbGoodsType1;
+			$pArray[':sbGoodsType2']	= $pSbGoodsType2;
 			$pArray[':dispPrice']		= $pDispPrice;
 			$pArray[':sellPrice']		= $pSellPrice;
 			$pArray[':useChk']			= $pUseChk;
@@ -43,11 +44,12 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0 ";	
+			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0 ";	
 			$pArray[':goodsCode']		= $pGoodsCode;
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;
-			$pArray[':sbGoodsType']		= $pSbGoodsType;
+			$pArray[':sbGoodsType1']	= $pSbGoodsType1;
+			$pArray[':sbGoodsType2']	= $pSbGoodsType2;
 			$pArray[':dispPrice']		= $pDispPrice;
 			$pArray[':sellPrice']		= $pSellPrice;
 			$pArray[':useChk']			= $pUseChk;
@@ -85,9 +87,9 @@
 			}
 
 			$sql  = " SELECT ";
-			$sql .= "	GI.goods_code, GI.goods_name, GI.disp_goods_name, GI.disp_price, GI.sell_price, GI.use_CHK, SI.SB_name AS sbGoodsType ";
+			$sql .= "	GI.goods_code, GI.goods_name, GI.disp_goods_name, GI.disp_price, GI.sell_price, GI.use_CHK, SI.SB_name AS sbGoodsTypeNm2 ";
 			$sql .= " FROM Goods_info AS GI (nolock) 	";
-			$sql .= " JOIN SB_Info AS SI (nolock) ON SI.SB_kind = 'goods_type' AND SI.SB_value = GI.SB_goods_type	";
+			$sql .= " JOIN SB_Info AS SI (nolock) ON SI.SB_kind = 'goods_type2' AND SI.SB_value = GI.SB_goods_type2	";
 			$sql .= " WHERE pack_CHK = 'X' ". $where;
 			$sql .= " ORDER BY update_day DESC ";
 

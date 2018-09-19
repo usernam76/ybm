@@ -11,11 +11,15 @@
 	$resultArray = fnGetRequestParam($valueValid);
 
 	$proc = fnNoInjection($_REQUEST['proc']);
+
 	if(empty($proc)) $proc = "write";
-	$pCenterCate = "PBT";	// 해당 페이지에서는 PBT만 입력한다.
+
+	/*
+	@ 이 페이지에서는 PBT만 입력하나, 리스트에서 파라메터 넘어온다
+	@ pCenterCate = PBT
+	*/
 
 	if($proc == "modify"){
-		
 		$sql = " SELECT ";
 		$sql .= " (SELECT left(SB_name,CHARINDEX('#', SB_name, 1) -1 ) FROM [theExam].[dbo].[SB_Info] WHERE SB_kind='area' AND SB_value = DEC.SB_area) as areaLev1, ";
 		$sql .= " DEC.SB_area, DEC.link_center_code, DEC.center_name, DEC.zipcode, DEC.address, DEC.memo, DEC.use_CHK, DEC.map_URL, DCP.room_count, DCP.room_seat";
@@ -27,9 +31,7 @@
 		$sql .= " WHERE ";
 		$sql .= " DEC.center_code = :centerCode ";
 		$pArray[':centerCode'] = $pCenterCode;
-
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
-	
 		if( count($arrRows) == 0 ){
 			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);
 		}else{

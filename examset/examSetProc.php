@@ -17,8 +17,7 @@
 	pLinkCenterCode --- 고사장이랑 연계되는 고유코드
 	> DB 명세서 에는 본사 전산실에서 가져오는 코드라 데이터 연동이라고 적혀있음
 	> 기획자 진경란 과장은 자동생성되는 코드라고 함.
-	> 그리고 테이블에 지도 URL 칼럼 없음(프로시저포함)
-	> 주소1과 주소2 > 테이블은 address 1칼럼, 수정에서는 분리해줘야 함. 
+	> 주소1과 주소2 > 테이블은 address 1칼럼, 수정에서는 분리해줘야 함.  분리안함
 	*/
 
 	switch($proc){
@@ -69,7 +68,7 @@
 
 
 			if( $result[0][result] != '0' ){	//성공일때 메일 발송
-				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
+				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php?centerCate=".$pCenterCate."';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
 			}
@@ -116,11 +115,10 @@
 			$pArray[':usePC']						= $pUsePC;
 			$pArray[':ETSCerti']					= $pETSCerti;
 
-
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 			if( $result[0][result] != '0' ){	//성공일때 메일 발송
-				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/examSetDef.php';", true);
+				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/examSetDef.php?centerCate=".$pCenterCate."';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
 			}

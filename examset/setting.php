@@ -12,7 +12,32 @@
 
 	$proc = fnNoInjection($_REQUEST['proc']);
 	if(empty($proc)) $proc = "write";
-	$pCenterCate = "CBT";	// 해당 페이지에서는 CBT만 입력한다.
+
+	$sql = "
+	Select 
+		Exam_num, 
+		Exam_day, 
+		A.gen_regi_Start, 
+		A.gen_regi_End, 
+		sum(case when B.fin_CHK = 'O' then 1 else 0 end) as fin_center, 
+		sum(case when B.fin_CHK = '-' then 1 else 0 end) as wait_center, 
+		sum(case when D.Group_Exam is not null then 1 else 0 end) as group_center, 
+		case when A.fin_CHK = 'O' then '완료' when A.fin_CHK = 'X' then '준비' end as fin_CHK
+	From
+		exam_info as A (nolock) join 
+		v_Exam_center as B (nolock) 
+			on A.Exam_code = B.Exam_code
+		left outer join Group_Exam_info as C (nolock) 
+			on A.Exam_code = C.Exam_code
+		left outer join Group_exam_center as D (nolock) 
+			on C.Group_Exam = D.Group_Exam
+		Group by Exam_num, Exam_day, A.gen_regi_Start, A.gen_regi_End, A.fin_CHK
+";
+
+
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
 
 
 
@@ -53,6 +78,36 @@
 							</tr>
 						</thead>
 						<tbody>
+
+
+<?php
+	foreach($arrRows as $data) {
+		if($data["fin_CHK"] == "완료"){
+			$addClass = ' class="other"';
+			$examStatus = "complete";
+		}else{
+			if($data["fin_center"] == 0 && $data["wait_center"]==0  && $data["group_center"]==0){
+				$examStatus = "non";
+			}else{
+				$examStatus = "ready";
+			}
+		}
+		
+?>
+							<tr<?=$addClass?>>
+								<td><?=$data["Exam_num"]?></td>
+								<td><a href="#"><?=$data["Exam_day"]?></a></td>
+								<td><?=$data["gen_regi_Start"]?> ~ <?=$data["gen_regi_End"]?></td>
+								<td><?=$data["fin_center"]?></td>
+								<td><?=$data["wait_center"]?></td>
+								<td><?=$data["group_center"]?></td>
+								<td><a href="#" class="setting" data-centerStatus="<?=$examStatus?>"><?=$data["fin_CHK"]?></a></td>
+							</tr>
+<?php
+	}
+?>
+						<?php
+						/*
 							<tr>
 								<td>000</td>
 								<td><a href="#">2018-00-00</a></td>
@@ -71,60 +126,7 @@
 								<td>00</td>
 								<td><a href="#">완료</a></td>
 							</tr>
-							<tr class="other">
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#">완료</a></td>
-							</tr>
-							<tr>
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#">완료</a></td>
-							</tr>
-							<tr>
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#" id="myBtn">준비</a></td>
-							</tr>
-							<tr>
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#">준비</a></td>
-							</tr>
-							<tr>
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#">준비</a></td>
-							</tr>
-							<tr>
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#">준비</a></td>
-							</tr>
+							*/?>
 						</tbody>
 					</table>
 				</div>
@@ -198,8 +200,19 @@ span.onclick = function() {
     modal.style.display = "none";
 }
 
+
+
+$(document).ready(function () {
+	
+
+	$(".setting").on("click", function(){
+		
+	});
+
+});
+
 </script>
-</fieldset>
-</form> 
-</body>
-</html>
+
+<?php
+	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/footer.php';
+?>

@@ -117,7 +117,8 @@
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
-			if( $result[0][result] != '0' ){	//성공일때 메일 발송
+
+			if( $result[0][result] != '0' ){	
 				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/examSetDef.php?centerCate=".$pCenterCate."';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);

@@ -10,7 +10,7 @@
 	$valueValid = [];
 	$resultArray = fnGetRequestParam($valueValid);
 
-	$SBExamCate = "TOE";	// 토익시험을 기준으로 개발.
+	if($pExamCate == "") $pExamCate = "TOE";		// 기본은 PBT, 상황에 따라 변수 변경
 
 	$listYear = fnNoInjection($_REQUEST['listYear']);
 	if(empty($listYear)) $listYear = date("Y");
@@ -39,9 +39,10 @@
 		,[update_day]
 		,[ok_id]
 		,[okType]
-		,(select GI.sell_price from [theExam].dbo.Exam_Info as EI left outer join [theExam].dbo.Exam_Goods as EG on EI.Exam_code=EG.Exam_code INNER JOIN [theExam].dbo.goods_info as GI on EG.goods_code = GI.goods_code where GI.SB_goods_type='EXR' and EI.Exam_code = oEI.Exam_code)  as genSellPrice
-		,(select GI.sell_price from [theExam].dbo.Exam_Info as EI left outer join [theExam].dbo.Exam_Goods as EG on EI.Exam_code=EG.Exam_code INNER JOIN [theExam].dbo.goods_info as GI on EG.goods_code = GI.goods_code where GI.SB_goods_type='EXS' and EI.Exam_code = oEI.Exam_code)  as speSellPrice
+		,(select GI.sell_price from [theExam].dbo.Exam_Info as EI left outer join [theExam].dbo.Exam_Goods as EG on EI.Exam_code=EG.Exam_code INNER JOIN [theExam].dbo.goods_info as GI on EG.goods_code = GI.goods_code where GI.SB_goods_type2='EXR' and EI.Exam_code = oEI.Exam_code)  as genSellPrice
+		,(select GI.sell_price from [theExam].dbo.Exam_Info as EI left outer join [theExam].dbo.Exam_Goods as EG on EI.Exam_code=EG.Exam_code INNER JOIN [theExam].dbo.goods_info as GI on EG.goods_code = GI.goods_code where GI.SB_goods_type2='EXS' and EI.Exam_code = oEI.Exam_code)  as speSellPrice
 	";
+
 
 	$pArray = null;
 	$sql = " SELECT ".$coulmn. " FROM ";
@@ -80,7 +81,7 @@
 		"btn^수정"
 	);
 
-	switch($SBExamCate == "TOE"){
+	switch($pExamCate == "TOE"){
 		case "" :
 		break;
 

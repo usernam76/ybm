@@ -90,6 +90,7 @@
 			$pArray[':sell_start']							= $pSellStart;
 			$pArray[':sell_end']							= $pSellEnd;
 
+
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 

@@ -32,7 +32,7 @@
 
 	/*단과시험 정보 출력*/
 	$pArray = null;
-	$coulmn = " [goods_code] ,[goods_name] ,[disp_goods_name] ,[SB_goods_type] ,[disp_price] ,[sell_price]";
+	$coulmn = " [goods_code] ,[goods_name] ,[disp_goods_name] ,[SB_goods_type2] ,[disp_price] ,[sell_price]";
 	$sql = "SELECT ".$coulmn;
 	$sql .= " FROM [Goods_info]";
 	$sql .="  WHERE use_CHK = 'O' AND pack_CHK='X'";
@@ -46,7 +46,7 @@
 		//goods_code^goods_name^sell_price
 		$inArrayExamInfo = $data["goods_code"]."^".$data["goods_name"]."^".$data["sell_price"];
 	
-		switch($data['SB_goods_type']){
+		switch($data['SB_goods_type2']){
 			// 정기시험
 			case "EXR" :
 				array_push($arrGenExam, $inArrayExamInfo);
@@ -83,7 +83,7 @@
 				refSecond			환불 2차
 */
 
-	$SBExamCate = "TOE";	// 토익>전체필드오픈
+	$pExamCate = "TOE";	// 토익>전체필드오픈
 	
 	// 공통 입력항목 세팅
 	$arrOpenField = array(

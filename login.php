@@ -4,6 +4,10 @@
 <title>어학시험 admin</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="robots" content="none" />
+<OBJECT ID="token" CLASSID="CLSID:D738A65D-1499-4E5D-BB99-C3ACCA482A8F" codebase="/eTSDAX.cab#Version=1,0,0,3"></OBJECT>
+<OBJECT id="tracker" classid="clsid:C63831C9-14B6-42DB-A458-0B263B2319EA"></OBJECT>
+
 <link rel="stylesheet" type="text/css" href="/_resources/css/login.css" media="all">
 <link rel="stylesheet" type="text/css" href="/_resources/css/nanumbarungothic.css" media="all">
 <!--[if lt IE 9]>
@@ -35,6 +39,7 @@
 		</div>
 <form name="frm" id="frm" action="/loginProc.php" method="post"> 
 <input type="hidden" name="proc" value="login">
+<input type="hidden" id="etoken" name="etoken" maxlength="10" value="">
 		<section class="member">
 			<!-- login_input -->
 			<div class="login_input">
@@ -93,8 +98,43 @@ $(document).ready(function () {
 	$("#btnLogin").on("click", function () {
 		$("#admId").val( $.trim($("#admId").val()) );
 
+//		token.Attach();
+//		$('#etoken').val( token.GetSerialNumber() );
+//		token.Detach();
+
+
 		$('#frm').submit();
     });
 
 });
+/*
+	//카드가 있는지 검사
+	var activeReader="";
+	function tracker::cardRemoved(a){
+		getActiveReader();
+	}
+
+	function tracker::cardInserted(a)	{
+		getActiveReader();
+	}
+
+	function getActiveReader(){
+		readers = tracker.snapshot();
+		do{
+			m = readers.next()
+			if (m != ""){
+				x = tracker.getCardInReader(m);
+				if(x=="No Card"){
+					if (m==activeReader) activeReader="";
+				}else{
+					activeReader = m;
+				}
+			}
+		} while (m != "");
+		if (activeReader==""){
+			alert(":: eToken 메모리카드를 넣어주시기 바랍니다.");
+			document.location = "/exam_supervision.htm"; //Javascript redirects to logout page
+		}
+	}
+*/
 </script>

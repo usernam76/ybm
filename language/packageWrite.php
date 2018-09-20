@@ -18,7 +18,7 @@
 
 	if ( $pGoodsCode != "" ){
 		$sql  = " SELECT ";
-		$sql .= "	goods_code, SB_goods_type, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
+		$sql .= "	goods_code, SB_goods_type1, SB_goods_type2, goods_name, disp_goods_name, disp_price, sell_price, use_CHK	";
 		$sql .= " FROM Goods_info (nolock)	";
 		$sql .= " WHERE goods_code = :goodsCode ";
 
@@ -27,10 +27,10 @@
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 		$sql  = " SELECT ";
-		$sql .= "	GP.goods_price, GI.goods_code, GI.SB_goods_type, GI.goods_name, GI.disp_goods_name, GI.disp_price, SI.SB_name AS sbGoodsType	";
+		$sql .= "	GP.goods_price, GI.goods_code, GI.goods_name, GI.disp_goods_name, GI.disp_price, SI.SB_name AS sbGoodsTypeNm2	";
 		$sql .= " FROM Goods_Pack AS GP (nolock)	";
 		$sql .= " JOIN Goods_info AS GI (nolock) ON GP.goods_code = GI.goods_code	";
-		$sql .= " JOIN SB_Info AS SI (nolock) ON SI.SB_kind = 'goods_type' AND SI.SB_value = GI.SB_goods_type	";
+		$sql .= " JOIN SB_Info AS SI (nolock) ON SI.SB_kind = 'goods_type2' AND SI.SB_value = GI.SB_goods_type2	";
 		$sql .= " WHERE pack_goods_code = :goodsCode ";
 
 		$arrRows2 = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -75,7 +75,8 @@
 								<th>분류</th>
 								<td colspan="3">
 									<div class="item">
-										<select id="sbGoodsType" name="sbGoodsType"></select>
+										<select id="sbGoodsType1" name="sbGoodsType1"></select>
+										<select id="sbGoodsType2" name="sbGoodsType2"></select>
 									</div>
 								</td>
 							</tr>
@@ -134,7 +135,7 @@
 		foreach($arrRows2 as $data) {
 ?>
 							<tr class="trDanList">
-								<td><?=$data['sbGoodsType']?></td>
+								<td><?=$data['sbGoodsTypeNm2']?></td>
 								<td><input style="width: 100px;" type="text" name="goodsCodes[]" value="<?=$data['goods_code']?>" readonly><button class="btn_sm_bg_grey btnSearchPop" type="button">검색</button></td>
 								<td><?=$data['disp_goods_name']?></td>
 								<td><?=number_format($data['disp_price'])?>원</td>
@@ -239,7 +240,9 @@ $(document).ready(function () {
 	$('#frmWrite').validate({
         onfocusout: false,
         rules: {
-            sbGoodsType: {
+            sbGoodsType1: {
+                required: true    //필수조건
+			},sbGoodsType2: {
                 required: true    //필수조건
 			}, goodsName: {
                 required: true    //필수조건
@@ -251,7 +254,9 @@ $(document).ready(function () {
                 required: true    //필수조건
 			}
         }, messages: {
-			sbGoodsType: {
+			sbGoodsType1: {
+				required: "분류를 선택해주세요."
+			},sbGoodsType2: {
 				required: "분류를 선택해주세요."
 			}, goodsName: {
 				required: "상품명을 입력해주세요."
@@ -283,14 +288,25 @@ $(document).ready(function () {
 	});
 
 	var param = {
-		"sbInfo" 			: "sbGoodsType"	// SbInfo 정보
-		, "sbKind" 			: "goods_type"	// sbKind 정보
+		"sbInfo" 			: "sbGoodsType1"	// SbInfo 정보
+		, "sbKind" 			: "goods_type1"	// sbKind 정보
 		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
 		, "firstOptVal"		: ""			// 상단 옵션  value
 		, "firstOptLable"	: "선택"			// 상단 옵션  text
 	}
 	common.sys.setSbInfoCreate(param);
-	$("#sbGoodsType").val("<?=$arrRows[0]['SB_goods_type']?>").change();
+
+	var param = {
+		"sbInfo" 			: "sbGoodsType2"	// SbInfo 정보
+		, "sbKind" 			: "goods_type2"	// sbKind 정보
+		, "optYn"			: "Y"			// 상단 옵션 사용여부(Y, N)
+		, "firstOptVal"		: ""			// 상단 옵션  value
+		, "firstOptLable"	: "선택"			// 상단 옵션  text
+	}
+	common.sys.setSbInfoCreate(param);
+
+	$("#sbGoodsType1").val("<?=$arrRows[0]['SB_goods_type1']?>").change();
+	$("#sbGoodsType2").val("<?=$arrRows[0]['SB_goods_type2']?>").change();
 	
 	$(".onlyNumber2").on("keypress keyup", function (){ 
 		danTotal();
@@ -361,7 +377,7 @@ $(document).ready(function () {
 				var html = "";
 				for(var i=0 ; i<list.length; i++){
 					html = html + "<tr>";
-					html = html + "<td><a class='mdGoodsCode' data-sbGoodsType='"+list[i].sbGoodsType+"'>"+list[i].goods_code+"</a></td>";
+					html = html + "<td><a class='mdGoodsCode' data-sbGoodsType='"+list[i].sbGoodsTypeNm2+"'>"+list[i].goods_code+"</a></td>";
 					html = html + "<td>"+list[i].goods_name+"</td>";
 					html = html + "<td>"+list[i].disp_goods_name+"</td>";
 					html = html + "<td>"+$.number(list[i].disp_price)+"원</td>";

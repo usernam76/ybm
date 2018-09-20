@@ -13,9 +13,113 @@
 
 	switch($proc){
 		case 'write':
+			$valueValid = [];
+			$resultArray = fnGetRequestParam($valueValid);
+
+			$pSbUseAreas		= "usr#usa";
+			$pSbUseAreaDatas	= $pSbAreaDataUsr."#".$pSbAreaDataUsa;
+
+			foreach(array_unique($pGoodsInfo) as $data) {
+				$pSbUseAreas		.= "#pro";
+				$pSbUseAreaDatas	.= "#".$data;
+			}
+			foreach(array_unique($pExamNums) as $data) {
+				$pSbUseAreas		.= "#enm";
+				$pSbUseAreaDatas	.= "#".$data;
+			}
+			if( $pRCoupCount == 0 ){
+				$pCoupCount = -1;			
+			}
+
+			$sql = "EXEC p_Coup_Info_IUD 'I', :coupCode, :sbCoupCate, :sbCoupType, :coupName, :usableStartday, :usableEndday, :coupInsertDay, :explain, :useCount, :coupCount, :userCoupCount, :freeChk, :applyId, :applyType, :docNum, :compName, :compMng, :sbUseAreas, :sbUseAreaDatas, :svcTypes, :svcs, :svcMaxs ";
+
+			$pArray[':coupCode']			= "";
+			$pArray[':sbCoupCate']			= $pSbCoupCate;
+			$pArray[':sbCoupType']			= $pSbCoupType;
+			$pArray[':coupName']			= $pCoupName;
+			$pArray[':usableStartday']		= $pUsableStartday;
+			$pArray[':usableEndday']		= $pUsableEndday;
+			$pArray[':coupInsertDay']		= $pCoupInsertDay;
+			$pArray[':explain']				= $pCoupName;
+			$pArray[':useCount']			= 1;
+			$pArray[':coupCount']			= $pCoupCount;
+			$pArray[':userCoupCount']		= 1;
+			$pArray[':freeChk']				= 0;
+			$pArray[':applyId']				= $_SESSION["admId"];
+			$pArray[':applyType']			= $_SESSION["admType"];
+			$pArray[':docNum']				= $pDocNum;
+			$pArray[':compName']			= $pCompName;
+			$pArray[':compMng']				= $pCompMng;
+
+			$pArray[':sbUseAreas']			= $pSbUseAreas;
+			$pArray[':sbUseAreaDatas']		= $pSbUseAreaDatas;
+
+			$pArray[':svcTypes']			= $pSvcType;
+			$pArray[':svcs']				= $pSvc;
+			$pArray[':svcMaxs']				= -1;
+
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+			
+			if( $result[0][result] >= 1 ){			
+				fnShowAlertMsg("등록 되었습니다.", "location.href = '/language/couponList.php';", true);
+			}else{
+				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
+			}
 
 			break;
 		case 'modify':
+			$valueValid = [];
+			$resultArray = fnGetRequestParam($valueValid);
+
+			$pSbUseAreas		= "usr#usa";
+			$pSbUseAreaDatas	= $pSbAreaDataUsr."#".$pSbAreaDataUsa;
+
+			foreach(array_unique($pGoodsInfo) as $data) {
+				$pSbUseAreas		.= "#pro";
+				$pSbUseAreaDatas	.= "#".$data;
+			}
+			foreach(array_unique($pExamNums) as $data) {
+				$pSbUseAreas		.= "#enm";
+				$pSbUseAreaDatas	.= "#".$data;
+			}
+			if( $pRCoupCount == 0 ){
+				$pCoupCount = -1;			
+			}
+
+			$sql = "EXEC p_Coup_Info_IUD 'U', :coupCode, :sbCoupCate, :sbCoupType, :coupName, :usableStartday, :usableEndday, :coupInsertDay, :explain, :useCount, :coupCount, :userCoupCount, :freeChk, :applyId, :applyType, :docNum, :compName, :compMng, :sbUseAreas, :sbUseAreaDatas, :svcTypes, :svcs, :svcMaxs ";
+
+			$pArray[':coupCode']			= $pCoupCode;
+			$pArray[':sbCoupCate']			= $pSbCoupCate;
+			$pArray[':sbCoupType']			= $pSbCoupType;
+			$pArray[':coupName']			= $pCoupName;
+			$pArray[':usableStartday']		= $pUsableStartday;
+			$pArray[':usableEndday']		= $pUsableEndday;
+			$pArray[':coupInsertDay']		= $pCoupInsertDay;
+			$pArray[':explain']				= $pCoupName;
+			$pArray[':useCount']			= 1;
+			$pArray[':coupCount']			= $pCoupCount;
+			$pArray[':userCoupCount']		= 1;
+			$pArray[':freeChk']				= 0;
+			$pArray[':applyId']				= $_SESSION["admId"];
+			$pArray[':applyType']			= $_SESSION["admType"];
+			$pArray[':docNum']				= $pDocNum;
+			$pArray[':compName']			= $pCompName;
+			$pArray[':compMng']				= $pCompMng;
+
+			$pArray[':sbUseAreas']			= $pSbUseAreas;
+			$pArray[':sbUseAreaDatas']		= $pSbUseAreaDatas;
+
+			$pArray[':svcTypes']			= $pSvcType;
+			$pArray[':svcs']				= $pSvc;
+			$pArray[':svcMaxs']				= -1;
+
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+			
+			if( $result[0][result] >= 1 ){			
+				fnShowAlertMsg("수정 되었습니다.", "location.href = '/language/couponList.php';", true);
+			}else{
+				fnShowAlertMsg("수정 실패 되었습니다.", "history.back();", true);
+			}
 
 			break;
 		case 'delete':

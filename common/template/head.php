@@ -73,8 +73,9 @@ $(document).ready(function () {
 			$('#'+$(this).attr("data-sDay")).val( edate.toISOString().slice(0,10) );
 			$('#'+$(this).attr("data-eDay")).val( date.toISOString().slice(0,10) );
 		}
-
 	});
+
+
 
 });
 

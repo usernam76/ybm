@@ -115,7 +115,7 @@
 
 			$sql  = " SELECT SB_value as cd, SB_name as cdNm ";
 			$sql .= " FROM SB_Info (nolock) ";
-			$sql .= " WHERE SB_kind = :sbKind ";
+			$sql .= " WHERE SB_kind = :sbKind AND Disp_type IN ('M','A') ";
 			$sql .= " ORDER BY SB_order ASC ";
 
 			$pArray[':sbKind'] = $pSbKind;
@@ -127,14 +127,29 @@
 
 			break;
 
+		case 'goodsInfoList':
+			$sql  = " SELECT goods_code as cd, goods_name as cdNm ";
+			$sql .= " FROM goods_info (nolock) ";
+			$sql .= " WHERE SB_goods_type2 in ('EXR', 'EXS', 'ECR', 'ECS') AND use_CHK = 'O' ";
+			$sql .= " ORDER BY goods_name ASC ";
+
+			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+			$returnData = array("status"=>"success", "data"=>$arrRows);
+			echo json_encode($returnData);
+
+			break;
+
 		case 'examInfoList':
 
-			$sql  = " SELECT Exam_code as cd, CAST(Exam_num AS varchar(10))+'회 '+CONVERT(CHAR(8), Exam_day, 2)+'('+LEFT(DATENAME(DW, Exam_day),1)+')' as cdNm ";
-			$sql .= " FROM Exam_Info (nolock) ";
-			$sql .= " WHERE SB_Exam_cate = :sbExamCate ";
+			$sql  = " SELECT A.Exam_code AS cd, CAST(Exam_num AS varchar(10))+'회 '+CONVERT(CHAR(8), Exam_day, 2)+'('+LEFT(DATENAME(DW, Exam_day),1)+')' as cdNm ";
+			$sql .= " FROM Exam_Info AS A (nolock) ";
+			$sql .= " JOIN Exam_Goods AS B (nolock) on A.Exam_code = B.Exam_code ";
+			$sql .= " WHERE goods_code = :goodsCode ";
+//			$sql .= " AND exam_day >= getdate() ";
 			$sql .= " ORDER BY Exam_num ASC ";
 
-			$pArray[':sbExamCate'] = $pSbExamCate;
+			$pArray[':goodsCode'] = $pGoodsCode;
 
 			$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 

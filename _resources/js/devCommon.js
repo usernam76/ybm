@@ -686,13 +686,36 @@
 
 		},
 
-		// SbInfo data 가져오기
-		getExamInfoList : function( sbExamCate ) {
+		// 시험정보 가져오기
+		getGoodsInfoList : function() {
+			var returnVal = "";
+			var u = "/common/commonAjaxProc.php";
+			var param = {				
+				"proc"	: "goodsInfoList",
+			};	
+
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+				success: function(resJson) {
+					returnVal = resJson.data;
+				},
+				error: function(e) {
+					alert("현재 서버 통신이 원할하지 않습니다.");
+//					console.log("[Error]");
+//					console.log(e);
+					returnVal = "";
+				}
+			});
+
+			return returnVal;
+		},
+
+		// 시험횟차정보 가져오기
+		getExamInfoList : function( goodsCode ) {
 			var returnVal = "";
 			var u = "/common/commonAjaxProc.php";
 			var param = {				
 				"proc"			: "examInfoList",
-				"sbExamCate"	: sbExamCate
+				"goodsCode"		: goodsCode
 			};	
 
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,

@@ -5,7 +5,10 @@
 	
 	$cPageMenuIdx = "210";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
-	
+	if( $cPageRoleRw != "W" ){	//쓰기 권한 필요
+		fnShowAlertMsg("페이지 쓰기 권한이 없습니다.", "location.href = '/main.php';", true);
+	}
+
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [];
 //	$valueValid = [
@@ -210,7 +213,6 @@
 			<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>	
 		</div>
 		<!-- sorting area -->
-
 		<table class="type01">
 			<caption></caption>
 			<colgroup>

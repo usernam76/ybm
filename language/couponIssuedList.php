@@ -87,12 +87,6 @@
 					<input style="width:300px;" type="text" id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>
 				</div>
-				<strong class="part_tit">필터</strong>
-				<div class="item pad_t5">
-					<input class="i_unit" id="all" type="radio" name="" value=""><label for="all">전체 (000)</label>
-					<input class="i_unit" id="use" type="radio" name="" value=""><label for="use">사용가능 (00)</label>
-					<input class="i_unit" id="end" type="radio" name="" value=""><label for="end">사용완료 (00)</label>
-				</div>
 			</div>
 </form> 
 			<!-- sorting area -->
@@ -100,11 +94,6 @@
 			<!-- 테이블1 -->
 			<div class="box_bs">
 				<p class="fl_l pad_b10">총 <strong><?=$totalRecords?></strong> 건</p>
-				<p class="item fl_r pad_b10">
-					<select style="width: 200px;">  
-						<option>정렬</option> 
-					</select>
-				</p>
 				<div class="wrap_tbl">
 					<table class="type01">
 						<caption></caption>
@@ -328,26 +317,28 @@ $(document).ready(function () {
 	});
 
 	$(".btnIssuedCancel").on("click", function () {
-		var u = "/language/couponProc.php";
-		var param = {
-			"proc"		: "issuedCancel",
-			"coupCode"	: "<?=$pCoupCode?>",
-			"coupNo"	: $(this).parents("tr").children().eq(3).text(),
-			"userId"	: $(this).parents("tr").children().eq(4).text()
-		};
-		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
-			success: function(resJson) {
-				if( resJson.result == 1 ){
-					alert("발급 취소 되었습니다.");
-					location.reload();
-				}else{
-					alert("발급 취소가 실패 하였습니다.");
+		if (confirm("쿠폰 발급을 취소하시겠습니까?") == true){
+			var u = "/language/couponProc.php";
+			var param = {
+				"proc"		: "issuedCancel",
+				"coupCode"	: "<?=$pCoupCode?>",
+				"coupNo"	: $(this).parents("tr").children().eq(3).text(),
+				"userId"	: $(this).parents("tr").children().eq(4).text()
+			};
+			$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
+				success: function(resJson) {
+					if( resJson.result == 1 ){
+						alert("발급 취소 되었습니다.");
+						location.reload();
+					}else{
+						alert("발급 취소가 실패 하였습니다.");
+					}
+				},
+				error: function(e) {
+					alert("현재 서버 통신이 원할하지 않습니다.");
 				}
-			},
-			error: function(e) {
-				alert("현재 서버 통신이 원할하지 않습니다.");
-			}
-		});
+			});
+		}
 	});
 
 

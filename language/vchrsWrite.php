@@ -5,7 +5,10 @@
 	
 	$cPageMenuIdx = "207";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
-	
+	if( $cPageRoleRw != "W" ){	//쓰기 권한 필요
+		fnShowAlertMsg("페이지 쓰기 권한이 없습니다.", "location.href = '/main.php';", true);
+	}
+
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
 	$valueValid = [];
 //	$valueValid = [
@@ -134,7 +137,7 @@
 								<th>금액</th>
 								<td colspan="3">
 									<div class="item">
-										<input style="width: 100px;" type="text" class="onlyNumber2" name="svc" value="<?=$svc?>"> 원								
+										<input style="width: 100px;" type="text" class="onlyNumber2" id="svc" name="svc" value="<?=$svc?>"> 원								
 									</div>
 								</td>
 							</tr>
@@ -142,7 +145,7 @@
 								<th>수량</th>
 								<td colspan="3">
 									<div class="item">
-										<label for=""><input style="width: 100px;" type="text" class="onlyNumber2" id="coupCount" name="coupCount" value="<?=$coupCount?>" > 매</label>
+										<label for=""><input style="width: 100px;" type="text" class="onlyNumber2" id="coupCount" name="coupCount" value="<?=$coupCount?>" > 매 / </label><span id="totalAmt"><?=number_format($svc * $coupCount) ?>원</span>
 									</div>									
 								</td>
 							</tr>
@@ -321,6 +324,12 @@ $(document).ready(function () {
 		}
 
 		$(this).val( jExamNums );
+	});
+
+	$(".onlyNumber2").on("keypress keyup", function (){
+		if ( $("#svc").val() != "" && $("#coupCount").val() != "" ){
+			$("#totalAmt").text( $.number( $("#svc").val() * $("#coupCount").val() )+"원" );
+		}
 	});
 
 	//사용기간 디폴트 세팅

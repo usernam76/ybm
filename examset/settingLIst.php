@@ -12,7 +12,7 @@
 
 
 	if($pExamCate == "") $pExamCate = "TOE";		// 기본은 PBT, 상황에 따라 변수 변경
-
+/*
 	$sql = " Select ";
 	$sql .= " Exam_num,  ";
 	$sql .= " Exam_day,  ";
@@ -32,8 +32,16 @@
 	$sql .= " left outer join Group_exam_center as D (nolock)  ";
 	$sql .= " on C.Group_Exam = D.Group_Exam ";
 	$sql .= " Group by Exam_num, Exam_day, A.gen_regi_Start, A.gen_regi_End, A.fin_CHK, A.exam_code";
+*/
 
 
+	$pArray = null;
+	$sql = " SELECT Exam_num, exam_code FROM theExam.dbo.exam_info WHERE (case when fin_CHK='O' then '완료' when fin_CHK='X' then '준비' end) = '완료' ";
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+	$arrCompleteCenter = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+
+	$pArray = null;
 	$sql = " SELECT ";
 	$sql .= " Exam_num,   ";
 	$sql .= " Exam_day,   ";
@@ -43,11 +51,11 @@
 	$sql .= " (SELECT sum(case when fin_CHK = 'O' then 1 else 0 end) FROM theExam.dbo.exam_center_PBT WHERE exam_code = EI.exam_code) as fin_center, ";
 	$sql .= " (SELECT sum(case when fin_CHK = 'X' then 1 else 0 end) FROM theExam.dbo.exam_center_PBT WHERE exam_code = EI.exam_code) as wait_center, ";
 	$sql .= " (SELECT sum(case when SB_exam_regi_type ='지정' then 1 else 0 end) FROM theExam.dbo.exam_center_PBT WHERE exam_code = EI.exam_code) as group_center, ";
-	$sql .= " case when fin_CHK = 'O' then '완료' when fin_CHK = 'X' then '준비' end as fin_CHK ";
+	$sql .= " (case when fin_CHK = 'O' then '완료' when fin_CHK = 'X' then '준비' end) as fin_CHK ";
 	$sql .= " from ";
 	$sql .= " theExam.dbo.exam_info as EI ";
-	$sql .= " where SB_Exam_cate='TOE' ";
-
+	$sql .= " where SB_Exam_cate=:examCate ";
+	$pArray["examCate"] = $pExamCate;
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
@@ -106,11 +114,11 @@
 ?>
 							<tr<?=$addClass?>>
 								<td><?=$data["Exam_num"]?></td>
-								<td><a href="#"><?=$data["Exam_day"]?></a></td>
+								<td><?=$data["Exam_day"]?></td>
 								<td><?=$data["gen_regi_Start"]?> ~ <?=$data["gen_regi_End"]?></td>
-								<td><?=$data["fin_center"]?></td>
-								<td><?=$data["wait_center"]?></td>
-								<td><?=$data["group_center"]?></td>
+								<td><?=($data["fin_center"] == "" ? "0" : $data["fin_center"]); ?></td>
+								<td><?=($data["wait_center"] == "" ? "0" : $data["wait_center"]); ?></td>
+								<td><?=($data["group_center"] == "" ? "0" : $data["group_center"]); ?></td>
 								<td><a href="#" class="setting" data-examCode="<?=$data["exam_code"]?>" data-centerStatus="<?=$examStatus?>"><?=$data["fin_CHK"]?></a></td>
 							</tr>
 <?php
@@ -167,14 +175,19 @@
 					<tr>
 						<td>
 							<div class="item">
-							   <select name="examNum" style="width: 100%;">  
-									<option>회차 선택</option> 
-									<option>선택 둘</option> 
-									<option>선택 셋</option> 
+							   <select name="prevExamNum" style="width: 100%;">  
+									<option value="">회차 선택</option> 
+							   <?php
+							   foreach($arrCompleteCenter as $data){
+							   ?>
+									<option value="<?=$data["exam_code"]?>"><?=$data["Exam_num"]?>회</option>
+								<?php
+								}
+							   ?>
 							   </select>
 							</div>
 							<div class="item">
-								<a href="#" class="sel_link copyLoad">선택 회차<br>고사장 불러오기</a>
+								<a href="#" class="sel_link" id="copyLoad">선택 회차<br>고사장 불러오기</a>
 							</div>
 						</td>
 						<td>
@@ -192,36 +205,14 @@
 </div>
 
 <script type="text/javascript">
-// Get the modal
-/*
-var modal = document.getElementById('myModal');
-
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-    modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
-*/
 
 
 $(document).ready(function () {
-	
 	var examCode;
-
 
 	/* 레이어 팝업 새로 입력 */
 	$(".newWrite").on("click", function(){
-		location.href =  "./settingReady.php?examCode="+examCode+"&autoPop=Y";
+		location.href =  "./settingEditList.php?examCode="+examCode+"&autoPop=Y";
 	});
 	/* 레이어 팝업 새로 입력 끝 */
 
@@ -230,8 +221,39 @@ $(document).ready(function () {
 		$("#myModal").css("display", "none");
 	});
 	/* 레이어 팝업 닫기 끝*/
+	
+	/* 선택 회차 불러오기 */
+	$("#copyLoad").on("click", function(){
+		var prevExamCode = $("select[name=prevExamNum]").val();
+		var u = "./settingPBTProc.php";				// 비동기 전송 파일 URL
+		var param = {	// 파라메터
+			"proc" : "getCopyCenterAjax",
+			"prevExamCode" : prevExamCode,
+			"examCode" : examCode
+		};
+		console.log(param);
 
-	/**/
+		/* 데이터 비동기 전송*/
+		$.ajax({ type:'post', url: u, dataType : 'json',data:param,
+			success: function(resJson) {
+				if(resJson.status == "success"){
+					location.reload();
+					/*
+					새로고침 이후 완료표시 여부에 대해 이후 액션이 필요.
+					*/
+					return false;
+				}
+			},
+			error: function(resJson) {
+				console.log(resJson)
+				alert("현재 서버 통신이 원활하지 않습니다.");
+			}
+		});
+
+	});
+
+
+	/*회차 준비/완료 클릭 이벤트*/
 	$(".setting").on("click", function(){
 		var examStatus = $(this).attr("data-centerStatus");
 		examCode  = $(this).attr("data-examCode");
@@ -245,20 +267,19 @@ $(document).ready(function () {
 
 			/* 준비 */
 			case "ready" :
-				location.href =  "./settingReady.php?examCode="+examCode;
+				location.href =  "./settingEditList.php?examCode="+examCode;
 			break;
 			/* 준비 끝 */
 
 			
 			/* 완료 */
 			case "complete" : 
+				location.href = "./settingDetailList.php?examCode="+examCode;
 			break;
 			/* 완료  끝*/
 			default:
 			break;
 		}
-		
-
 	});
 
 });

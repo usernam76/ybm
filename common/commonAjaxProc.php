@@ -5,7 +5,7 @@
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 
-	$proc = fnNoInjection($_REQUEST['proc']);	
+	$proc = fnNoInjection($_POST['proc']);	
 
 	$valueValid = [];
 	$resultArray = fnGetRequestParam($valueValid);

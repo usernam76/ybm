@@ -6,7 +6,7 @@
 	$cPageMenuIdx = "192";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 
-	$proc = fnNoInjection($_REQUEST['proc']);	
+	$proc = fnNoInjection($_POST['proc']);	
 
 	$valueValid = [];
 	$resultArray = fnGetRequestParam($valueValid);

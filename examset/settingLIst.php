@@ -49,7 +49,7 @@
 	$sql .= " gen_regi_Start,  ";
 	$sql .= " gen_regi_End, ";
 	$sql .= " (SELECT sum(case when fin_CHK = 'O' then 1 else 0 end) FROM theExam.dbo.exam_center_PBT WHERE exam_code = EI.exam_code) as fin_center, ";
-	$sql .= " (SELECT sum(case when fin_CHK = 'X' then 1 else 0 end) FROM theExam.dbo.exam_center_PBT WHERE exam_code = EI.exam_code) as wait_center, ";
+	$sql .= " (SELECT sum(case when use_CHK = '-' then 1 else 0 end) FROM theExam.dbo.exam_center WHERE exam_code = EI.exam_code) as wait_center, ";
 	$sql .= " (SELECT sum(case when SB_exam_regi_type ='지정' then 1 else 0 end) FROM theExam.dbo.exam_center_PBT WHERE exam_code = EI.exam_code) as group_center, ";
 	$sql .= " (case when fin_CHK = 'O' then '완료' when fin_CHK = 'X' then '준비' end) as fin_CHK ";
 	$sql .= " from ";
@@ -231,13 +231,12 @@ $(document).ready(function () {
 			"prevExamCode" : prevExamCode,
 			"examCode" : examCode
 		};
-		console.log(param);
 
 		/* 데이터 비동기 전송*/
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param,
 			success: function(resJson) {
 				if(resJson.status == "success"){
-					location.reload();
+					window.location.reload();
 					/*
 					새로고침 이후 완료표시 여부에 대해 이후 액션이 필요.
 					*/

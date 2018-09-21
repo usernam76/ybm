@@ -154,7 +154,7 @@
 
 			$pCenterCodes = implode("#", $pCenterCodes);
 			$pSBExamRegiType = "일반";
-			$pUseChk = "-";
+			$pUseChk = "O";
 			$pAdmType = "T";
 			$pAdmId = "csw";
 			$memo = null;

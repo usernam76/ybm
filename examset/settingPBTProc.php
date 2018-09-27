@@ -21,29 +21,14 @@
 		
 		case "write" : 
 
-		/*
-
-			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
-			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
-
-
-			if( $result[0][result] != '0' ){	//성공일때 메일 발송
-				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetDef.php?centerCate=".$pCenterCate."';", true);
-			}else{
-				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
-			}
-
-*/
 
 		break;
 
-
-		/* 고사장 개별 수정 */
-		case 'getModifyCenterAjax':
-
+		/*완료 고사장 개별 수정*/
+		case 'modifyCenter' :
 			$pIUD = "U";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos';
+			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;
 			$pArray[':center_codes']					= $pCenterCode;
@@ -51,6 +36,38 @@
 			$pArray[':room_counts']					= $pRoomCount;
 			$pArray[':room_seats']						= $pRoomSeat;
 			$pArray[':memos']								= $pMemo;
+			$pArray[':use_CHK']							= $pUseCHK;
+
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+			
+
+			if(in_array( $pExamCode, $result[0])){
+				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/settingView.php?centerCode=".$pCenterCode."&examCode=".$pExamCode."'  ;", true);
+			}else{
+				fnShowAlertMsg("수정 실패 되었습니다.", "history.back();", true);
+			}
+
+			exit;
+		break;
+		/*완료 고사장 개별 수정*/
+
+
+
+		/* 고사장 개별 수정 */
+		case 'getModifyCenterAjax':
+
+			$pIUD = "U";
+			$pArray = null;
+			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
+			$pArray[':IUD']									= $pIUD;
+			$pArray[':Exam_code']						= $pExamCode;
+			$pArray[':center_codes']					= $pCenterCode;
+			$pArray[':SB_exam_regi_types']	= $pSBExamRegiType;
+			$pArray[':room_counts']					= $pRoomCount;
+			$pArray[':room_seats']						= $pRoomSeat;
+			$pArray[':memos']								= $pMemo;
+			$pArray[':use_CHK']							= $pUseCHK;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
@@ -68,7 +85,7 @@
 
 			$pIUD = "D";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos';
+			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;
 			$pArray[':center_codes']					= $pCenterCode;
@@ -76,6 +93,7 @@
 			$pArray[':room_counts']					= $pRoomCount;
 			$pArray[':room_seats']						= $pRoomSeat;
 			$pArray[':memos']								= $pMemo;
+			$pArray[':use_CHK']							= $pUseCHK;
 
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -136,7 +154,7 @@
 
 			$pCenterCodes = implode("#", $pCenterCodes);
 			$pSBExamRegiType = "일반";
-			$pUseChk = "-";
+			$pUseChk = "O";
 			$pAdmType = "T";
 			$pAdmId = "csw";
 			$memo = null;
@@ -162,6 +180,21 @@
 
 		break;
 		/* 고사장 추가 팝업 끝*/
+
+		/* 선택 회차 불러오기*/
+		case "getCopyCenterAjax" :
+			$pArray = null;
+			$sql = 'EXEC p_Exam_center_copy :prevExamCode, :Exam_code';
+			$pArray[':prevExamCode']				= $pPrevExamCode;
+			$pArray[':Exam_code']						= $pExamCode;
+			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
+
+			$returnData = array("status"=>"success");
+			echo json_encode($pArray);
+
+		break;
+		/* 선택 회차 불러오기 끝*/
 
 
 		default:

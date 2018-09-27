@@ -31,6 +31,7 @@
 		$sql .= " WHERE ";
 		$sql .= " DEC.center_code = :centerCode ";
 		$pArray[':centerCode'] = $pCenterCode;
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 		$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 		if( count($arrRows) == 0 ){
 			fnShowAlertMsg("데이터가 존재하지 않습니다.", "history.back();", true);

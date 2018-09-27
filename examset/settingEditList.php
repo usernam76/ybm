@@ -14,6 +14,47 @@
 	if($pCenterCate == "") $pCenterCate = "PBT";		// 기본은 PBT, 상황에 따라 변수 변경
 
 
+	/*
+	@ 시험 회차 타이틀 및 네비게이션(이전,다음글)
+	*/
+	$daily = array('일','월','화','수','목','금','토');
+
+	$pArray = null;
+	$sql = " SELECT  ";
+	$sql .= " Exam_num, ";
+	$sql .= " Exam_code, ";
+	$sql .= " Exam_day, ";
+	$sql .= " (SELECT SB_name FROM theExam.dbo.SB_Info where SB_value = EI.SB_Exam_cate AND SB_kind='exam_cate' AND Disp_type='A' OR Disp_type='B') as examFullName, ";
+	$sql .= " (SELECT TOP 1 Exam_code FROM theExam.dbo.Exam_info WHERE Exam_num < EI.Exam_num AND SB_Exam_cate = EI.SB_Exam_cate ORDER BY Exam_num asc) as prevExamCode, ";
+	$sql .= " (SELECT TOP 1 Exam_code FROM theExam.dbo.Exam_info WHERE Exam_num > EI.Exam_num AND SB_Exam_cate = EI.SB_Exam_cate ORDER BY Exam_num asc) as nextExamCode ";
+	$sql .= " FROM  ";
+	$sql .= " theExam.dbo.Exam_info as EI ";
+	$sql .= " where SB_Exam_cate = :examCate ";
+	$pArray[':examCate']			= substr($pExamCode,0,3);
+
+	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
+	$arrExamRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+	$arrExamNavInfo = array();
+	foreach($arrExamRows as $data){
+		$optFullName = "[".$data["examFullName"]."] ".$data["Exam_num"]."회 | ".substr($data["Exam_day"],0,10)." (".$daily[date("w", strtotime(substr($data["Exam_day"],0,10)))].") ";
+
+		$arrExamNavInfo[$data["Exam_code"]] = array("examCode"=>$data["Exam_code"] , "optFullName"=>$optFullName, "nextExamCode"=> $data["nextExamCode"], "prevExamCode"=>$data["prevExamCode"]);
+	}
+	if($arrExamNavInfo[$pExamCode]["prevExamCode"] != ""){
+		$prevURL = $_SERVER["SCRIPT_NAME"]."?examCode=".$arrExamNavInfo[$pExamCode]["prevExamCode"];
+	}else{
+		$prevURL = "non";
+	}
+	if($arrExamNavInfo[$pExamCode]["nextExamCode"] != ""){
+		$nextURL = $_SERVER["SCRIPT_NAME"]."?examCode=".$arrExamNavInfo[$pExamCode]["nextExamCode"];
+	}else{
+		$nextURL = "non";
+	}
+
+	/*
+	@ 해당 시험 세팅 고사장 설정
+	*/
 	$where		= "";
 	if( $pSearchKey != "" ){
 		$where .= " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
@@ -66,13 +107,13 @@
 			<!-- sorting area -->
 			<div class="box_sort c_txt">
 				<div class="item"> 
-					<button class="btn_arr" type="button"><strong class="fs_sm">◀</strong></button>
-					<select style="width: 300px;">  
-						<option> [토익] 352회 | 2018.03.31 (일)[접수중]</option> 
-						<option>선택 둘</option> 
-						<option>선택 셋</option> 
+					<button class="btn_arr btnNavExam" type="button" data-url="<?=$prevURL?>"><strong class="fs_sm">◀</strong></button>
+					<select name="examNavInfo" style="width: 300px;">  
+			<?php	foreach($arrExamNavInfo as $k=>$v){?>
+						<option <?=($arrExamNavInfo[$k]["examCode"] == $pExamCode)? "selected" : ""; ?> value="<?=$arrExamNavInfo[$k]["examCode"]?>"><?=$arrExamNavInfo[$k]["optFullName"]?></option> 
+			<?php	}?>
 					</select>
-					<button class="btn_arr" type="button"><strong class="fs_sm">▶</strong></button>
+					<button class="btn_arr btnNavExam" type="button" data-url="<?=$nextURL?>"><strong class="fs_sm">▶</strong></button>
 				</div>
 			</div>
 
@@ -313,7 +354,7 @@ $(document).ready(function () {
 			success: function(resJson) {
 				console.log(resJson)
 				if(resJson.status == "success"){
-					location.href = "./setting.php";
+					location.href = "./settingList.php";
 				}
 			},
 			error: function(resJson) {
@@ -325,6 +366,7 @@ $(document).ready(function () {
 	});
 	/* 고사장 최종 준비 완료 끝 */
 
+	/* 고사장 세팅 초기화 */
 	$("#btnInit").on("click", function(){
 		var examCode = $(this).attr("data-examCode");
 		var u = "./settingPBTProc.php";				// 비동기 전송 파일 URL
@@ -339,7 +381,7 @@ $(document).ready(function () {
 			success: function(resJson) {
 				console.log(resJson)
 				if(resJson.status == "success"){
-					location.href = "./setting.php";
+					location.href = "./settingLIst.php";
 				}
 			},
 			error: function(resJson) {
@@ -347,6 +389,19 @@ $(document).ready(function () {
 				alert("현재 서버 통신이 원활하지 않습니다.");
 			}
 		});
+	});
+	/* 고사장 세팅 초기화  끝*/
+
+	$(".btnNavExam").on("click", function(){
+		if($(this).attr("data-url") == "non"){
+			alert("이전/다음 회차가 없습니다.");
+			return false;
+		}
+		location.href = $(this).attr("data-url");
+	});
+
+	$("select[name=examNavInfo]").on("change", function(){
+		location.href = "./settingEditList.php?examCode="+$(this).val();
 	});
 
 
@@ -359,7 +414,7 @@ $(document).ready(function () {
 	// 새로고침시 계속 열리는 팝업창을 위해 브라우저 history의 URL에서 팝업관련 내용을 삭제한다.
 	var state = null
 	var title = 'YBM TOTAL EXAM';
-	var url = 'settingReady.php?examCode=<?=$pExamCode?>';
+	var url = 'settingEditList.php?examCode=<?=$pExamCode?>';
 	history.pushState(state, title, url);
 	<?php
 	}

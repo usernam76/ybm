@@ -10,19 +10,54 @@
 	$valueValid = [];
 
 	$resultArray = fnGetRequestParam($valueValid);
-	
-	$sql  = " SELECT ";
-	$sql .= "	A.Coup_code, Dept_Name, comp_name, coup_name, [dbo].f_Coup_scv_type_name(svc_type) AS svcNm, svc ";
-	$sql .= "	, CONVERT(CHAR(10), A.usable_Startday, 23) AS usable_Startday, CONVERT(CHAR(10), A.usable_endday, 23) AS usable_endday, coup_count, ok_CHK	";
-	$sql .= "	, ( SELECT COUNT(*) FROM Coup_List_User (nolock) WHERE A.Coup_code = Coup_code AND use_day IS NOT NULL ) AS use_count	";
-	$sql .= " FROM Coup_Info as A (nolock) 	";
-	$sql .= " JOIN Adm_info as B (nolock) on A.apply_id = B.Adm_id and A.applyType = B.AdmType 	";
-	$sql .= " JOIN Adm_Dept_Info as C (nolock) on B.Dept_Code = C.Dept_Code 	";
-	$sql .= " JOIN Coup_Service as D (nolock) on A.Coup_code = D.Coup_code	";
-	$sql .= " WHERE SB_coup_cate != '응시권' ". $where;
-	$sql .= " ORDER BY A.Coup_code DESC ";
 
-	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+	if( $pSYear == "" ){
+		$pSYear = date('Y');
+	}
+	$cStartDay	= $pSYear."-01-01";
+	$cEndDay	= $pSYear."-12-31";
+
+	$sql  = " SELECT ";
+	$sql .= "	coup_name, coup_code ";
+	$sql .= " FROM Coup_Info as A (nolock) 	";
+	$sql .= " WHERE SB_coup_cate != '응시권' ";
+	$sql .= "	AND ((usable_Startday >= :StartDay1 AND usable_Startday <= :EndDay1) OR (usable_Endday >= :StartDay2 AND usable_Endday <= :EndDay2)) AND ok_CHK = 'O' ";
+	$sql .= " ORDER BY Coup_code DESC ";
+
+	$pArrayCoup[':StartDay1']	= $cStartDay;
+	$pArrayCoup[':EndDay1']		= $cEndDay;
+	$pArrayCoup[':StartDay2']	= $cStartDay;
+	$pArrayCoup[':EndDay2']		= $cEndDay;
+
+	$arrRowsCoup = $dbConn->fnSQLPrepare($sql, $pArrayCoup, ''); // 쿼리 실행
+
+	if( count($arrRowsCoup) > 0 && $pSCoupCode == "" ){
+		$pSCoupCode = $arrRowsCoup[0]['coup_code'];
+	}
+
+	if( $pSCoupCode != "" ){
+
+		$sql  = " SELECT	 ";
+		$sql .= "	gender	";
+		$sql .= "	, sum(case when use_day is not null then 1 else 0 end) as use_count	";
+		$sql .= "	, sum(case when use_day is null then 1 else 0 end) as not_use_count	";
+		$sql .= " FROM Coup_List_User as A (nolock) 	";
+		$sql .= " JOIN My_test as B (nolock) on A.Member_id = B.Member_id		";
+		$sql .= " WHERE A.Coup_code = :coupCode	";
+		$sql .= " Group by gender	";
+
+		$pArrayChart[':coupCode'] = $pSCoupCode;
+
+		$arrRowsChart = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행	
+
+		$chart_array = [];
+
+		array_push($chart_array, array("Task", "") );
+		foreach($arrRowsChart as $data) {
+			array_push($chart_array, array( $data['gender']."", $data['use_count']) );
+		}
+	}
+
 ?>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
@@ -35,23 +70,37 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">사용량 통계</h3>
+			<h3 class="title">성별 통계</h3>
 
 			<!-- sorting area -->
+<form name="frmSearch" id="frmSearch" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
 			<div class="box_sort c_txt">
 				<div class="item"> 
-					<select style="width: 300px;">  
-						<option> [토익] 352회 | 2018.03.31 (일)[접수중]</option> 
-						<option>선택 둘</option> 
-						<option>선택 셋</option> 
-					</select>
-					<select style="width: 300px;">  
-						<option> [토익] 352회 | 2018.03.31 (일)[접수중]</option> 
-						<option>선택 둘</option> 
-						<option>선택 셋</option> 
+					<select name="sYear" id="sYear">
+<?php
+	for($i=0;$i<5;$i++){
+		if( $pSYear == date('Y')-$i ){
+			echo "<option value='".(date('Y')-$i)."' SELECTED>".(date('Y')-$i)."</option>";
+		}else{
+			echo "<option value='".(date('Y')-$i)."'>".(date('Y')-$i)."</option>";
+		}
+	}
+?>
+					</select>&nbsp;&nbsp;
+					<select name="sCoupCode" id="sCoupCode">
+<?php
+	foreach($arrRowsCoup as $data) {
+		if( $pSCoupCode == $data['coup_code'] ){
+			echo "<option value='".$data['coup_code']."' SELECTED>".$data['coup_name']."</option>";
+		}else{
+			echo "<option value='".$data['coup_code']."' >".$data['coup_name']."</option>";
+		}
+	}
+?>
 					</select>
 				</div>		
 			</div>
+</form> 
 			<!-- sorting area -->
 
 			<!-- 테이블1 -->
@@ -71,7 +120,7 @@
 						</colgroup>
 						<thead>
 							<tr>
-								<th>날짜</th>
+								<th>성별</th>
 								<th>사용</th>
 								<th>미사용</th>
 								<th>사용율(%)</th>
@@ -79,9 +128,18 @@
 						</thead>
 						<tbody>
 <?php
-	foreach($arrRows as $data) {
-?>
-<?php
+	$useCount = 0;
+	foreach($arrRowsChart as $data) {
+		$useCountPer = 0;
+
+		$useCount += $data['use_count'];
+
+		if ( $data['not_use_count'] == 0 ){
+			$useCountPer = 100;
+		}else if( $data['use_count'] > 0 && $data['not_use_count'] > 0  ){
+			$useCountPer = $data['use_count'] / ( $data['not_use_count'] + $useCount ) * 100;
+		}
+		echo "<tr><td>".$data['gender']."</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
 	}
 ?>
 					  </tbody>
@@ -99,29 +157,41 @@
 <script type="text/javascript">
 $(document).ready(function () {
 
+	$("#sYear").on("change", function(){
+		$('#frmSearch').submit();
+    });
+
+	$("#sCoupCode").on("change", function(){
+		$('#frmSearch').submit();
+    });
+
 	
 });
 
-	google.charts.load('current', {'packages':['corechart']});
-	google.charts.setOnLoadCallback(drawChart);
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
 
-	function drawChart() {
-		var data = google.visualization.arrayToDataTable([
-			['Task', 'Hours per Day'],
-			['Work',     11],
-			['Eat',      2],
-			['Commute',  2],
-			['Watch TV', 2],
-			['Sleep',    7]
-		]);
+function drawChart() {
+	var data = google.visualization.arrayToDataTable( <?=json_encode($chart_array)?> );
 
-		var options = {
-			title: ''
-		};
+	var view = new google.visualization.DataView(data);
+	view.setColumns([0, 1]);
 
-		var chart = new google.visualization.PieChart(document.getElementById('divChart'));
-		chart.draw(data, options);
-	}
+	var options = {
+		title: ''
+	};
+
+	var chart = new google.visualization.PieChart(document.getElementById("divChart"));
+	chart.draw(view, options);
+
+/*
+	var selectHandler = function(e) {
+		alert( data.getValue(chart.getSelection()[0]['row'], 0) );
+   }
+   google.visualization.events.addListener(chart, 'select', selectHandler);
+*/
+
+}
 
 </script>
 

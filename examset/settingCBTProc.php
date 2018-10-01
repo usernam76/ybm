@@ -14,7 +14,7 @@
 	
 	/*
 	@ 최상운 2018.09.18
-	> PBT 회차별 고사장세팅 PROC
+	> CBT 회차별 고사장세팅 PROC
 	*/
 
 	switch($proc){
@@ -28,7 +28,7 @@
 		case 'modifyCenter' :
 			$pIUD = "U";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
+			$sql = 'EXEC p_exam_center_CBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;
 			$pArray[':center_codes']					= $pCenterCode;
@@ -43,7 +43,7 @@
 			
 
 			if(in_array( $pExamCode, $result[0])){
-				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/settingPBTView.php?centerCode=".$pCenterCode."&examCode=".$pExamCode."'  ;", true);
+				fnShowAlertMsg("수정 되었습니다.", "location.href = '/examset/settingCBTView.php?centerCode=".$pCenterCode."&examCode=".$pExamCode."'  ;", true);
 			}else{
 				fnShowAlertMsg("수정 실패 되었습니다.", "history.back();", true);
 			}
@@ -59,7 +59,7 @@
 
 			$pIUD = "U";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
+			$sql = 'EXEC p_exam_center_CBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;
 			$pArray[':center_codes']					= $pCenterCode;
@@ -85,7 +85,7 @@
 
 			$pIUD = "D";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_PBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
+			$sql = 'EXEC p_exam_center_CBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;
 			$pArray[':center_codes']					= $pCenterCode;
@@ -150,7 +150,6 @@
 		break;
 
 		/* 고사장 추가 팝업 */
-
 		case 'addCenterAjax':
 
 			$pCenterCodes = implode("#", $pCenterCodes);
@@ -162,7 +161,7 @@
 
 			$pIUD = "I";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_ID :IUD, :Exam_code, :center_codes, :SB_exam_regi_type, :use_CHK, :AdmType, :Adm_id, :memo';
+			$sql = 'EXEC p_Exam_center_ID :IUD, :Exam_code, :center_codes, :SB_exam_regi_type, :use_CHK, :AdmType, :Adm_id, :memo';
 
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;

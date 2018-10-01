@@ -212,7 +212,7 @@ $(document).ready(function () {
 
 	/* 레이어 팝업 새로 입력 */
 	$(".newWrite").on("click", function(){
-		location.href =  "./settingEditList.php?examCode="+examCode+"&autoPop=Y";
+		location.href =  "./settingPBTEditList.php?examCode="+examCode+"&autoPop=Y";
 	});
 	/* 레이어 팝업 새로 입력 끝 */
 
@@ -266,14 +266,14 @@ $(document).ready(function () {
 
 			/* 준비 */
 			case "ready" :
-				location.href =  "./settingEditList.php?examCode="+examCode;
+				location.href =  "./settingPBTEditList.php?examCode="+examCode;
 			break;
 			/* 준비 끝 */
 
 			
 			/* 완료 */
 			case "complete" : 
-				location.href = "./settingDetailList.php?examCode="+examCode;
+				location.href = "./settingPBTDetailList.php?examCode="+examCode;
 			break;
 			/* 완료  끝*/
 			default:

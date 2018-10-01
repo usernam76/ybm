@@ -245,7 +245,7 @@ $(document).ready(function () {
 
 	/* 고사장 추가*/
 	$(".btnAddPop").on("click", function(){
-		var u = "./settingAddPop.php?examCode=<?=$pExamCode?>";
+		var u = "./settingPBTAddPop.php?examCode=<?=$pExamCode?>";
 		var name = "settingAddPopup";
 		var opt = "width=680,height=700,menubar=no,status=no,toolbar=no";
 		var addPop = window.open(u, name, opt)
@@ -264,7 +264,7 @@ $(document).ready(function () {
 	});
 		// 시험 콤보박스 선택 시,
 	$("select[name=examNavInfo]").on("change", function(){
-		location.href = "./settingEditList.php?examCode="+$(this).val();
+		location.href = "./settingPBTEditList.php?examCode="+$(this).val();
 	});
 	/* 상단 네비 끝*/
 
@@ -272,7 +272,7 @@ $(document).ready(function () {
 	$(".btnModify").on("click", function(){
 		var centerCode = $(this).attr("data-centerCode");
 		var examCode = $(this).attr("data-examCode");
-		location.href = "./settingView.php?centerCode="+centerCode+"&examCode="+examCode;
+		location.href = "./settingPBTView.php?centerCode="+centerCode+"&examCode="+examCode;
 
 	});
 

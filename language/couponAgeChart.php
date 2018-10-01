@@ -38,14 +38,15 @@
 	}
 
 	if( $pSCoupCode != "" ){
+
 		$sql  = " SELECT ";
-		$sql .= "	datepart(month, use_day) as month	";
-		$sql .= "	,sum(case when use_day is not null then 1 else 0 end) as use_count	";
-		$sql .= "	,A.coup_count - sum(case when use_day is not null then 1 else 0 end) as not_use_count 	";
-		$sql .= " FROM Coup_Info as A (nolock) 	";
-		$sql .= " JOIN Coup_List_User as B (nolock) on A.Coup_code = B.Coup_code  	";
+		$sql .= "	dbo.f_year_ages(left(convert(varchar, decryptbykey(birthdayAES)),4)) as ages	";
+		$sql .= "	, sum(case when use_day is not null then 1 else 0 end) as use_count	";
+		$sql .= "	, sum(case when use_day is null then 1 else 0 end) as not_use_count	";
+		$sql .= " FROM Coup_List_User as A (nolock) 	";
+		$sql .= " JOIN Member_certi as B (nolock) on A.Member_id = B.Member_id		";
 		$sql .= " WHERE A.Coup_code = :coupCode	";
-		$sql .= " GROUP BY datepart(month, use_day), A.coup_count	";
+		$sql .= " Group by dbo.f_year_ages(left(convert(varchar, decryptbykey(birthdayAES)),4))	";
 
 		$pArrayChart[':coupCode'] = $pSCoupCode;
 
@@ -53,24 +54,10 @@
 
 		$chart_array = [];
 
-		array_push($chart_array, array("month", "사용") );
+		array_push($chart_array, array("Task", "") );
 		foreach($arrRowsChart as $data) {
-			array_push($chart_array, array( $data['month']."월", $data['use_count']) );
+			array_push($chart_array, array( $data['ages']."대 ", $data['use_count']) );
 		}
-
-		$sql  = " SELECT ";
-		$sql .= "	datepart(month, use_day) as month	";
-		$sql .= "	, datepart(day, use_day) as day	";
-		$sql .= "	, sum(case when use_day is not null then 1 else 0 end) as use_count	";
-		$sql .= "	, A.coup_count - sum(case when use_day is not null then 1 else 0 end) as not_use_count	";
-		$sql .= " FROM Coup_Info as A (nolock) 	";
-		$sql .= " JOIN Coup_List_User as B (nolock) on A.Coup_code = B.Coup_code  	";
-		$sql .= " WHERE A.Coup_code = :coupCode		";
-//		$sql .= "	and use_day <= @기준일 and use_day >= @기준일	";
-		$sql .= " Group by datepart(month, use_day), datepart(day, use_day), A.coup_count	";
-		$sql .= " Order by datepart(month, use_day), datepart(day, use_day)	";
-		
-		$arrRowsList = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행
 	}
 
 ?>
@@ -85,7 +72,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">사용량 통계</h3>
+			<h3 class="title">연령 통계</h3>
 
 			<!-- sorting area -->
 <form name="frmSearch" id="frmSearch" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
@@ -135,7 +122,7 @@
 						</colgroup>
 						<thead>
 							<tr>
-								<th>날짜</th>
+								<th>연령</th>
 								<th>사용</th>
 								<th>미사용</th>
 								<th>사용율(%)</th>
@@ -144,7 +131,7 @@
 						<tbody>
 <?php
 	$useCount = 0;
-	foreach($arrRowsList as $data) {
+	foreach($arrRowsChart as $data) {
 		$useCountPer = 0;
 
 		$useCount += $data['use_count'];
@@ -154,7 +141,7 @@
 		}else if( $data['use_count'] > 0 && $data['not_use_count'] > 0  ){
 			$useCountPer = $data['use_count'] / ( $data['not_use_count'] + $useCount ) * 100;
 		}
-		echo "<tr><td>".$data['month']."월 ".$data['day']."일</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
+		echo "<tr><td>".$data['ages']."대</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
 	}
 ?>
 					  </tbody>
@@ -196,7 +183,7 @@ function drawChart() {
 		title: ''
 	};
 
-	var chart = new google.visualization.ColumnChart(document.getElementById("divChart"));
+	var chart = new google.visualization.PieChart(document.getElementById("divChart"));
 	chart.draw(view, options);
 
 /*

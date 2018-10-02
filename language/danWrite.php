@@ -18,6 +18,9 @@
 	$resultArray = fnGetRequestParam($valueValid);
 
 	$proc = "write";
+	$options1	= "5,6급(초급)";
+	$options2	= "3,4급(중급)";
+	$options3	= "1,2급(고급)";
 
 	if ( $pGoodsCode != "" ){
 		$sql  = " SELECT ";
@@ -34,7 +37,20 @@
 		}else{
 			$proc		= "modify";
 		}
-	}	
+
+		$sql  = " SELECT ";
+		$sql .= "	option_name	";
+		$sql .= " FROM Goods_option (nolock)	";
+		$sql .= " WHERE goods_code = :goodsCode	";
+		$sql .= " ORDER BY option_name DESC		";
+
+		$arrRowsOptions = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+		for($i=0;$i<sizeof($arrRowsOptions);$i++){
+			${"options".($i+1)} = $arrRowsOptions[$i]['option_name'];
+		}
+
+	}
 ?>
 <?php
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
@@ -85,6 +101,16 @@
 								<td colspan="3">
 									<div class="item">
 										<input style="width: 300px;" type="text" name="dispGoodsName" value="<?=$arrRows[0]['disp_goods_name']?>">
+									</div>
+								</td>
+							</tr>
+							<tr id="options">
+								<th>급수 분류</th>
+								<td colspan="3">
+									<div class="item">
+										<input style="width: 100px;" type="text" name="options1" value="<?=$options1?>">
+										<input style="width: 100px;" type="text" name="options2" value="<?=$options2?>">
+										<input style="width: 100px;" type="text" name="options3" value="<?=$options3?>">
 									</div>
 								</td>
 							</tr>
@@ -203,6 +229,20 @@ $(document).ready(function () {
 
 	$("#sbGoodsType1").val("<?=$arrRows[0]['SB_goods_type1']?>").change();
 	$("#sbGoodsType2").val("<?=$arrRows[0]['SB_goods_type2']?>").change();
+
+	if( "<?=$arrRows[0]['SB_goods_type1']?>" == "jet" ){
+		$("#options").show();
+	}else{
+		$("#options").hide();
+	}
+
+	$("#sbGoodsType1").on("change", function () {
+		if ( $("#sbGoodsType1").val() == "jet" ){
+			$("#options").show();
+		}else{
+			$("#options").hide();
+		}
+	});
 
 });
 </script>

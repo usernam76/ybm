@@ -14,7 +14,7 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0 ";	
+			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0, '' ";	
 			$pArray[':goodsCode']		= "";
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;
@@ -44,7 +44,7 @@
 			$valueValid = [];
 			$resultArray = fnGetRequestParam($valueValid);
 
-			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0 ";	
+			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'O', :useChk, :okId, :okType, :updateId, :updateType, 0, :goods_codes, :goods_prices, 0, '' ";	
 			$pArray[':goodsCode']		= $pGoodsCode;
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;

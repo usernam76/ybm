@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "204";	//메뉴고유번호
+	$cPageMenuIdx = "1210";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -31,23 +31,26 @@
 
 	$arrRowsCoup = $dbConn->fnSQLPrepare($sql, $pArrayCoup, ''); // 쿼리 실행
 
-	if( count($arrRowsCoup) > 0 ){
-		if( $pSCoupCode == "" ){
-			$pSCoupCode = $arrRowsCoup[0]['coup_code'];
-		}
+	if( count($arrRowsCoup) > 0 && $pSCoupCode == "" ){
+		$pSCoupCode = $arrRowsCoup[0]['coup_code'];
 	}
 
 	if( $pSCoupCode != "" ){
-		$sql  = " SELECT ";
-		$sql .= "	datepart(month, use_day) as month	";
-		$sql .= "	,sum(case when use_day is not null then 1 else 0 end) as use_count	";
-		$sql .= "	,A.coup_count - sum(case when use_day is not null then 1 else 0 end) as not_use_count 	";
-		$sql .= " FROM Coup_Info as A (nolock) 	";
-		$sql .= " JOIN Coup_List_User as B (nolock) on A.Coup_code = B.Coup_code  	";
-		$sql .= " WHERE A.Coup_code = :coupCode	";
-		$sql .= " GROUP BY datepart(month, use_day), A.coup_count	";
+		$sql  = " SELECT COUNT(*) AS totalRecords ";
+		$sql .= " FROM Coup_List_User as A (nolock) 	";
+		$sql .= " WHERE Coup_code = :coupCode ";
 
 		$pArrayChart[':coupCode'] = $pSCoupCode;
+
+		$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행
+		$totalRecords	= $arrRowsTotal[0]['totalRecords'];
+
+		$sql  = " SELECT ";
+		$sql .= "	datepart(month, use_day) as month	";
+		$sql .= "	, sum(case when use_day is not null then 1 else 0 end) as use_count	";
+		$sql .= " FROM Coup_List_User (nolock) 	";
+		$sql .= " WHERE use_day is not null And Coup_code = :coupCode ";
+		$sql .= " GROUP BY datepart(month, use_day)	";
 
 		$arrRowsChart = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행	
 
@@ -62,12 +65,11 @@
 		$sql .= "	datepart(month, use_day) as month	";
 		$sql .= "	, datepart(day, use_day) as day	";
 		$sql .= "	, sum(case when use_day is not null then 1 else 0 end) as use_count	";
-		$sql .= "	, A.coup_count - sum(case when use_day is not null then 1 else 0 end) as not_use_count	";
-		$sql .= " FROM Coup_Info as A (nolock) 	";
-		$sql .= " JOIN Coup_List_User as B (nolock) on A.Coup_code = B.Coup_code  	";
+		$sql .= " FROM Coup_List_User AS A (nolock) 	";
 		$sql .= " WHERE A.Coup_code = :coupCode		";
 //		$sql .= "	and use_day <= @기준일 and use_day >= @기준일	";
-		$sql .= " Group by datepart(month, use_day), datepart(day, use_day), A.coup_count	";
+		$sql .= " Group by datepart(month, use_day), datepart(day, use_day)	";
+		$sql .= " having datepart(month, use_day) is not null	";
 		$sql .= " Order by datepart(month, use_day), datepart(day, use_day)	";
 		
 		$arrRowsList = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행
@@ -119,6 +121,9 @@
 			<!-- sorting area -->
 
 			<!-- 테이블1 -->
+<?php
+	if( count($arrRowsChart) > 0 ){
+?>
 			<div class="box_bs">
 				<div id="divChart" style="height:400px;"></div>
 
@@ -143,18 +148,20 @@
 						</thead>
 						<tbody>
 <?php
-	$useCount = 0;
+	$useCount		= 0;
+	$notUseCount	= $totalRecords;
+	$totalCount		= $totalRecords;
 	foreach($arrRowsList as $data) {
 		$useCountPer = 0;
 
-		$useCount += $data['use_count'];
+		$notUseCount -= $data['use_count'];
 
-		if ( $data['not_use_count'] == 0 ){
+		if ( $notUseCount <= 0 ){
 			$useCountPer = 100;
-		}else if( $data['use_count'] > 0 && $data['not_use_count'] > 0  ){
-			$useCountPer = $data['use_count'] / ( $data['not_use_count'] + $useCount ) * 100;
+		}else if( $data['use_count'] > 0 && $notUseCount > 0  ){
+			$useCountPer = ( $totalCount - $notUseCount ) / $totalCount * 100;
 		}
-		echo "<tr><td>".$data['month']."월 ".$data['day']."일</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
+		echo "<tr><td>".$data['month']."월 ".$data['day']."일</td><td>".$data['use_count']."</td><td>".$notUseCount."</td><td>".number_format($useCountPer,2)."%</td></tr>";
 	}
 ?>
 					  </tbody>
@@ -163,6 +170,9 @@
 
 			</div>
 			<!-- //테이블1-->
+<?php
+	}
+?>
 		</div>
 	</div>
 </div>
@@ -173,6 +183,7 @@
 $(document).ready(function () {
 
 	$("#sYear").on("change", function(){
+		$("#sCoupCode").val("");
 		$('#frmSearch').submit();
     });
 

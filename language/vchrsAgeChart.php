@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "1211";	//메뉴고유번호
+	$cPageMenuIdx = "1215";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -20,7 +20,7 @@
 	$sql  = " SELECT ";
 	$sql .= "	coup_name, coup_code ";
 	$sql .= " FROM Coup_Info as A (nolock) 	";
-	$sql .= " WHERE SB_coup_cate != '응시권' ";
+	$sql .= " WHERE SB_coup_cate = '응시권' ";
 	$sql .= "	AND ((usable_Startday >= :StartDay1 AND usable_Startday <= :EndDay1) OR (usable_Endday >= :StartDay2 AND usable_Endday <= :EndDay2)) AND ok_CHK = 'O' ";
 	$sql .= " ORDER BY Coup_code DESC ";
 

@@ -225,7 +225,7 @@ $(document).ready(function () {
 		};
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
 			success: function(resJson) {
-				if( resJson.result == 1 ){
+				if( resJson.result >= 1 ){
 					alert("결제 승인 되었습니다.");
 					location.reload();
 				}else{
@@ -248,7 +248,7 @@ $(document).ready(function () {
 
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param, async : false,
 			success: function(resJson) {
-				if( resJson.result == 1 ){
+				if( resJson.result >= 1 ){
 					alert("결제 미승인 되었습니다.");
 					location.reload();
 				}else{

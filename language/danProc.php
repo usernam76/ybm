@@ -11,10 +11,16 @@
 	$valueValid = [];
 	$resultArray = fnGetRequestParam($valueValid);
 
+	$options	= "";
+
 	switch($proc){
 		case 'write':
 
-			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
+			if( $pSbGoodsType1 == "jet" ){
+				$options	= $pOptions1."##".$pOptions2."##".$pOptions3;
+			}
+
+			$sql = "EXEC p_Goods_IUD 'I', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '', :options ";	
 			$pArray[':goodsCode']		= "";
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;
@@ -27,6 +33,7 @@
 			$pArray[':okType']			= $_SESSION["admType"];
 			$pArray[':updateId']		= $_SESSION["admId"];
 			$pArray[':updateType']		= $_SESSION["admType"];
+			$pArray[':options']			= $options;
 
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 			
@@ -39,7 +46,11 @@
 			break;
 		case 'modify':
 
-			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '' ";	
+			if( $pSbGoodsType1 == "jet" ){
+				$options	= $pOptions1."##".$pOptions2."##".$pOptions3;
+			}
+
+			$sql = "EXEC p_Goods_IUD 'U', :goodsCode, :goodsName, :dispGoodsName, :sbGoodsType1, :sbGoodsType2, :dispPrice, :sellPrice, 'X', :useChk, :okId, :okType, :updateId, :updateType, 0, '', '', '', :options ";	
 			$pArray[':goodsCode']		= $pGoodsCode;
 			$pArray[':goodsName']		= $pGoodsName;
 			$pArray[':dispGoodsName']	= $pDispGoodsName;
@@ -52,6 +63,7 @@
 			$pArray[':okType']			= $_SESSION["admType"];
 			$pArray[':updateId']		= $_SESSION["admId"];
 			$pArray[':updateType']		= $_SESSION["admType"];
+			$pArray[':options']			= $options;
 
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 

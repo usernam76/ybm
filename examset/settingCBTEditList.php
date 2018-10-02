@@ -11,7 +11,7 @@
 	$resultArray = fnGetRequestParam($valueValid);
 
 	$autoPop = fnNoInjection($_REQUEST['autoPop']);
-	if($pCenterCate == "") $pCenterCate = "PBT";		// 기본은 PBT, 상황에 따라 변수 변경
+	if($pCenterCate == "") $pCenterCate = "CBT";		// 기본은 CBT, 상황에 따라 변수 변경
 
 
 	/*
@@ -70,19 +70,21 @@
 	$sql .= " ,DEC.[zipcode] ";
 	$sql .= " ,DEC.[address] ";
 	$sql .= " ,DEC.[use_CHK] ";
-	$sql .= " ,ECT.[SB_exam_regi_type] ";
-	$sql .= " ,ECT.[Exam_code] ";
-	$sql .= " ,ECT.room_count ";
-	$sql .= " ,ECT.room_seat ";
-	$sql .= " ,ECT.use_seat ";
+	$sql .= " ,ECC.[SB_exam_regi_type] ";
+	$sql .= " ,ECC.[Exam_code] ";
+	$sql .= " ,ECC.[Exam_start_time] ";
+	$sql .= " ,ECC.subject";
+	$sql .= " ,ECC.certi_PC";
+	$sql .= " ,ECC.use_PC";
+;	$sql .= " ,(SELECT center_group_name FROM [Def_exam_center_Group] where center_group_code= DEC.center_group_code) as center_group_name";
 	$sql .= " FROM ";
 	$sql .= " [theExam].[dbo].[Def_exam_center] as DEC ";
 	$sql .= "  join ";
-	$sql .= " [theExam].[dbo].[exam_center_PBT] as ECT ";
-	$sql .= " on DEC.center_code = ECT.center_code ";
+	$sql .= " [theExam].[dbo].[exam_center_CBT] as ECC ";
+	$sql .= " on DEC.center_code = ECC.center_code ";
 	$sql .= " WHERE DEC.SB_center_cate = :centerCate ";
 	$sql .= " AND DEC.use_CHK= :useCHK "; 
-	$sql .= " AND ECT.exam_code = :examCode".$where;
+	$sql .= " AND ECC.exam_code = :examCode".$where;
 
 	$pArray[':centerCate']			= $pCenterCate;
 	$pArray[':useCHK']				= 'O';
@@ -90,6 +92,13 @@
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+
+	if(empty($data["Exam_start_time"])){
+		$examStartTime = "11:30";
+	}else{
+		$examStartTime = $data["Exam_start_time"];
+	}
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
@@ -103,7 +112,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">회차별 고사장세팅 <span class="sm_tit">( 상세보기 )</span></h3>
+			<h3 class="title">회차별 센터세팅 <span class="sm_tit">( 상세보기 )</span></h3>
 			<!-- sorting area -->
 			<div class="box_sort c_txt">
 				<div class="item"> 
@@ -151,18 +160,17 @@
 							<col style="width:auto">
 							<col style="width:auto">
 							<col style="width:auto">
-							<col style="width:auto">
 						</colgroup>
 						<thead>
 							<tr>
 								<th>No</th>
 								<th>코드</th>
 								<th>지역</th>
-								<th>학교명</th>
-								<th>학교주소</th>
-								<th>고사실수</th>
-								<th>실좌석</th>
-								<th>사용제한</th>
+								<th>그룹명</th>
+								<th>센터명</th>
+								<th>과목</th>
+								<th>시험시간</th>
+								<th>총좌석</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -175,16 +183,29 @@
 								<td><?=$i?></td>
 								<td><?=$data["center_code"]?></td>
 								<td><?=$data["SB_area"]?></td>
+								<td><?=$data["center_group_name"]?></td>
 								<td><?=$data["center_name"]?></td>
-								<td>(<?=$data["zipcode"]?>) <?=$data["address"]?></td>
-								<td><input style="width: 80px;" name="roomCount_<?=$data["center_code"]?>" type="text" value="<?=$data["room_count"]?>" /></td>
-								<td><input style="width: 80px;" name="roomSeat_<?=$data["center_code"]?>" type="text" value="<?=$data["room_seat"]?>"></td>
 								<td>
-									<select name="SBExamRegiType_<?=$data["center_code"]?>" style="width: 80px;">  
-										<option value="일반" <?=($data["SB_exam_regi_type"] == "일반") ? "selected" : "";?>>일반</option> 
-										<option value="지정" <?=($data["SB_exam_regi_type"] == "지정") ? "selected" : "";?>>지정</option> 
+									<select name="subject_<?=$data["center_code"]?>" style="width: 80px;">  
+										<option value="SO" <?=($data["subject"] == "SO") ? "selected" : "";?>>SO</option> 
+										<option value="WO" <?=($data["subject"] == "WO") ? "selected" : "";?>>WO</option> 
+										<option value="SW" <?=($data["subject"] == "SW") ? "selected" : "";?>>SW</option> 
 									</select>
 								</td>
+								<td>
+									<select name="Exam_start_time_<?=$data["center_code"]?>" style="width: 80px;">  
+
+									<?php
+										for($i=9; $i<=21; $i++){
+											if(strlen($i) == 1) $i = "0".$i;
+									?>
+										<option value="<?=$i?>:30" <?=($examStartTime == $i.":30") ? "selected" : "";?>><?=$i?>:30</option> 
+									<?php
+									}
+									?>
+									</select>
+								</td>
+								<td><input style="width: 80px;" name="roomSeat_<?=$data["center_code"]?>" type="text" value="<?=$data["room_seat"]?>"></td>
 								<td>
 									<button class="btn_fill btn_sm btnModify" data-centerCode="<?=$data["center_code"]?>" data-examCode="<?=$pExamCode?>" type="button">수정</button>
 									<button class="btn_line btn_sm btnDelete" data-centerCode="<?=$data["center_code"]?>" data-examCode="<?=$pExamCode?>" type="button">삭제</button>
@@ -245,7 +266,7 @@ $(document).ready(function () {
 
 	/* 고사장 추가*/
 	$(".btnAddPop").on("click", function(){
-		var u = "./settingAddPop.php?examCode=<?=$pExamCode?>";
+		var u = "./settingCBTAddPop.php?examCode=<?=$pExamCode?>";
 		var name = "settingAddPopup";
 		var opt = "width=680,height=700,menubar=no,status=no,toolbar=no";
 		var addPop = window.open(u, name, opt)
@@ -265,7 +286,7 @@ $(document).ready(function () {
 			var SBExamRegiType = $("select[name=SBExamRegiType_"+centerCode+"]").val();
 			
 
-			var u = "./settingPBTProc.php";				// 비동기 전송 파일 URL
+			var u = "./settingCBTProc.php";				// 비동기 전송 파일 URL
 			var param = {	// 파라메터
 				"proc" : "getModifyCenterAjax",
 				"centerCode" : centerCode,
@@ -307,7 +328,7 @@ $(document).ready(function () {
 			var examCode = $(this).attr("data-examCode");
 			var SBExamRegiType = $("select[name=SBExamRegiType_"+centerCode+"]").val();
 
-			var u = "./settingPBTProc.php";				// 비동기 전송 파일 URL
+			var u = "./settingCBTProc.php";				// 비동기 전송 파일 URL
 			var param = {	// 파라메터
 				"proc" : "getDeleteCenterAjax",
 				"centerCode" : centerCode,
@@ -342,7 +363,7 @@ $(document).ready(function () {
 	/* 고사장 최종 준비 완료 */
 	$("#btnReady").on("click", function(){
 		var examCode = $(this).attr("data-examCode");
-		var u = "./settingPBTProc.php";				// 비동기 전송 파일 URL
+		var u = "./settingCBTProc.php";				// 비동기 전송 파일 URL
 		var param = {	// 파라메터
 			"proc" : "getFinalReadyAjax",
 			"examCode" : examCode
@@ -354,7 +375,7 @@ $(document).ready(function () {
 			success: function(resJson) {
 				console.log(resJson)
 				if(resJson.status == "success"){
-					location.href = "./settingList.php";
+					location.href = "./settingCBTList.php";
 				}
 			},
 			error: function(resJson) {
@@ -369,7 +390,7 @@ $(document).ready(function () {
 	/* 고사장 세팅 초기화 */
 	$("#btnInit").on("click", function(){
 		var examCode = $(this).attr("data-examCode");
-		var u = "./settingPBTProc.php";				// 비동기 전송 파일 URL
+		var u = "./settingCBTProc.php";				// 비동기 전송 파일 URL
 		var param = {	// 파라메터
 			"proc" : "getInitAjax",
 			"examCode" : examCode
@@ -381,7 +402,7 @@ $(document).ready(function () {
 			success: function(resJson) {
 				console.log(resJson)
 				if(resJson.status == "success"){
-					location.href = "./settingLIst.php";
+					location.href = "./settingCBTList.php";
 				}
 			},
 			error: function(resJson) {

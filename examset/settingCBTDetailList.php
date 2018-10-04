@@ -23,11 +23,11 @@
 	$sql .= " Exam_num, ";
 	$sql .= " Exam_code, ";
 	$sql .= " Exam_day, ";
-	$sql .= " (SELECT SB_name FROM theExam.dbo.SB_Info where SB_value = EI.SB_Exam_cate AND SB_kind='exam_cate' AND Disp_type='A' OR Disp_type='B') as examFullName, ";
-	$sql .= " (SELECT TOP 1 Exam_code FROM theExam.dbo.Exam_info WHERE Exam_num < EI.Exam_num AND SB_Exam_cate = EI.SB_Exam_cate ORDER BY Exam_num asc) as prevExamCode, ";
-	$sql .= " (SELECT TOP 1 Exam_code FROM theExam.dbo.Exam_info WHERE Exam_num > EI.Exam_num AND SB_Exam_cate = EI.SB_Exam_cate ORDER BY Exam_num asc) as nextExamCode ";
+	$sql .= " (SELECT SB_name FROM SB_Info where SB_value = EI.SB_Exam_cate AND SB_kind='exam_cate' AND Disp_type='A' OR Disp_type='B') as examFullName, ";
+	$sql .= " (SELECT TOP 1 Exam_code FROM Exam_info WHERE Exam_num < EI.Exam_num AND SB_Exam_cate = EI.SB_Exam_cate ORDER BY Exam_num asc) as prevExamCode, ";
+	$sql .= " (SELECT TOP 1 Exam_code FROM Exam_info WHERE Exam_num > EI.Exam_num AND SB_Exam_cate = EI.SB_Exam_cate ORDER BY Exam_num asc) as nextExamCode ";
 	$sql .= " FROM  ";
-	$sql .= " theExam.dbo.Exam_info as EI ";
+	$sql .= " Exam_info as EI ";
 	$sql .= " where SB_Exam_cate = :examCate ";
 	$pArray[':examCate']			= substr($pExamCode,0,3);
 
@@ -60,36 +60,28 @@
 	}
 
 	$pArray = null;
-	$sql ="Select 
-		SB_area
-		, A.center_code
-		, center_name
-		, room_count
-		, room_seat
-		, use_seat
-		, isnull(gen_count, 0) as gen_count
-		, isnull(spe_count, 0) as spe_count
-		From 
-			theExam.dbo.exam_center_CBT as A (nolock)
-			join 
-			theExam.dbo.Def_exam_center as B (nolock) 
-				on A.center_code = B.center_code 
-			left outer join 
-				(Select 
-				sum(case when examee_regi_type = 'gen' then 1 else 0 end) as gen_count
-				, sum(case when examee_regi_type = 'spe' then 1 else 0 end) as spe_count
-				, center_code 
-				From theExam.dbo.examee_info (nolock) Where Exam_code = :examCode1
-		group by center_code) as C on A.center_code = C.center_code
-		Where Exam_code = :examCode2 and SB_center_cate = :centerCate
-";
-
-	$pArray[':centerCate']			= $pCenterCate;
-	$pArray[':examCode1']			= $pExamCode;
-	$pArray[':examCode2']			= $pExamCode;
+	$sql =" Select ";
+	$sql .= " SB_area, link_center_code, center_name, subject, Exam_start_time, certi_PC as totalPC, certi_PC-use_PC as requestPC, use_PC, C.use_CHK as use_CHK, B.center_group_code,A.center_code";
+	$sql .= " From exam_center_CBT as A (nolock) ";
+	$sql .= " join Def_exam_center as B (nolock) on A.center_code = B.center_code ";
+	$sql .= " join exam_center as C (nolock) on A.Exam_code = C.Exam_code and A.center_code = C.center_code ";
+	$sql .= " Where A.Exam_code = :examCode ";
+	$sql .= " ORDER BY B.center_group_code asc";
+	$pArray[':examCode']			= $pExamCode;
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
+
+
+	$arrGroupCenter = array();
+
+	foreach($arrRows as $data){
+		$arrGroupCenter[$data["center_group_code"]][] = $data;
+	}
+
+
+
+
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
@@ -99,11 +91,12 @@
 ?>
 
 
+
 <!--right -->
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">회차별 고사장세팅 <span class="sm_tit">( 상세보기 )</span></h3>
+			<h3 class="title">회차별 센터세팅 <span class="sm_tit">( 상세보기 )</span></h3>
 			<!-- sorting area -->
 			<div class="box_sort c_txt">
 				<div class="item"> 
@@ -115,26 +108,167 @@
 					</select>
 					<button class="btn_arr btnNavExam" type="button" data-url="<?=$nextURL?>"><strong class="fs_sm">▶</strong></button>
 				</div>
+				<span class="fl_r"><?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md btnAddPop'", "센터 추가")?></span>
+				
 			</div>
+			<div class="box_sort2 l_txt">
 
 <form name="frmSearch" id="frmSearch" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
 	<input type="hidden" name="examCode" value="<?=$pExamCode?>" />
-			<div class="box_sort2">
+
 				<strong class="part_tit">검색</strong>
-				<div class="item">
-					<select name="searchType" style="width:200px;">  
-						<option <?=( $pSearchType == 'center_name'	)? "SELECTED": "" ?> value="center_name">고사장명</option> 
-						<option <?=( $pSearchType == 'SB_area'	)? "SELECTED": "" ?> value="SB_area">지역</option> 
-						<option <?=( $pSearchType == 'center_code'	)? "SELECTED": "" ?> value="center_code">고사장코드</option> 
+				<div class="item line">
+					<select name="searchType" style="width:300px;">  
+						<option <?=( $pSearchType == 'center_name'	)? "SELECTED": "" ?> value="center_name">센터명</option> 
+						<option <?=( $pSearchType == 'link_center_code'	)? "SELECTED": "" ?> value="SB_area">센터코드</option> 
+						<option <?=( $pSearchType == 'Exam_start_time'	)? "SELECTED": "" ?> value="center_code">시험시간</option> 
 					</select>
 					<input style="width: 300px;" type="text"  id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>
-					<span class="fl_r">
-					<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md btnAddPop'", "고사장추가")?>
-					</span>	
+				</div>
+				<strong class="part_tit">필터</strong>
+				<div class="item">
+			    	<select name="subject" style="width: 300px;"> 
+						<option>과목 선택</option> 
+						<option>SW</option> 
+						<option>Speaking</option> 
+						<option>Writing</option> 
+					</select>
+					<select name="use_CHK" style="width: 300px;">  
+						<option>사용 여부</option> 
+						<option>사용</option> 
+						<option>사용 안함</option> 
+					</select>
+				</div>
+</form>
+			</div>
+			<!-- sorting area -->
+			<!-- 테이블1 -->
+			<div class="box_bs">
+				<div class="wrap_tbl">
+					<table class="type01">
+						<caption></caption>
+						<colgroup>
+							<col style="width:40px">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:180px">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+							<col style="width:auto">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>번호</th>
+								<th>지역</th>
+								<th>센터코드</th>
+								<th>센터명</th>
+								<th>시간</th>
+								<th>총좌석</th>
+								<th>응시좌석</th>
+								<th>남은좌석</th>
+								<th>사용</th>
+								<th>관리</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php
+
+						$sumTotalPC = 0;
+						$sumRequestPC = 0;
+						$sumUsePC = 0;
+						$article_no = count($arrRows);
+
+						foreach($arrGroupCenter as $k=>$v){
+							foreach($v as $p=>$data){
+						?>
+							<tr>
+								<td><?=$article_no?></td>
+								<td><?=$data["SB_area"]?></td>
+								<td><?=$data["link_center_code"]?></td>
+								<td><?=$data["center_name"]?></td>
+								<td><?=$data["Exam_start_time"]?></td>
+								<td><?=$data["totalPC"]?></td>
+								<td><?=$data["requestPC"]?></td>
+								<td><?=$data["use_PC"]?></td>
+								<td><?=$data["use_CHK"]?></td>
+								<td><button class="btn_fill btn_sm btnModify" data-centerCode="<?=$data["center_code"]?>" data-examCode="<?=$pExamCode?>" type="button">수정</button></td>
+							</tr>
+							<?php
+								$article_no--;
+								$sumTotalPC		= $sumTotalPC + $data["totalPC"];
+								$sumRequestPC	= $sumRequestPC + $data["requestPC"];
+								$sumUsePC			= $sumUsePC + $data["use_PC"];
+							}
+							?>
+							<tr>
+								<td colspan="5" class="total">그룹 합계</td>
+								<td class="total"><?=$sumTotalPC?></td>
+								<td class="total"><?=$sumRequestPC?></td>
+								<td class="total"><?=$sumUsePC?></td>
+								<td class="total">-</td>
+								<td class="total">-</td>
+							</tr>
+						<?php
+							$sumTotalPC = 0;
+							$sumRequestPC = 0;
+							$sumUsePC = 0;
+						}
+						?>
+						<?php
+						/*
+							<tr>
+								<td>서울</td>
+								<td><a href="#">강서구</a></td>
+								<td>0</td>
+								<td>0</td>
+								<td>00</td>
+								<td><a href="#">000</a></td>
+								<td>0%</td>
+								<td>00</td>
+								<td>00</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							<tr>
+								<td colspan="5" class="total">서울합계</td>
+								<td class="total">00</td>
+								<td class="total">0</td>
+								<td class="total">0</td>
+								<td class="total">0</td>
+								<td class="total">0</td>
+							</tr>
+							<tr>
+								<td class="point">서울</td>
+								<td class="point"><a href="#">강서구</a></td>
+								<td class="point">0</td>
+								<td class="point">0</td>
+								<td class="point">00</td>
+								<td class="point"><a href="#">000</a></td>
+								<td class="point">0%</td>
+								<td class="point">00</td>
+								<td class="point">00</td>
+								<td><button class="btn_fill btn_sm" type="button">수정</button></td>
+							</tr>
+							*/?>
+						</tbody>
+					</table>
 				</div>
 			</div>
-</form>
+			<!-- //테이블1-->
+		</div>
+	</div>
+</div>
+<!--right //-->
+
+<?php
+/*
+<!--right -->
+<div id="right_area">
+	<div class="wrap_contents">
+		<div class="wid_fix"> 
 
 			<!-- sorting area -->
 			<!-- 테이블1 -->
@@ -209,6 +343,8 @@
 </div>
 <!--right //-->
 
+*/
+?>
 <script>
 
 $(document).ready(function () {

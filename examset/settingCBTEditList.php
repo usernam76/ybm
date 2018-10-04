@@ -57,7 +57,11 @@
 	*/
 	$where		= "";
 	if( $pSearchKey != "" ){
-		$where .= " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
+		if($pSearchType == "center_code"){
+			$where .= " AND DEC.". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
+		}else{
+			$where .= " AND ". $pSearchType . " LIKE '%". $pSearchKey ."%' ";
+		}
 	}
 
 	$pArray = null;
@@ -76,12 +80,15 @@
 	$sql .= " ,ECC.subject";
 	$sql .= " ,ECC.certi_PC";
 	$sql .= " ,ECC.use_PC";
-;	$sql .= " ,(SELECT center_group_name FROM [Def_exam_center_Group] where center_group_code= DEC.center_group_code) as center_group_name";
+	$sql .= " ,DECG.center_group_name";
 	$sql .= " FROM ";
-	$sql .= " [theExam].[dbo].[Def_exam_center] as DEC ";
+	$sql .= " [Def_exam_center] as DEC ";
 	$sql .= "  join ";
-	$sql .= " [theExam].[dbo].[exam_center_CBT] as ECC ";
+	$sql .= " [exam_center_CBT] as ECC ";
 	$sql .= " on DEC.center_code = ECC.center_code ";
+	$sql .= " left outer join";
+	$sql .= " [Def_exam_center_Group] as DECG ";
+	$sql .= " on DEC.center_group_code = DECG.center_group_code";
 	$sql .= " WHERE DEC.SB_center_cate = :centerCate ";
 	$sql .= " AND DEC.use_CHK= :useCHK "; 
 	$sql .= " AND ECC.exam_code = :examCode".$where;
@@ -94,11 +101,6 @@
 	$arrRows = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
 
-	if(empty($data["Exam_start_time"])){
-		$examStartTime = "11:30";
-	}else{
-		$examStartTime = $data["Exam_start_time"];
-	}
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/header.php';
@@ -132,14 +134,15 @@
 				<strong class="part_tit">검색</strong>
 				<div class="item">
 					<select name="searchType" style="width:200px;">  
-						<option <?=( $pSearchType == 'SB_area'	)? "SELECTED": "" ?> value="SB_area">지역명</option> 
-						<option <?=( $pSearchType == 'center_name'	)? "SELECTED": "" ?> value="center_name">학교명</option> 
-						<option <?=( $pSearchType == 'address'	)? "SELECTED": "" ?> value="address">주소</option> 
+						<option <?=( $pSearchType == 'center_name')? "SELECTED": "" ?> value="center_name">센터명</option> 
+						<option <?=( $pSearchType == 'center_code')? "SELECTED": "" ?> value="center_code">센터코드</option> 
+						<option <?=( $pSearchType == 'SB_area')? "SELECTED": "" ?> value="SB_area">지역명</option> 
+						<option <?=( $pSearchType == 'center_group_name')? "SELECTED": "" ?> value="center_group_name">그룹명</option> 
 					</select>
 					<input style="width: 300px;" type="text"  id="searchKey" name="searchKey" value="<?=$pSearchKey?>">
 					<button class="btn_fill btn_md" type="button" id="btnSearch">조회</button>
 					<span class="fl_r">
-					<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md btnAddPop'", "고사장추가")?>
+					<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_md btnAddPop'", "센터추가")?>
 					</span>	
 				</div>
 			</div>
@@ -152,14 +155,15 @@
 					<table class="type01">
 						<caption></caption>
 						<colgroup>
-							<col style="width:80px">
+							<col style="width:60px">
 							<col style="width:auto">
 							<col style="width:auto">
-							<col style="width:auto">
-							<col style="width:300px">
-							<col style="width:auto">
-							<col style="width:auto">
-							<col style="width:auto">
+							<col style="width:200px">
+							<col style="width:200px">
+							<col style="width:90px">
+							<col style="width:130px">
+							<col style="width:90px">
+							<col style="width:130px">
 						</colgroup>
 						<thead>
 							<tr>
@@ -176,7 +180,7 @@
 						</thead>
 						<tbody>
 						<?php
-						$i=1;
+						$idkey=1;
 						foreach($arrRows as $data){
 						?>
 							<tr>
@@ -186,33 +190,40 @@
 								<td><?=$data["center_group_name"]?></td>
 								<td><?=$data["center_name"]?></td>
 								<td>
-									<select name="subject_<?=$data["center_code"]?>" style="width: 80px;">  
+									<select name="subject_<?=$data["center_code"].$idkey?>" style="width: 80px;">  
 										<option value="SO" <?=($data["subject"] == "SO") ? "selected" : "";?>>SO</option> 
 										<option value="WO" <?=($data["subject"] == "WO") ? "selected" : "";?>>WO</option> 
 										<option value="SW" <?=($data["subject"] == "SW") ? "selected" : "";?>>SW</option> 
 									</select>
 								</td>
 								<td>
-									<select name="Exam_start_time_<?=$data["center_code"]?>" style="width: 80px;">  
+									<select name="examStartTime_<?=$data["center_code"].$idkey?>" style="width: 80px;">  
 
 									<?php
 										for($i=9; $i<=21; $i++){
 											if(strlen($i) == 1) $i = "0".$i;
+
+											if(empty($data["Exam_start_time"])){
+												$examStartTime = "11:30";
+											}else{
+												$examStartTime = $data["Exam_start_time"];
+											}
 									?>
 										<option value="<?=$i?>:30" <?=($examStartTime == $i.":30") ? "selected" : "";?>><?=$i?>:30</option> 
 									<?php
 									}
 									?>
 									</select>
+									<a href="#" data-centerCode="<?=$data["center_code"]?>" idkey="<?=$idkey?>" data-examCode="<?=$pExamCode?>" class="addCenter">추가</a>
 								</td>
-								<td><input style="width: 80px;" name="roomSeat_<?=$data["center_code"]?>" type="text" value="<?=$data["room_seat"]?>"></td>
+								<td><input style="width: 40px;" name="certiPC_<?=$data["center_code"].$idkey?>" type="text" value="<?=$data["certi_PC"]?>" class="onlyNumber"></td>
 								<td>
-									<button class="btn_fill btn_sm btnModify" data-centerCode="<?=$data["center_code"]?>" data-examCode="<?=$pExamCode?>" type="button">수정</button>
-									<button class="btn_line btn_sm btnDelete" data-centerCode="<?=$data["center_code"]?>" data-examCode="<?=$pExamCode?>" type="button">삭제</button>
+									<button class="btn_fill btn_sm btnModify" data-centerCode="<?=$data["center_code"]?>" data-SBExamRegiType="<?=$data["SB_exam_regi_type"]?>" idkey="<?=$idkey?>" data-examCode="<?=$pExamCode?>" type="button">수정</button>
+									<button class="btn_line btn_sm btnDelete" data-centerCode="<?=$data["center_code"]?>" data-SBExamRegiType="<?=$data["SB_exam_regi_type"]?>"  idkey="<?=$idkey?>" data-examCode="<?=$pExamCode?>" type="button">삭제</button>
 								</td>
 							</tr>
 						<?php
-							$i++;
+							$idkey++;
 						}
 						?>
 							
@@ -220,8 +231,8 @@
 					</table>
 				</div>
 				<div class="wrap_btn">
-					<button class="btn_fill btn_lg" type="button" id="btnReady" data-examCode="<?=$pExamCode?>">고사장 준비 완료</button>
-					<span class="fx_r"><button class="btn_line btn_md" id="btnInit" type="button" data-examCode="<?=$pExamCode?>">고사장 셋팅 초기화</button></span>
+					<button class="btn_fill btn_lg" type="button" id="btnReady" data-examCode="<?=$pExamCode?>">센터 준비 완료</button>
+					<span class="fx_r"><button class="btn_line btn_md" id="btnInit" type="button" data-examCode="<?=$pExamCode?>">센터 세팅 초기화</button></span>
 				</div>
 			</div>
 			<!-- //테이블1-->
@@ -279,37 +290,34 @@ $(document).ready(function () {
 	$(".btnModify").on("click", function(){
 		var msg = "수정하시겠습니까";
 		if(confirm(msg)){
+			var idkey = $(this).attr("idkey");
 			var centerCode = $(this).attr("data-centerCode");
 			var examCode = $(this).attr("data-examCode");
-			var roomCount = $("input[name=roomCount_"+centerCode+"]").val();
-			var roomSeat = $("input[name=roomSeat_"+centerCode+"]").val();
-			var SBExamRegiType = $("select[name=SBExamRegiType_"+centerCode+"]").val();
-			
+			var SBExamRegiType = $(this).attr("data-SBExamRegiType");
+			var subject = $("select[name=subject_"+centerCode+idkey+"]").val();
+			var examStartTime = $("select[name=examStartTime_"+centerCode+idkey+"]").val();
+			var certiPC = $("input[name=certiPC_"+centerCode+idkey+"]").val();
 
 			var u = "./settingCBTProc.php";				// 비동기 전송 파일 URL
 			var param = {	// 파라메터
 				"proc" : "getModifyCenterAjax",
 				"centerCode" : centerCode,
 				"examCode" : examCode,
-				"roomCount" : roomCount,
-				"roomSeat" : roomSeat,
-				"SBExamRegiType" : SBExamRegiType
+				"subject" : subject,
+				"examStartTime" : examStartTime,
+				"SBExamRegiType":SBExamRegiType,
+				"certiPC" : certiPC
 			};
-
-			console.log(param);
-
 
 		/* 데이터 비동기 전송*/
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param,
 			success: function(resJson) {
-			console.log(resJson)
 				if(resJson.status == "success"){
 					alert("수정 되었습니다.");
 					return false;
 				}
 			},
 			error: function(resJson) {
-				console.log(resJson)
 				alert("현재 서버 통신이 원활하지 않습니다.");
 			}
 		});
@@ -326,7 +334,7 @@ $(document).ready(function () {
 
 			var centerCode = $(this).attr("data-centerCode");
 			var examCode = $(this).attr("data-examCode");
-			var SBExamRegiType = $("select[name=SBExamRegiType_"+centerCode+"]").val();
+			var SBExamRegiType = $(this).attr("data-SBExamRegiType");
 
 			var u = "./settingCBTProc.php";				// 비동기 전송 파일 URL
 			var param = {	// 파라메터
@@ -335,8 +343,6 @@ $(document).ready(function () {
 				"examCode" : examCode,
 				"SBExamRegiType" : SBExamRegiType
 			};
-
-			console.log(param)
 
 			/* 데이터 비동기 전송*/
 			$.ajax({ type:'post', url: u, dataType : 'json',data:param,
@@ -395,7 +401,6 @@ $(document).ready(function () {
 			"proc" : "getInitAjax",
 			"examCode" : examCode
 		};
-		console.log(param)
 
 		/* 데이터 비동기 전송*/
 		$.ajax({ type:'post', url: u, dataType : 'json',data:param,
@@ -435,7 +440,7 @@ $(document).ready(function () {
 	// 새로고침시 계속 열리는 팝업창을 위해 브라우저 history의 URL에서 팝업관련 내용을 삭제한다.
 	var state = null
 	var title = 'YBM TOTAL EXAM';
-	var url = 'settingEditList.php?examCode=<?=$pExamCode?>';
+	var url = 'settingCBTEditList.php?examCode=<?=$pExamCode?>';
 	history.pushState(state, title, url);
 	<?php
 	}

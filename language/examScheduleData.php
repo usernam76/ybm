@@ -26,18 +26,14 @@
 		,EI.[spe_regi_Start] as spe_regi_Start
 		,EI.[spe_regi_End] as spe_regi_End
 		,GI.[SB_goods_type2]
-		, (SELECT SB_name FROM [theExam].[dbo].[SB_info] WHERE SB_kind = 'exam_cate' AND SB_value=EI.SB_Exam_Cate) as examFullCate
+		, (SELECT SB_name FROM SB_info WHERE SB_kind = 'exam_cate' AND SB_value=EI.SB_Exam_Cate) as examFullCate
 	";
 
 	$pArray = null;
 	$sql = " SELECT ".$coulmn. " FROM ";
-	$sql .= "  [theExam].[dbo].[Exam_Info] AS EI ";
-	$sql .= "  LEFT OUTER JOIN ";
-	$sql .= "  [theExam].[dbo].[Exam_Goods] AS EG ";
-	$sql .= "  on EI.Exam_code = EG.Exam_code ";
-	$sql .= "  INNER JOIN ";
-	$sql .= "  [theExam].[dbo].[Goods_info] as GI ";
-	$sql .= "  on GI.goods_code = EG.goods_code ";
+	$sql .= "  Exam_Info AS EI ";
+	$sql .= "  LEFT OUTER JOIN Exam_Goods AS EG on EI.Exam_code = EG.Exam_code ";
+	$sql .= "  INNER JOIN Goods_info as GI on GI.goods_code = EG.goods_code ";
 	$sql .= " WHERE ";
 	$sql .= "  EI.SB_Exam_Cate = :SBExamCate";
 	$pArray[':SBExamCate']				= $SBExamCate;

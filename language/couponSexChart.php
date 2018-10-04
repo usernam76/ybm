@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "204";	//메뉴고유번호
+	$cPageMenuIdx = "1212";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -36,17 +36,23 @@
 	}
 
 	if( $pSCoupCode != "" ){
+		$sql  = " SELECT COUNT(*) AS totalRecords ";
+		$sql .= " FROM Coup_List_User as A (nolock) 	";
+		$sql .= " WHERE Coup_code = :coupCode ";
+
+		$pArrayChart[':coupCode'] = $pSCoupCode;
+
+		$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행
+		$totalRecords	= $arrRowsTotal[0]['totalRecords'];
 
 		$sql  = " SELECT	 ";
-		$sql .= "	gender	";
+		$sql .= "	CASE WHEN gender = 'M' THEN '남자' ELSE '여자' END AS gender		";
 		$sql .= "	, sum(case when use_day is not null then 1 else 0 end) as use_count	";
 		$sql .= "	, sum(case when use_day is null then 1 else 0 end) as not_use_count	";
 		$sql .= " FROM Coup_List_User as A (nolock) 	";
 		$sql .= " JOIN My_test as B (nolock) on A.Member_id = B.Member_id		";
 		$sql .= " WHERE A.Coup_code = :coupCode	";
 		$sql .= " Group by gender	";
-
-		$pArrayChart[':coupCode'] = $pSCoupCode;
 
 		$arrRowsChart = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행	
 
@@ -102,7 +108,9 @@
 			</div>
 </form> 
 			<!-- sorting area -->
-
+<?php
+	if( count($arrRowsChart) > 0 ){
+?>
 			<!-- 테이블1 -->
 			<div class="box_bs">
 				<div id="divChart" style="height:400px;"></div>
@@ -128,19 +136,19 @@
 						</thead>
 						<tbody>
 <?php
-	$useCount = 0;
-	foreach($arrRowsChart as $data) {
-		$useCountPer = 0;
+		$useCount = 0;
+		foreach($arrRowsChart as $data) {
+			$useCountPer = 0;
 
-		$useCount += $data['use_count'];
+			$useCount += $data['use_count'];
 
-		if ( $data['not_use_count'] == 0 ){
-			$useCountPer = 100;
-		}else if( $data['use_count'] > 0 && $data['not_use_count'] > 0  ){
-			$useCountPer = $data['use_count'] / ( $data['not_use_count'] + $useCount ) * 100;
+			if ( $data['not_use_count'] == 0 ){
+				$useCountPer = 100;
+			}else if( $data['use_count'] > 0 && $data['not_use_count'] > 0  ){
+				$useCountPer = $data['use_count'] / ( $data['not_use_count'] + $useCount ) * 100;
+			}
+			echo "<tr><td>".$data['gender']."</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
 		}
-		echo "<tr><td>".$data['gender']."</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
-	}
 ?>
 					  </tbody>
 					</table>
@@ -148,6 +156,9 @@
 
 			</div>
 			<!-- //테이블1-->
+<?php
+	}
+?>
 		</div>
 	</div>
 </div>
@@ -158,6 +169,7 @@
 $(document).ready(function () {
 
 	$("#sYear").on("change", function(){
+		$("#sCoupCode").val("");
 		$('#frmSearch').submit();
     });
 

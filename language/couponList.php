@@ -146,9 +146,9 @@
 								<td><a href="/language/couponView.php<?=fnGetParams().'currentPage='.$pCurrentPage?>&coupCode=<?=$data['Coup_code']?>"><?=$data['coup_name']?></td>
 								<td><?=$data['svc'].$data['svcNm']?></td>
 								<td><?=$data['usable_Startday']?> ~ <?=$data['usable_endday']?></td>
-								<td><?=$data['coup_count']?></td>
+								<td><?=( $data['coup_count'] == -1	)? "무제한": $data['coup_count'] ?></td>
 								<td><?=$data['use_count']?></td>
-								<td><?=$data['coup_count']-$data['use_count']?></td>
+								<td><?=( $data['coup_count'] == -1	)? "": $data['coup_count']-$data['use_count'] ?></td>
 								<td><?=$okChkNm?></td>
 								<td>
 									<?=fnButtonCreate($cPageRoleRw, "class='btn_fill btn_sm btnIssuedList' data-coupCode='".$data['Coup_code']."' ", "발급리스트")?>

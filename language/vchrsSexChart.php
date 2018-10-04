@@ -3,7 +3,7 @@
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/function.php';
 	include_once $_SERVER["DOCUMENT_ROOT"].'/_common/classes/DBConnMgr.class.php';
 	
-	$cPageMenuIdx = "1211";	//메뉴고유번호
+	$cPageMenuIdx = "1216";	//메뉴고유번호
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/headerRole.php';
 	
 	// validation 체크를 따로 안할 경우 빈 배열로 선언
@@ -20,7 +20,7 @@
 	$sql  = " SELECT ";
 	$sql .= "	coup_name, coup_code ";
 	$sql .= " FROM Coup_Info as A (nolock) 	";
-	$sql .= " WHERE SB_coup_cate != '응시권' ";
+	$sql .= " WHERE SB_coup_cate = '응시권' ";
 	$sql .= "	AND ((usable_Startday >= :StartDay1 AND usable_Startday <= :EndDay1) OR (usable_Endday >= :StartDay2 AND usable_Endday <= :EndDay2)) AND ok_CHK = 'O' ";
 	$sql .= " ORDER BY Coup_code DESC ";
 
@@ -45,14 +45,14 @@
 		$arrRowsTotal = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행
 		$totalRecords	= $arrRowsTotal[0]['totalRecords'];
 
-		$sql  = " SELECT ";
-		$sql .= "	dbo.f_year_ages(left(convert(varchar, decryptbykey(birthdayAES)),4)) as ages	";
+		$sql  = " SELECT	 ";
+		$sql .= "	CASE WHEN gender = 'M' THEN '남자' ELSE '여자' END AS gender		";
 		$sql .= "	, sum(case when use_day is not null then 1 else 0 end) as use_count	";
 		$sql .= "	, sum(case when use_day is null then 1 else 0 end) as not_use_count	";
 		$sql .= " FROM Coup_List_User as A (nolock) 	";
-		$sql .= " JOIN Member_certi as B (nolock) on A.Member_id = B.Member_id		";
+		$sql .= " JOIN My_test as B (nolock) on A.Member_id = B.Member_id		";
 		$sql .= " WHERE A.Coup_code = :coupCode	";
-		$sql .= " Group by dbo.f_year_ages(left(convert(varchar, decryptbykey(birthdayAES)),4))	";
+		$sql .= " Group by gender	";
 
 		$arrRowsChart = $dbConn->fnSQLPrepare($sql, $pArrayChart, ''); // 쿼리 실행	
 
@@ -60,7 +60,7 @@
 
 		array_push($chart_array, array("Task", "") );
 		foreach($arrRowsChart as $data) {
-			array_push($chart_array, array( $data['ages']."대 ", $data['use_count']) );
+			array_push($chart_array, array( $data['gender']."", $data['use_count']) );
 		}
 	}
 
@@ -76,7 +76,7 @@
 <div id="right_area">
 	<div class="wrap_contents">
 		<div class="wid_fix"> 
-			<h3 class="title">연령 통계</h3>
+			<h3 class="title">성별 통계</h3>
 
 			<!-- sorting area -->
 <form name="frmSearch" id="frmSearch" action="<?=$_SERVER['SCRIPT_NAME']?>" method="get"> 
@@ -108,7 +108,6 @@
 			</div>
 </form> 
 			<!-- sorting area -->
-
 <?php
 	if( count($arrRowsChart) > 0 ){
 ?>
@@ -129,7 +128,7 @@
 						</colgroup>
 						<thead>
 							<tr>
-								<th>연령</th>
+								<th>성별</th>
 								<th>사용</th>
 								<th>미사용</th>
 								<th>사용율(%)</th>
@@ -137,19 +136,19 @@
 						</thead>
 						<tbody>
 <?php
-	$useCount = 0;
-	foreach($arrRowsChart as $data) {
-		$useCountPer = 0;
+		$useCount = 0;
+		foreach($arrRowsChart as $data) {
+			$useCountPer = 0;
 
-		$useCount += $data['use_count'];
+			$useCount += $data['use_count'];
 
-		if ( $data['not_use_count'] == 0 ){
-			$useCountPer = 100;
-		}else if( $data['use_count'] > 0 && $data['not_use_count'] > 0  ){
-			$useCountPer = $data['use_count'] / ( $data['not_use_count'] + $useCount ) * 100;
+			if ( $data['not_use_count'] == 0 ){
+				$useCountPer = 100;
+			}else if( $data['use_count'] > 0 && $data['not_use_count'] > 0  ){
+				$useCountPer = $data['use_count'] / ( $data['not_use_count'] + $useCount ) * 100;
+			}
+			echo "<tr><td>".$data['gender']."</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
 		}
-		echo "<tr><td>".$data['ages']."대</td><td>".$data['use_count']."</td><td>".$data['not_use_count']."</td><td>".number_format($useCountPer,2)."%</td></tr>";
-	}
 ?>
 					  </tbody>
 					</table>

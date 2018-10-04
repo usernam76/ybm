@@ -56,6 +56,7 @@
 			$pOkId = "csw";
 			$pOkType = "T";
 
+
 			/* 입력 프로시저 실행*/
 			$pIUD = "I";
 			$pArray = null;
@@ -95,7 +96,7 @@
 			$result = $dbConn->fnSQLPrepare($sql, $pArray, 'IUD'); // 쿼리 실행
 
 			if(in_array($pExamCode, $result[0])) {
-				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetSchList.php';", true);
+				fnShowAlertMsg("등록 되었습니다.", "location.href = '/examset/examSetSchList.php?examCate=".$pExamCate."';", true);
 			}else{
 				fnShowAlertMsg("등록 실패 되었습니다.", "history.back();", true);
 			}

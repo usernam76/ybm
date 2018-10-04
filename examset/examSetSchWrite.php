@@ -30,6 +30,7 @@
 		}
 	}
 
+
 	/*단과시험 정보 출력*/
 	$pArray = null;
 	$coulmn = " [goods_code] ,[goods_name] ,[disp_goods_name] ,[SB_goods_type2] ,[disp_price] ,[sell_price]";
@@ -83,7 +84,9 @@
 				refSecond			환불 2차
 */
 
-	$pExamCate = "TOE";	// 토익>전체필드오픈
+	
+
+	//$pExamCate = "TOE";	// 토익>전체필드오픈
 	
 	// 공통 입력항목 세팅
 	$arrOpenField = array(
@@ -97,27 +100,6 @@
 	);
 	// 공통 입력항목 세팅 끝
 
-	// 시험별 추가 입력항목
-	switch($SBExamCate){
-		case "TOEIC" : 
-			array_push($arrOpenField, "examSpeCode");
-			array_push($arrOpenField, "speRegi");
-			array_push($arrOpenField, "refSecond");
-		break;
-		case "토익스피킹" : 
-			array_push($arrOpenField, "regiExt");
-		break;
-
-		case "TOE" :  // 전체오픈
-			array_push($arrOpenField, "examSpeCode");
-			array_push($arrOpenField, "examDate");
-			array_push($arrOpenField, "regiExt");
-			array_push($arrOpenField, "speRegi");
-			array_push($arrOpenField, "regiExt");
-			array_push($arrOpenField, "refSecond");
-		break;
-		default: break;
-	}
 	// 시험별 추가 입력항목 끝
 
 	if($proc == "modify"){
@@ -210,6 +192,28 @@
 
 	}
 
+	if(empty($pExamCate)) $pExamCate = $SBExamCate;
+
+	// 시험별 추가 입력항목
+	switch($pExamCate){
+		case "TOE" :  // 전체오픈
+			array_push($arrOpenField, "examSpeCode");
+			array_push($arrOpenField, "examDate");
+			array_push($arrOpenField, "regiExt");
+			array_push($arrOpenField, "speRegi");
+			array_push($arrOpenField, "regiExt");
+			array_push($arrOpenField, "refSecond");
+		break;
+
+		case "TOS" :  // CBT
+			array_push($arrOpenField, "examSpeCode");
+			array_push($arrOpenField, "examDate");
+			array_push($arrOpenField, "regiExt");
+			array_push($arrOpenField, "speRegi");
+		break;
+		default: break;
+
+	}
 
 	
 	require_once $_SERVER["DOCUMENT_ROOT"].'/common/template/head.php';
@@ -229,7 +233,7 @@
 			<!-- 테이블1 -->
 <form name="frmWrite" id="frmWrite" action="./examSetSchProc.php" method="post"> 
 	<input type="hidden" name="proc" value="<?=$proc?>" />
-	<input type="hidden" name="SBExamCate" value="<?=$SBExamCate?>" />
+	<input type="hidden" name="SBExamCate" value="<?=$pExamCate?>" />
 	<?php	if($proc=="modify"){?>
 	<input type="hidden" name="examCode" value="<?=$pExamCode?>" />
 	<?php	}?>

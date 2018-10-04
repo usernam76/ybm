@@ -59,14 +59,15 @@
 
 			$pIUD = "U";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_CBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
+			$sql = 'EXEC p_exam_center_CBT_IUD :IUD, :Exam_code, :center_code, :SB_exam_regi_type, :subject, :Exam_start_time, :certi_pc,:memo, :use_CHK';
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;
-			$pArray[':center_codes']					= $pCenterCode;
-			$pArray[':SB_exam_regi_types']	= $pSBExamRegiType;
-			$pArray[':room_counts']					= $pRoomCount;
-			$pArray[':room_seats']						= $pRoomSeat;
-			$pArray[':memos']								= $pMemo;
+			$pArray[':center_code']					= $pCenterCode;
+			$pArray[':SB_exam_regi_type']		= $pSBExamRegiType;
+			$pArray[':subject']								= $pSubject;
+			$pArray[':Exam_start_time']			= $pExamStartTime;
+			$pArray[':certi_pc']							= $pCertiPC;
+			$pArray[':memo']								= $pMemo;
 			$pArray[':use_CHK']							= $pUseCHK;
 
 			$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -74,7 +75,7 @@
 
 			if(in_array( $pExamCode, $result[0])){
 				$returnData = array("status"=>"success");
-				echo json_encode($returnData);
+				echo json_encode($pArray);
 			}
 			exit;
 
@@ -85,14 +86,15 @@
 
 			$pIUD = "D";
 			$pArray = null;
-			$sql = 'EXEC p_exam_center_CBT_IUD :IUD, :Exam_code, :center_codes, :SB_exam_regi_types, :room_counts, :room_seats, :memos, :use_CHK';
+			$sql = 'EXEC p_exam_center_CBT_IUD :IUD, :Exam_code, :center_code, :SB_exam_regi_type, :subject, :Exam_start_time, :certi_pc,:memo, :use_CHK';
 			$pArray[':IUD']									= $pIUD;
 			$pArray[':Exam_code']						= $pExamCode;
-			$pArray[':center_codes']					= $pCenterCode;
-			$pArray[':SB_exam_regi_types']	= $pSBExamRegiType;
-			$pArray[':room_counts']					= $pRoomCount;
-			$pArray[':room_seats']						= $pRoomSeat;
-			$pArray[':memos']								= $pMemo;
+			$pArray[':center_code']					= $pCenterCode;
+			$pArray[':SB_exam_regi_type']		= $pSBExamRegiType;
+			$pArray[':subject']								= $pSubject;
+			$pArray[':Exam_start_time']			= $pExamStartTime;
+			$pArray[':certi_pc']							= $pCertiPC;
+			$pArray[':memo']								= $pMemo;
 			$pArray[':use_CHK']							= $pUseCHK;
 
 

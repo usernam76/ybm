@@ -12,6 +12,7 @@
 
 	if($pExamCate == "") $pExamCate = "TOE";		// 기본은 PBT, 상황에 따라 변수 변경
 
+
 	$listYear = fnNoInjection($_REQUEST['listYear']);
 	if(empty($listYear)) $listYear = date("Y");
 
@@ -49,9 +50,10 @@
 	$sql .= "  [Exam_Info] as oEI";
 	$sql .= " WHERE ";
 	$sql .= "  convert(char(4),[gen_regi_start],120)=:listYear";
+	$sql .= " AND oEI.SB_Exam_cate=:SBExamCate";
 
 
-	//$pArray[':SBExamCate']	= $SBExamCate;
+	$pArray[':SBExamCate']	= $pExamCate;
 	$pArray[':listYear']				= $listYear;
 
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
@@ -113,7 +115,7 @@
 				</div>
 				<span class="fx_r">
 					<button class="btn_fill btn_md" id="btnCalendar" type="button">캘린더 보기</button>
-					<?=fnButtonCreate($cPageRoleRw, "class='btn_line btn_md' id='btnWrite' ", "일정 추가")?>
+					<?=fnButtonCreate($cPageRoleRw, "class='btn_line btn_md' data-examCate='".$pExamCate."' id='btnWrite' ", "일정 추가")?>
 				</span>
 			</div>
 			<!-- 테이블1 -->
@@ -211,7 +213,8 @@ $(document).ready(function () {
 
 	// 일정 추가
 	$("#btnWrite").on("click", function(){
-		location.href = "./examSetSchWrite.php";
+		var examCate = $(this).attr("data-examCate");
+		location.href = "./examSetSchWrite.php?examCate="+examCate;
 	})
 
 	// 캘린더보기

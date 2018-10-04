@@ -12,31 +12,11 @@
 
 
 	if($pExamCate == "") $pExamCate = "TOS";		// 기본은 TOE, 상황에 따라 변수 변경
-/*
-	$sql = " Select ";
-	$sql .= " Exam_num,  ";
-	$sql .= " Exam_day,  ";
-	$sql .= " A.exam_code,";
-	$sql .= " A.gen_regi_Start,  ";
-	$sql .= " A.gen_regi_End,  ";
-	$sql .= " sum(case when B.fin_CHK = 'O' then 1 else 0 end) as fin_center,  ";
-	$sql .= " sum(case when B.fin_CHK = '-' then 1 else 0 end) as wait_center,  ";
-	$sql .= " sum(case when D.Group_Exam is not null then 1 else 0 end) as group_center,  ";
-	$sql .= " case when A.fin_CHK = 'O' then '완료' when A.fin_CHK = 'X' then '준비' end as fin_CHK ";
-	$sql .= " From ";
-	$sql .= " exam_info as A (nolock) join  ";
-	$sql .= " v_Exam_center as B (nolock)  ";
-	$sql .= " on A.Exam_code = B.Exam_code ";
-	$sql .= " left outer join Group_Exam_info as C (nolock)  ";
-	$sql .= " on A.Exam_code = C.Exam_code ";
-	$sql .= " left outer join Group_exam_center as D (nolock)  ";
-	$sql .= " on C.Group_Exam = D.Group_Exam ";
-	$sql .= " Group by Exam_num, Exam_day, A.gen_regi_Start, A.gen_regi_End, A.fin_CHK, A.exam_code";
-*/
 
 
 	$pArray = null;
-	$sql = " SELECT Exam_num, exam_code FROM theExam.dbo.exam_info WHERE (case when fin_CHK='O' then '완료' when fin_CHK='X' then '준비' end) = '완료' ";
+	$sql = " SELECT Exam_num, exam_code FROM theExam.dbo.exam_info WHERE  fin_CHK='O' and SB_Exam_cate = :examCate";
+	$pArray["examCate"] = $pExamCate;
 	$dbConn = new DBConnMgr(DB_DRIVER, DB_USER, DB_PASSWD); // DB커넥션 객체 생성
 	$arrCompleteCenter = $dbConn->fnSQLPrepare($sql, $pArray, ''); // 쿼리 실행
 
@@ -49,7 +29,6 @@
 	$sql .= " gen_regi_Start,  ";
 	$sql .= " gen_regi_End, ";
 	$sql .= " (SELECT sum(case when fin_CHK = 'O' then 1 else 0 end) FROM theExam.dbo.exam_center_CBT WHERE exam_code = EI.exam_code) as fin_center, ";
-	$sql .= " (SELECT sum(case when use_CHK = '-' then 1 else 0 end) FROM theExam.dbo.exam_center WHERE exam_code = EI.exam_code) as wait_center, ";
 	$sql .= " (SELECT sum(case when SB_exam_regi_type ='지정' then 1 else 0 end) FROM theExam.dbo.exam_center_CBT WHERE exam_code = EI.exam_code) as group_center, ";
 	$sql .= " (case when fin_CHK = 'O' then '완료' when fin_CHK = 'X' then '준비' end) as fin_CHK ";
 	$sql .= " from ";
@@ -83,17 +62,15 @@
 							<col style="width:auto">
 							<col style="width:auto">
 							<col style="width:auto">
-							<col style="width:auto">
 						</colgroup>
 						<thead>
 							<tr>
 								<th>회차</th>
 								<th>시험일</th>
 								<th>접수기간</th>
-								<th>등록 고사장수</th>
-								<th>대기 고사장수</th>
-								<th>지정 고사장수<br>(특정 사용자만 접수가능)</th>
-								<th>고사장세팅</th>
+								<th>등록 센터 수</th>
+								<th>지정 센터 수<br>(특정 사용자만 접수가능)</th>
+								<th>센터 세팅</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -117,34 +94,12 @@
 								<td><?=$data["Exam_day"]?></td>
 								<td><?=$data["gen_regi_Start"]?> ~ <?=$data["gen_regi_End"]?></td>
 								<td><?=($data["fin_center"] == "" ? "0" : $data["fin_center"]); ?></td>
-								<td><?=($data["wait_center"] == "" ? "0" : $data["wait_center"]); ?></td>
 								<td><?=($data["group_center"] == "" ? "0" : $data["group_center"]); ?></td>
 								<td><a href="#" class="setting" data-examCode="<?=$data["exam_code"]?>" data-centerStatus="<?=$examStatus?>"><?=$data["fin_CHK"]?></a></td>
 							</tr>
 <?php
 	}
 ?>
-						<?php
-						/*
-							<tr>
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#">완료</a></td>
-							</tr>
-							<tr class="other"><!-- 배경색 other-->
-								<td>000</td>
-								<td><a href="#">2018-00-00</a></td>
-								<td>0</td>
-								<td>0</td>
-								<td>00</td>
-								<td>00</td>
-								<td><a href="#">완료</a></td>
-							</tr>
-							*/?>
 						</tbody>
 					</table>
 				</div>

@@ -63,10 +63,10 @@
 			$regiStart = $data["spe_regi_Start"];
 			$regiEnd = $data["spe_regi_End"];
 		}
-		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 시험일",'start'=>$examDay, 'color'=>'#F8b195'));
-		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 성적 발표",'start'=>$scoreDay, 'color'=>'#99b898'));
-		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 접수 시작",'start'=>$regiStart, 'color'=>'skyblue'));
-		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 접수 종료",'start'=>$regiEnd, 'color'=>'skyblue'));
+		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 시험일",	'start'=>$examDay,		'color'=>'#F8b195', 'kind'=>'1'));
+		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 성적 발표",	'start'=>$scoreDay,		'color'=>'#99b898', 'kind'=>'2'));
+		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 접수 시작",	'start'=>$regiStart,	'color'=>'skyblue', 'kind'=>'3'));
+		array_push($returnData, array('title'=>$examFullCate." ".$examNum."회 접수 종료",	'start'=>$regiEnd,		'color'=>'skyblue', 'kind'=>'4'));
 	}
 
 	echo json_encode($returnData);

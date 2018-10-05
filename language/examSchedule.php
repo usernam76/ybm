@@ -116,7 +116,12 @@ function onSetCalendar(){
 				element.attr("title", calEvent.title);
 				element.attr("href", "#");
 			}else{ // 일반 이벤트 일 경우 이벤트 속성 세팅
-				element.attr("title", calEvent.userName + " ("+calEvent.posName+")");
+				element.attr("title", calEvent.title );
+				if( calEvent.kind == "1" ){
+//					element.find('.fc-title').prepend('<span class="bl test">시험</span>'); 
+				}else{
+//					element.find('.fc-title').prepend('<span class="bl test">시험</span>'); 
+				}
 			}
 		},	
 		viewRender: function(view, element){
@@ -133,8 +138,7 @@ function onSetCalendar(){
 	$("#dp").datepicker({
 		dateFormat: 'yy-mm-dd',
         onSelect: function(dateText, inst) {
-			alert(dateText);
-//			$("#calendarTag").fullCalendar("gotoDate", e.date);
+			$('#calendar').fullCalendar("gotoDate", dateText);
         },
         beforeShow: function (input, inst) {
 			inst.dpDiv.css({marginTop: 30 + 'px', marginLeft: $(".box_bs").width() - 210 + 'px'});
